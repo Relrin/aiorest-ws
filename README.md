@@ -1,5 +1,4 @@
 # Rest-ws
-REST framework with WebSockets support
 
 This library represents as a flexible toolkit for building Web APIs, which based on WebSockets and standart asyncio package.
 
