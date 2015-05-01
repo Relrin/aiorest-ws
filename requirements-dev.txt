@@ -1,0 +1,7 @@
+aiohttp==0.15.3
+pytest==2.7.0
+pytest-xdist==1.11
+pep8==1.6.2
+pudb==2015.2
+pyflakes==0.8.1
+pylint==1.4.3
