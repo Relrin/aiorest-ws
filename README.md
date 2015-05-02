@@ -1,4 +1,5 @@
-# Rest-ws
+# Rest-ws [![Build Status](https://travis-ci.org/Relrin/rest-ws.svg)](https://travis-ci.org/Relrin/rest-ws)
+REST framework with WebSockets support
 
 This library represents as a flexible toolkit for building Web APIs, which used WebSockets and standart asyncio package.
 
