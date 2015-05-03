@@ -11,7 +11,7 @@ def define(name, default=None, help=None, type=None, *args, **kwargs):
                                 *args, **kwargs)
 
 
-def parse_command_line(args=None):
+def parse_command_line():
     """
         Parse options from the command line
     """

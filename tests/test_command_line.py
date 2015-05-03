@@ -15,8 +15,8 @@ def test_define_with_user_arguments(default_options):
 def test_define_with_user_arguments_and_options(default_options):
     define('-arg1', default='127.0.0.1', help='used ip for server', type=str)
     define('-arg2', default=8080, help='listened on server', type=int)
-    define('--arg1', help='arg #1', type=int)
-    define('--arg2', help='arg #2', type=str)
+    define('--opt1', help='arg #1', type=int)
+    define('--opt2', help='arg #2', type=str)
     assert len(options._option_string_actions.keys()) == 8
 
 
