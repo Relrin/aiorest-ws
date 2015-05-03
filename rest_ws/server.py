@@ -15,7 +15,7 @@ def init_server(loop, ip, port, router=None):
 def run_server(router=None):
     define('-ip', default='127.0.0.1', type=str, help="used ip for server",
            required=False)
-    define('-port', default=8080, type=int, help="listened port for server",
+    define('-port', default=8080, type=int, help="listened port on the server",
            required=False)
     args = parse_command_line()
     loop = asyncio.get_event_loop()
