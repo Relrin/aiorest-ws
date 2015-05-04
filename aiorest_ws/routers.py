@@ -49,7 +49,7 @@ class RestWSRouter(UrlDispatcher):
             Args:
                 path - URL, which used to get access to API
                 handler - callable function, which used for processing request
-                methods - list of supported
+                methods - list of supported HTTP methods
                 base_name - the base to use for the URL names that are created
         """
         if isinstance(methods, list):
