@@ -14,6 +14,8 @@ requirements = ['aiohttp>=0.15.3', ]
 if sys.version_info < (3, 4):
     requirements += ['asyncio', ]
 
+tests_require = install_requires + ['pytest', 'pytest-asyncio', 
+                                    'pytest-cov', 'pytest-xdist']
 
 def read(f):
     return open(os.path.join(os.path.dirname(__file__), f)).read().strip()
@@ -32,6 +34,8 @@ args = dict(
     zip_safe=False,
     platforms='any',
     install_requires=requirements,
+    tests_require=tests_require,
+    # add there test_suite 
     classifiers=[
         'License :: OSI Approved :: MIT License',
         'Intended Audience :: Developers',
