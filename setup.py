@@ -14,8 +14,8 @@ requirements = ['aiohttp>=0.15.3', ]
 if sys.version_info < (3, 4):
     requirements += ['asyncio', ]
 
-tests_require = install_requires + ['pytest', 'pytest-asyncio', 
-                                    'pytest-cov', 'pytest-xdist']
+tests_require = requirements + ['pytest', 'pytest-asyncio', 
+                                'pytest-cov', 'pytest-xdist']
 
 def read(f):
     return open(os.path.join(os.path.dirname(__file__), f)).read().strip()
