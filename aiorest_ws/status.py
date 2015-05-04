@@ -4,6 +4,16 @@
     For more detail information check link below:
         https://tools.ietf.org/html/rfc6455
 """
+__all__ = ('WS_NORMAL', 'WS_GOING_AWAY', 'WS_PROTOCOL_ERROR',
+           'WS_DATA_CANNOT_ACCEPT', 'WS_RESERVED', 'WS_NO_STATUS_CODE',
+           'WS_CLOSED_ABNORMALLY', 'WS_MESSAGE_NOT_CONSISTENT',
+           'WS_MESSAGE_VIOLATE_POLICY', 'WS_MESSAGE_TOO_BIG',
+           'WS_SERVER_DIDNT_RETURN_EXTENSIONS', 'WS_UNEXPECTED_CONDITION',
+           'WS_FAILURE_TLS',
+
+           'is_not_used', 'is_reserved', 'is_library', 'is_private')
+
+
 WS_NORMAL = 1000
 WS_GOING_AWAY = 1001
 WS_PROTOCOL_ERROR = 1002
@@ -20,16 +30,16 @@ WS_FAILURE_TLS = 1015
 
 
 def is_not_used(code):
-    return code >= 0 and code <= 999
+    return 0 <= code <= 999
 
 
 def is_reserved(code):
-    return code >= 1000 and code <= 2999
+    return 1000 <= code <= 2999
 
 
 def is_library(code):
-    return code >= 3000 and code <= 3999
+    return 3000 <= code <= 3999
 
 
 def is_private(code):
-    return code >= 4000 and code <= 4999
+    return 4000 <= code <= 4999
