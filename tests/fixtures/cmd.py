@@ -1,6 +1,6 @@
 import pytest
 
-from rest_ws.command_line import options, define
+from aiorest_ws.command_line import define
 
 
 @pytest.fixture(scope="module", autouse=True)

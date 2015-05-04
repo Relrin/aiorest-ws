@@ -4,9 +4,8 @@ python:
 before_install:
   - sudo apt-get update -qq
   - sudo apt-get install python-dev
-# install dependencies
 install:
   - pip install -r requirements-dev.txt
-# run tests via pytest
 script:
+  - flake8 aiorest_ws tests
   - python ./tests/runtests.py
