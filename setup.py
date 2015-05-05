@@ -10,12 +10,13 @@ with open('aiorest_ws/__init__.py', 'rb') as f:
     version = str(ast.literal_eval(_version_re.search(
         f.read().decode('utf-8')).group(1)))
 
-requirements = ['aiohttp>=0.15.3', ]
+requirements = ['aiohttp==0.15.3', ]
 if sys.version_info < (3, 4):
     requirements += ['asyncio', ]
 
-tests_require = requirements + ['pytest', 'pytest-asyncio', 
-                                'pytest-cov', 'pytest-xdist']
+test_requirements = requirements + ['pytest', 'pytest-asyncio',
+                                    'pytest-cov', 'pytest-xdist']
+
 
 def read(f):
     return open(os.path.join(os.path.dirname(__file__), f)).read().strip()
@@ -34,8 +35,7 @@ args = dict(
     zip_safe=False,
     platforms='any',
     install_requires=requirements,
-    tests_require=tests_require,
-    # add there test_suite 
+    tests_require=test_requirements,
     classifiers=[
         'License :: OSI Approved :: MIT License',
         'Intended Audience :: Developers',
@@ -47,4 +47,6 @@ args = dict(
     ],
 )
 
-setup(**args)
+
+if __name__ == '__main__':
+    setup(**args)
