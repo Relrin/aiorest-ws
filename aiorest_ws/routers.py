@@ -1,6 +1,6 @@
 """
     This modules provide a functions and classes, which every developer
-    can used for determine URL for their APIs
+    can used for determine URL for their APIs.
 
     For example, we can use this features something like this:
 
@@ -8,7 +8,6 @@
         router.add('user/info', info_handler, methods='GET')
         router.add('user/register', register_handler, methods='POST')
         router.add('user/{user_name}', user_handler, methods=['GET', 'PUT'])
-
 
     If necessary append this urls to Django instantly, we can use this:
 
@@ -24,24 +23,21 @@ __all__ = ('DjangoRouterMixin', 'RestWSRouter')
 
 
 class DjangoRouterMixin(metaclass=abc.ABCMeta):
-
     """
-        Mixin for compatibility with Django URLs
+        Mixin for compatibility with Django URLs.
     """
     @abc.abstractmethod
     def get_urls(self):
         """
-            Returns list of urlpatterns, which can be added to Django URLs
+            Returns list of urlpatterns, which can be added to Django URLs.
         """
         pass
 
 
 class RestWSRouter(UrlDispatcher):
-
     """
         Default router class, used for working with REST over WebSockets
     """
-
     def add(self, path, handler, methods, base_name=None):
         """
             Add new endpoint to server router
@@ -64,5 +60,5 @@ class RestWSRouter(UrlDispatcher):
             )
 
     # add there support class-based handlers
-    # def add_class_handler(self, path, handler, base_name=None):
+    # def add_class_handler(self, path, cls_handler, base_name=None):
     # ...

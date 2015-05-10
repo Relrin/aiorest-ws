@@ -1,10 +1,12 @@
 """
-    Handled exceptions raised by aiorest-ws framework
+    Handled exceptions raised by aiorest-ws framework, which inspired under
+    Django REST framework
 """
 import status
 
 
-__all__ = ('BaseAPIException', 'NotSupportedArgumentType')
+__all__ = ('BaseAPIException', 'NotSupportedArgumentType',
+           'NotResolvedRequest')
 
 
 class BaseAPIException(Exception):
@@ -28,3 +30,7 @@ class BaseAPIException(Exception):
 
 class NotSupportedArgumentType(BaseAPIException):
     default_detail = "Check your arguments on supported types."
+
+
+class NotResolvedRequest(BaseAPIException):
+    default_detail = "For URL, typed in request, handler not specified."

@@ -1,41 +1,52 @@
 """
-    This module provides a classes, which can be used with aiorest-ws routers
+    This module provides class-based views inspired by Django/Flask
+    frameworks and can be used with aiorest-ws routers.
 """
-import asyncio
-__all__ = ('BaseView', 'ClassBasedView', )
+__all__ = ('View', 'MethodViewMeta', 'ClassBasedView',)
+
+http_methods = frozenset(['get', 'post', 'head', 'options', 'delete', 'put',
+                          'trace', 'patch'])
 
 
-class BaseView(object):
+class View(object):
     """
-        Base class for realization class-based views
+        Subclass for implementing class-based views.
     """
-    @asyncio.coroutine
-    def get(self, request, *args, **kwargs):
-        raise NotImplementedError('`get` method should be overridden')
-
-    @asyncio.coroutine
-    def post(self, request, *args, **kwargs):
-        raise NotImplementedError('`post` method should be overridden')
-
-    @asyncio.coroutine
-    def put(self, request, *args, **kwargs):
-        raise NotImplementedError('`put` method should be overridden')
-
-    @asyncio.coroutine
-    def delete(self, request, *args, **kwargs):
-        raise NotImplementedError('`delete` method should be overridden')
-
-    @asyncio.coroutine
-    def patch(self, request, *args, **kwargs):
-        raise NotImplementedError('`patch` method should be overridden')
-
-    @asyncio.coroutine
-    def head(self, request, *args, **kwargs):
-        raise NotImplementedError('`head` method should be overridden')
+    @classmethod
+    def as_view(cls, name, *class_args, **class_kwargs):
+        """
+            Converts the class into an actual view function that can be used
+            with the routing system.
+        """
+        pass
 
 
-class ClassBasedView(BaseView):
+class MethodViewMeta(type):
     """
-        Class-based view for aiorest-ws framework
+        Metaclass, which helps to define list of supported methods in
+        class-based views.
     """
-    pass
+    def __new__(cls, name, bases, attrs):
+        obj = type.__new__(cls, name, bases, attrs)
+        # if not defined 'method' attribute, then make and append him to
+        # our class-based view
+        if 'methods' not in attrs:
+            methods = set(obj.methods or [])
+            for key in attrs:
+                if key in http_methods:
+                    methods.add(key.upper())
+            # this action necessary for appending list of supported methods
+            if methods:
+                obj.methods = sorted(methods)
+        return obj
+
+
+class ClassBasedView(View, metaclass=MethodViewMeta):
+    """
+        Class-based view for aiorest-ws framework.
+    """
+    # NOTE: HTTP handlers shall be wrapped into asyncio.coroutine decorator
+    def dispatch_request(self, *args, **kwargs):
+        # TODO: try to write code without using global request and resolve
+        # there called method
+        pass
