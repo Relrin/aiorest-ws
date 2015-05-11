@@ -1,5 +1,16 @@
 """
     Custom functions, which simplify development with command line
+
+    Example:
+
+    from aiorest_ws.server import run_server
+    from aiorest_ws.command_line import define, parse_command_line
+
+    define('-ip', default='127.0.0.1', help='used ip for server', type=str)
+    define('-port', default=8080, help='listened on server', type=int)
+    args = parse_command_line()
+
+    run_server(args.ip, args.port)
 """
 from argparse import ArgumentParser
 
