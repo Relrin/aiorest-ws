@@ -4,8 +4,8 @@
 """
 __all__ = ('View', 'MethodViewMeta', 'ClassBasedView',)
 
-http_methods = frozenset(['get', 'post', 'head', 'options', 'delete', 'put',
-                          'trace', 'patch'])
+http_methods = frozenset(['GET', 'POST', 'HEAD', 'OPTIONS', 'DELETE', 'PUT',
+                          'TRACE', 'PATCH'])
 
 
 class View(object):
