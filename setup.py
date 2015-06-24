@@ -1,7 +1,6 @@
 import os
 import re
 import ast
-import sys
 from setuptools import setup
 
 _version_re = re.compile(r'__version__\s+=\s+(.*)')
@@ -10,10 +9,7 @@ with open('aiorest_ws/__init__.py', 'rb') as f:
     version = str(ast.literal_eval(_version_re.search(
         f.read().decode('utf-8')).group(1)))
 
-requirements = ['aiohttp==0.15.3', ]
-if sys.version_info < (3, 4):
-    requirements += ['asyncio', ]
-
+requirements = ['autobahn==0.10.4', ]
 test_requirements = requirements + ['pytest', 'pytest-asyncio',
                                     'pytest-cov', 'pytest-xdist']
 
