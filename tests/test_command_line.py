@@ -1,26 +1,17 @@
-from fixtures.cmd import default_options  # noqa
-from aiorest_ws.command_line import options, define, parse_command_line
+from fixtures.command_line import default_command_line as cmd  # noqa
 
 
-def test_define(default_options):  # noqa
-    assert len(options._option_string_actions.keys()) == 4
+def test_define(cmd):  # noqa
+    assert len(cmd.options._option_string_actions.keys()) == 4
 
+    cmd.define('-arg1', default='some value', help='arg #1', type=str)
+    cmd.define('-arg2', default=8888, help='arg #2', type=int)
+    assert len(cmd.options._option_string_actions.keys()) == 6
 
-def test_define_with_user_arguments(default_options):  # noqa
-    define('-arg1', default='127.0.0.1', help='used ip for server', type=str)
-    define('-arg2', default=8080, help='listened on server', type=int)
-    assert len(options._option_string_actions.keys()) == 6
+    # try to add one more time the same argument into parser
+    cmd.define('-arg2', default=8888, help='arg #2', type=int)
+    assert len(cmd.options._option_string_actions.keys()) == 6
 
-
-def test_define_with_user_arguments_and_options(default_options):  # noqa
-    define('-arg1', default='127.0.0.1', help='used ip for server', type=str)
-    define('-arg2', default=8080, help='listened on server', type=int)
-    define('--opt1', help='arg #1', type=int)
-    define('--opt2', help='arg #2', type=str)
-    assert len(options._option_string_actions.keys()) == 8
-
-
-def test_parse_command_line(default_options):  # noqa
-    res = parse_command_line()
-    assert res.ip == '127.0.0.1'
-    assert res.port == 8080
+    cmd.define('--opt1', help='arg #1', type=int)
+    cmd.define('--opt2', help='arg #2', type=str)
+    assert len(cmd.options._option_string_actions.keys()) == 8
