@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 __title__ = 'aiorest-ws'
 __version__ = '0.0.1a1'
 __author__ = 'Valeryi Savich'

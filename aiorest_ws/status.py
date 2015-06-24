@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
     WebSocket status codes and functions for work with them
 
