@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
     This module provides class-based views inspired by Django/Flask
     frameworks and can be used with aiorest-ws routers.

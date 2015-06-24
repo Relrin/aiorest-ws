@@ -7,5 +7,5 @@ before_install:
 install:
   - pip install -r requirements-dev.txt
 script:
-  - flake8 aiorest_ws tests
-  - python ./tests/runtests.py
+  - make flake
+  - make test_parallel

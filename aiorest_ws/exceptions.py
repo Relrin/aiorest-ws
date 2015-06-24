@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
     Handled exceptions raised by aiorest-ws framework, which inspired under
     Django REST framework

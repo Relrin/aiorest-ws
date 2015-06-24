@@ -1,12 +1,12 @@
 # aiorest-ws [![Build Status](https://travis-ci.org/Relrin/aiorest-ws.svg)](https://travis-ci.org/Relrin/aiorest-ws)
 REST framework with WebSockets support
 
-This library represents as a flexible toolkit for building Web APIs, which used WebSockets and standard asyncio package.
+This library represents as a flexible toolkit for building Web APIs, which used WebSockets and asyncio package.
 
 Requirements
 -----
-- Python 3.4+ or [asyncio](https://github.com/python/asyncio)
-- aiohttp 0.15.3
+- Autobahn.ws
+- asyncio
 
 License
 -----
