@@ -7,7 +7,7 @@ from exceptions import NotSpecifiedHandler, NotSpecifiedMethodName, \
     IncorrectMethodNameType
 
 
-__all__ = ('http_methods', 'View', 'MethodViewMeta', 'ClassBasedView',)
+__all__ = ('http_methods', 'View', 'MethodViewMeta', 'MethodBasedView',)
 
 http_methods = frozenset(['get', 'post', 'head', 'options', 'delete', 'put',
                           'trace', 'patch'])
