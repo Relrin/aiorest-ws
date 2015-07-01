@@ -33,7 +33,7 @@ class CommandLine(object):
                        program with -h flag
                 type - preferred type for option
 
-            Note: argument or option already defined has been ignored!
+            Note: already defined argument or option has been ignored!
         """
         if name not in self.options._option_string_actions.keys():
             self.options.add_argument(name, default=default, help=help,
