@@ -3,10 +3,14 @@
     This module provides class-based views inspired by Django/Flask
     frameworks and can be used with aiorest-ws routers.
 """
-__all__ = ('View', 'MethodViewMeta', 'ClassBasedView',)
+from exceptions import NotSpecifiedHandler, NotSpecifiedMethodName, \
+    IncorrectMethodNameType
 
-http_methods = frozenset(['GET', 'POST', 'HEAD', 'OPTIONS', 'DELETE', 'PUT',
-                          'TRACE', 'PATCH'])
+
+__all__ = ('http_methods', 'View', 'MethodViewMeta', 'ClassBasedView',)
+
+http_methods = frozenset(['get', 'post', 'head', 'options', 'delete', 'put',
+                          'trace', 'patch'])
 
 
 class View(object):
@@ -42,12 +46,25 @@ class MethodViewMeta(type):
         return obj
 
 
-class ClassBasedView(View, metaclass=MethodViewMeta):
+class MethodBasedView(View, metaclass=MethodViewMeta):
     """
         Class-based view for aiorest-ws framework.
     """
-    # NOTE: HTTP handlers shall be wrapped into asyncio.coroutine decorator
-    def dispatch_request(self, *args, **kwargs):
-        # TODO: try to write code without using global request and resolve
-        # there called method
-        pass
+
+    def dispatch(self, request, *args, **kwargs):
+        method = request.pop('method', None)
+
+        # invoked, when user not specified method in query (e.c. get, post)
+        if not method:
+            raise NotSpecifiedMethodName()
+
+        # invoked, when user specified method name as not a string
+        if not isinstance(method, str):
+            raise IncorrectMethodNameType()
+
+        # trying to find the most suitable handler
+        method = method.lower().strip()
+        handler = getattr(self, method, None)
+        if not handler:
+            raise NotSpecifiedHandler()
+        return handler(request, *args, **kwargs)

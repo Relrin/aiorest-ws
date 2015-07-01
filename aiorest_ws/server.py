@@ -23,27 +23,26 @@ class RestWSServer(WebSocketServerProtocol):
     def setRouter(cls, router):
         cls.router = router
 
+    def _decode_message(self, payload, isBinary):
+        # message in base64
+        if isBinary:
+            payload = b64decode(payload)
+        input_data = payload.decode('utf8')
+        return json.loads(input_data)
+
+    def _encode_message(self, response, isBinary):
+        output_data = json.dumps(response)
+        output_data = output_data.encode('utf8')
+        # convert to base64 if necessary
+        if isBinary:
+            output_data = b64encode(output_data)
+        return output_data
+
     @asyncio.coroutine
     def onMessage(self, payload, isBinary):
-
-        def decode_message(payload):
-            # message in base64
-            if isBinary:
-                payload = b64decode(payload)
-            input_data = payload.decode('utf8')
-            return json.loads(input_data)
-
-        def encode_message(response):
-            output_data = json.dumps(response)
-            output_data = output_data.encode('utf8')
-            # convert to base64 if necessary
-            if isBinary:
-                output_data = b64encode(output_data)
-            return output_data
-
-        request = decode_message(payload)
+        request = self._decode_message(payload, isBinary)
         response = self.router.dispatch(request)
-        out_payload = encode_message(response)
+        out_payload = self._encode_message(response, isBinary)
         self.sendMessage(out_payload, isBinary=isBinary)
 
 
@@ -72,6 +71,8 @@ def run_server(ip='127.0.0.1', port=8080, server=RestWSServer, router=None,
     factory = WebSocketServerFactory(url, debug=debug)
     factory.protocol = server
 
+    # TODO: Add there SSL support
+
     loop = asyncio.get_event_loop()
     server_coroutine = loop.create_server(factory, ip, port)
     server = loop.run_until_complete(server_coroutine)
@@ -79,7 +80,7 @@ def run_server(ip='127.0.0.1', port=8080, server=RestWSServer, router=None,
     print(strftime("%d %b, %Y - %X", gmtime()))
     print("aiorest-ws version {0}".format(__version__))
     print("Server started at {0}".format(url))
-    print("For terminating work of the server use CONTROL-C.")
+    print("Quit the server with CONTROL-C.")
 
     try:
         loop.run_forever()

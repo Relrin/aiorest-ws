@@ -10,7 +10,16 @@
         router.add('user/register', register_handler, methods='POST')
         router.add('user/{user_name}', user_handler, methods=['GET', 'PUT'])
 """
-__all__ = ('RestWSRouter', )
+from exceptions import BaseAPIException
+
+__all__ = ('RestWSRouter', 'reverse')
+
+
+def reverse(endpoint_name):
+    """
+        Return path to endpoint
+    """
+    pass
 
 
 class RestWSRouter(object):
@@ -29,5 +38,10 @@ class RestWSRouter(object):
         """
         pass
 
-    def dispatch(self):
-        pass
+    def dispatch(self, request, *args, **kwargs):
+        response = {}
+        try:
+            pass
+        except BaseAPIException as exc:
+            response = {'details': exc.detail}
+        return response

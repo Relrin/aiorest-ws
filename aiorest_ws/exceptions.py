@@ -7,7 +7,7 @@ import status
 
 
 __all__ = ('BaseAPIException', 'NotSupportedArgumentType',
-           'NotResolvedRequest')
+           'NotSpecifiedHandler', 'IncorrectMethodNameType')
 
 
 class BaseAPIException(Exception):
@@ -17,7 +17,7 @@ class BaseAPIException(Exception):
         properties
     """
     status_code = status.WS_PROTOCOL_ERROR
-    default_detail = "A server error occurred."
+    default_detail = u"A server error occurred."
 
     def __init__(self, detail=None):
         if detail is not None:
@@ -30,8 +30,16 @@ class BaseAPIException(Exception):
 
 
 class NotSupportedArgumentType(BaseAPIException):
-    default_detail = "Check your arguments on supported types."
+    default_detail = u"Check your arguments on supported types."
 
 
-class NotResolvedRequest(BaseAPIException):
-    default_detail = "For URL, typed in request, handler not specified."
+class NotSpecifiedHandler(BaseAPIException):
+    default_detail = u"For URL, typed in request, handler not specified."
+
+
+class NotSpecifiedMethodName(BaseAPIException):
+    default_detail = u"In query not specified `method` argument."
+
+
+class IncorrectMethodNameType(BaseAPIException):
+    default_detail = u"Method name should be a string type."

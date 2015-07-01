@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from server import run_server
-from command_line import CommandLine
+from aiorest_ws.server import run_server
+from aiorest_ws.command_line import CommandLine
 
 cmd = CommandLine()
 cmd.define('-ip', default='127.0.0.1', help='used ip', type=str)
