@@ -11,16 +11,20 @@ from autobahn.asyncio.websocket import WebSocketServerProtocol, \
     WebSocketServerFactory
 
 from __init__ import __version__
+from routers import RestWSRouter
 
 __all__ = ('RestWSServer', 'run_server', )
 
 
 class RestWSServer(WebSocketServerProtocol):
 
-    router = None
+    router = RestWSRouter()
 
     @classmethod
     def setRouter(cls, router):
+        if not issubclass(router, RestWSRouter):
+            raise TypeError('Custom router class must be inherited from '
+                            'RestWSRouter class.')
         cls.router = router
 
     def _decode_message(self, payload, isBinary):
