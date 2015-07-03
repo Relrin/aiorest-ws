@@ -7,7 +7,8 @@ import status
 
 
 __all__ = ('BaseAPIException', 'NotSupportedArgumentType',
-           'NotSpecifiedHandler', 'IncorrectMethodNameType')
+           'NotSpecifiedHandler', 'NotSpecifiedMethodName',
+           'IncorrectMethodNameType', 'NotImplementedSerializeMethod', )
 
 
 class BaseAPIException(Exception):
@@ -43,3 +44,7 @@ class NotSpecifiedMethodName(BaseAPIException):
 
 class IncorrectMethodNameType(BaseAPIException):
     default_detail = u"Method name should be a string type."
+
+
+class NotImplementedSerializeMethod(BaseAPIException):
+    default_detail = u"Method `serialize()` not implemented."
