@@ -12,7 +12,7 @@
 """
 from exceptions import BaseAPIException
 
-__all__ = ('RestWSRouter', 'reverse')
+__all__ = ('RestWSRouter', 'reverse', )
 
 
 def reverse(endpoint_name):
@@ -39,6 +39,9 @@ class RestWSRouter(object):
         pass
 
     def dispatch(self, request, *args, **kwargs):
+        # TODO: 1) find the most suitable endpoint handler
+        # TODO: 2) get response serializer (if not specified - use `json`)
+        # TODO: 3) invoke serialize() method for generated response
         response = {}
         try:
             pass
