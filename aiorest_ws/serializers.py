@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 """
-    Serializers for generated responses by the server
+    Serializers for generated responses by the server.
+
+    :copyright: (c) 2015 by Savich Valeryi.
+    :license: MIT, see LICENSE for more details.
 """
-from exceptions import NotImplementedSerializeMethod
+from exceptions import NotImplementedSerializerMethod
 
 __all__ = ('BaseSerializer', 'JSONSerializer', )
-# TODO: also implement XMLSerializer
 
 
 class BaseSerializer(object):
@@ -15,7 +17,11 @@ class BaseSerializer(object):
     charset = 'utf-8'
 
     def serialize(self, data):
-        raise NotImplementedSerializeMethod()
+        """Serialize input data into another format.
+
+        :param data: dictionary object.
+        """
+        raise NotImplementedSerializerMethod()
 
 
 class JSONSerializer(BaseSerializer):
@@ -27,4 +33,11 @@ class JSONSerializer(BaseSerializer):
     # for more details see: http://www.ietf.org/rfc/rfc4627.txt
     # and Armin Ronacher's article http://goo.gl/MExCKv
     charset = None
+    # TODO: override serialize() method
+
+
+class XMLSerializer(BaseSerializer):
+
+    media_type = 'application/xml'
+    format = 'xml'
     # TODO: override serialize() method
