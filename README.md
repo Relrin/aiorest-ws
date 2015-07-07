@@ -17,13 +17,13 @@ Roadmap (by priority) to releases:
 v1.0:
 - JSON/XML serializers
 - Routing
-- Filters support over querysets
 - Views (function and class-based)
 - Authentication
 - Documentation over all code
 
 v1.1:
 - Compatible with Django and SQLAlchemy ORMs
+- Filters support over querysets
 
 v1.2:
 - Web browsable API (similar on swagger?)
