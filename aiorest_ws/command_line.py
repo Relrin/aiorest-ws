@@ -13,13 +13,10 @@
         args = cmd.parse_command_line()
 
         run_server(ip=args.ip, port=args.port)
-
-    :copyright: (c) 2015 by Savich Valeryi.
-    :license: MIT, see LICENSE for more details.
 """
-from argparse import ArgumentParser
-
 __all__ = ('CommandLine', )
+
+from argparse import ArgumentParser
 
 
 class CommandLine(object):
@@ -29,14 +26,14 @@ class CommandLine(object):
     def define(self, name, default=None, help=None, type=None):
         """Defines an option in the global namespace.
 
+        Note: already defined argument or option has been ignored and not
+              appended again!
+
         :param name: used argument/option in command line (e.c. -f or --foo).
         :param default: used value for argument or option if not specified.
         :param help: full description for option, which used when invoked
                      program with -h flag.
         :param type: preferred type for option.
-
-        Note: already defined argument or option has been ignored and not
-              appended again!
         """
         if name not in self.options._option_string_actions.keys():
             self.options.add_argument(name, default=default, help=help,
