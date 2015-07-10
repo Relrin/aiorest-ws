@@ -2,16 +2,11 @@
 """
     This module provide a class-based views inspired by Django/Flask
     frameworks and can be used with aiorest-ws routers.
-
-    :copyright: (c) 2015 by Savich Valeryi.
-    :license: MIT, see LICENSE for more details.
 """
+__all__ = ('http_methods', 'View', 'MethodViewMeta', 'MethodBasedView', )
 
 from exceptions import NotSpecifiedHandler, NotSpecifiedMethodName, \
     IncorrectMethodNameType
-
-
-__all__ = ('http_methods', 'View', 'MethodViewMeta', 'MethodBasedView',)
 
 http_methods = frozenset(['get', 'post', 'head', 'options', 'delete', 'put',
                           'trace', 'patch'])
@@ -52,12 +47,9 @@ class MethodBasedView(View, metaclass=MethodViewMeta):
     def dispatch(self, request, *args, **kwargs):
         """Search the most suitable handler for request.
 
-        :param request: passed request from user
-        :param args: list of arguments passed from router
-        :param kwargs: dictionary passed from router
+        :param request: passed request from user.
         """
-
-        method = request.pop('method', None)
+        method = request.get('method', None)
 
         # invoked, when user not specified method in query (e.c. get, post)
         if not method:
@@ -73,3 +65,10 @@ class MethodBasedView(View, metaclass=MethodViewMeta):
         if not handler:
             raise NotSpecifiedHandler()
         return handler(request, *args, **kwargs)
+
+    def get_serializer(self, *args, **kwargs):
+        """Get serialize class, which using to converting response to
+        some users format.
+        """
+        pass
+        # TODO: override this method()
