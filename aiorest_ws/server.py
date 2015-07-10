@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
 """
     Classes and function for creating and starting web server.
-
-    :copyright: (c) 2015 by Savich Valeryi.
-    :license: MIT, see LICENSE for more details.
 """
 __all__ = ('RestWSServer', 'run_server', )
 
