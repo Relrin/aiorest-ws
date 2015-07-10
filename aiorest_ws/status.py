@@ -4,18 +4,17 @@
 
     For more details check the link below:
         https://tools.ietf.org/html/rfc6455
-
-    :copyright: (c) 2015 by Savich Valeryi.
-    :license: MIT, see LICENSE for more details.
 """
-__all__ = ('WS_NORMAL', 'WS_GOING_AWAY', 'WS_PROTOCOL_ERROR',
-           'WS_DATA_CANNOT_ACCEPT', 'WS_RESERVED', 'WS_NO_STATUS_CODE',
-           'WS_CLOSED_ABNORMALLY', 'WS_MESSAGE_NOT_CONSISTENT',
-           'WS_MESSAGE_VIOLATE_POLICY', 'WS_MESSAGE_TOO_BIG',
-           'WS_SERVER_DIDNT_RETURN_EXTENSIONS', 'WS_UNEXPECTED_CONDITION',
-           'WS_FAILURE_TLS',
+__all__ = (
+    'WS_NORMAL', 'WS_GOING_AWAY', 'WS_PROTOCOL_ERROR',
+    'WS_DATA_CANNOT_ACCEPT', 'WS_RESERVED', 'WS_NO_STATUS_CODE',
+    'WS_CLOSED_ABNORMALLY', 'WS_MESSAGE_NOT_CONSISTENT',
+    'WS_MESSAGE_VIOLATE_POLICY', 'WS_MESSAGE_TOO_BIG',
+    'WS_SERVER_DIDNT_RETURN_EXTENSIONS', 'WS_UNEXPECTED_CONDITION',
+    'WS_FAILURE_TLS',
 
-           'is_not_used', 'is_reserved', 'is_library', 'is_private')
+    'is_not_used', 'is_reserved', 'is_library', 'is_private'
+)
 
 
 WS_NORMAL = 1000
@@ -36,7 +35,7 @@ WS_FAILURE_TLS = 1015
 def is_not_used(code):
     """Checking code, that is unused.
 
-    :param code: integer value
+    :param code: integer value.
     """
     return 0 <= code <= 999
 
@@ -44,7 +43,7 @@ def is_not_used(code):
 def is_reserved(code):
     """Checking code, that is reserved.
 
-    :param code: integer value
+    :param code: integer value.
     """
     return 1000 <= code <= 2999
 
@@ -52,7 +51,7 @@ def is_reserved(code):
 def is_library(code):
     """Checking code, that is value, used by libraries.
 
-    :param code: integer value
+    :param code: integer value.
     """
     return 3000 <= code <= 3999
 
@@ -60,6 +59,6 @@ def is_library(code):
 def is_private(code):
     """Checking code, that is private code.
 
-    :param code: integer value
+    :param code: integer value.
     """
     return 4000 <= code <= 4999

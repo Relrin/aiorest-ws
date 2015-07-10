@@ -1,13 +1,10 @@
 # -*- coding: utf-8 -*-
 """
     Serializers for generated responses by the server.
-
-    :copyright: (c) 2015 by Savich Valeryi.
-    :license: MIT, see LICENSE for more details.
 """
-from exceptions import NotImplementedSerializerMethod
+__all__ = ('BaseSerializer', 'JSONSerializer', 'XMLSerializer', )
 
-__all__ = ('BaseSerializer', 'JSONSerializer', )
+from exceptions import NotImplementedMethod
 
 
 class BaseSerializer(object):
@@ -21,7 +18,8 @@ class BaseSerializer(object):
 
         :param data: dictionary object.
         """
-        raise NotImplementedSerializerMethod()
+        raise NotImplementedMethod(u"Error occurred in not implemented "
+                                   u"method of serializer.")
 
 
 class JSONSerializer(BaseSerializer):

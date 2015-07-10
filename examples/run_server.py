@@ -11,7 +11,8 @@ args = cmd.parse_command_line()
 run_server(ip=args.ip, port=args.port)
 
 # variant 2
-# or we can run it without any arguments
+# or we can run it without any arguments on the default
+# ip=127.0.0.1 and port=8080
 # run_server()
 
 # variant 3

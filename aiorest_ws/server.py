@@ -5,6 +5,8 @@
     :copyright: (c) 2015 by Savich Valeryi.
     :license: MIT, see LICENSE for more details.
 """
+__all__ = ('RestWSServer', 'run_server', )
+
 import asyncio
 import json
 from base64 import b64encode, b64decode
@@ -15,8 +17,6 @@ from autobahn.asyncio.websocket import WebSocketServerProtocol, \
 
 from __init__ import __version__
 from routers import RestWSRouter
-
-__all__ = ('RestWSServer', 'run_server', )
 
 
 class RestWSServer(WebSocketServerProtocol):
@@ -78,7 +78,7 @@ def run_server(ip='127.0.0.1', port=8080, server=RestWSServer, router=None,
     :param router: instance of RestWSRouter.
     :param cert: path to certificate.
     :param key: private key for certificate.
-    :param debug: output all debug information.
+    :param debug: output all debug information to stdout.
     """
     if cert and key:
         url = "wss://{0}:{1}".format(ip, port)
