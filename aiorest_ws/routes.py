@@ -1,35 +1,64 @@
 # -*- coding: utf-8 -*-
 """
     Endpoint classes for aiorest-ws router.
-
-    :copyright: (c) 2015 by Savich Valeryi.
-    :license: MIT, see LICENSE for more details.
 """
-from abc import ABCMeta, abstractmethod
+__all__ = ('BaseRoute', 'PlainRoute', 'DynamicRoute', )
 
-__all__ = ('BaseRoute', 'StaticRoute', 'DynamicRoute')
+from abc import ABCMeta, abstractmethod
 
 
 class BaseRoute(metaclass=ABCMeta):
 
-    path = None
-    handler = None
-    methods = []
-    basename = None
+    path = None     # URL, used for get access to API
+    handler = None  # class/function for processing request
+    methods = []    # list of supported methods (GET, POST, etc.)
+    name = None     # short name for route
+
+    def __init__(self, path, methods, handler, name):
+        self.path = path
+        if type(methods) is str:
+            self.methods.append(methods)
+        else:
+            self.methods.extend(methods)
+        self.handler = handler
+        self.name = name
 
     @abstractmethod
     def match(self, path):
-        """The ."""
+        """Checking path on compatible.
+
+        :param path: URL, which used for get access to API.
+        """
         pass
 
 
-class StaticRoute(BaseRoute):
+class PlainRoute(BaseRoute):
 
     def match(self, path):
-        pass
+        """Checking path on compatible.
+
+        :param path: URL, which used for get access to API.
+        """
+        match_result = None
+        if self.path == path:
+            match_result = {}
+        return match_result
 
 
 class DynamicRoute(BaseRoute):
 
+    def __init__(self, path, methods, handler, name, pattern):
+        super(DynamicRoute, self).__init__(path, methods, handler, name)
+        self._pattern = pattern
+
     def match(self, path):
-        pass
+        """Checking path on compatible.
+
+        :param path: URL, which used for get access to API.
+        """
+        match_result = self._pattern.match(path)
+        # if comparing has successful, then return dictionary of
+        # parsed arguments
+        if match_result:
+            match_result = match_result.groupdict()
+        return match_result
