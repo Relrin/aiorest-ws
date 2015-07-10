@@ -17,9 +17,10 @@ import inspect
 from exceptions import BaseAPIException, NotSupportedArgumentType, \
     InvalidPathArgument, InvalidHandler, EndpointValueError, \
     IncompatibleResponseType, NotSpecifiedHandler
-from routes import BaseRoute
+from endpoints import BaseRoute
+from serializers import JSONSerializer
 from views import MethodBasedView
-from url_parser import URLParser
+from parsers import URLParser
 
 
 class RestWSRouter(object):
@@ -97,34 +98,49 @@ class RestWSRouter(object):
 
         :param request: request from user.
         """
-        # TODO: 1) find the most suitable endpoint handler
-        # TODO: 2) get response serializer (if not specified - use `json`)
-        # TODO: 3) invoke serialize() method for generated response
         try:
+            # extract URL from request
             url = request.get('url', None)
             if not url:
                 raise IncompatibleResponseType()
 
+            # search handler by URL
             handler = None
             for route in self._urls:
                 match = route.match(url)
                 if match:
-                    handler = route.handler
+                    handler = route.handler()
                     kwargs.update({'vars': match})
                     break
 
+            # invoke handler for request
             if handler:
                 response = handler.dispatch(request, *args, **kwargs)
-                # serializer there result
-                # don't forget check format from args in request
-                # response = handler.get_serializer(...).serialize()
+
                 if type(response) is not dict:
                     raise IncompatibleResponseType()
+
+                # search serializer for response
+                format = self.get_argument(request, 'format')
+                serializer = handler.get_serializer(format, *args, **kwargs)
 
             raise NotSpecifiedHandler()
         except BaseAPIException as exc:
             response = {'details': exc.detail}
-        return response
+            serializer = JSONSerializer()
+        return serializer.serialize(response)
+
+    def get_argument(self, request, name):
+        """Extracting argument from the request.
+
+        :param request: request, passed from a dispatcher
+        :param name: name of extracted argument in dictionary.
+        """
+        request_args = request.get('args', None)
+        argument = None
+        if request_args:
+            argument = request_args.get(name, None)
+        return argument
 
     def reverse(self, name):
         """Get path to endpoint, using his short name.

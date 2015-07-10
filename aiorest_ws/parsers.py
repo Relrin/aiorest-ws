@@ -6,7 +6,7 @@ __all__ = ('URLParser', )
 
 import re
 
-from routes import PlainRoute, DynamicRoute
+from endpoints import PlainRoute, DynamicRoute
 from exceptions import EndpointValueError
 
 

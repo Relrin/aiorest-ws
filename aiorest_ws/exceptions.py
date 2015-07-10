@@ -5,9 +5,10 @@
 """
 __all__ = (
     'BaseAPIException', 'EndpointValueError', 'IncompatibleResponseType',
-    'IncorrectMethodNameType', 'InvalidHandler', 'InvalidPathArgument',
-    'NotImplementedMethod', 'NotSpecifiedError', 'NotSpecifiedHandler',
-    'NotSpecifiedMethodName', 'NotSpecifiedURL', 'NotSupportedArgumentType',
+    'IncorrectArgument', 'IncorrectMethodNameType', 'InvalidHandler',
+    'InvalidPathArgument', 'InvalidSerializer', 'NotImplementedMethod',
+    'NotSpecifiedError', 'NotSpecifiedHandler', 'NotSpecifiedMethodName',
+    'NotSpecifiedURL', 'NotSupportedArgumentType',
 )
 
 import status
@@ -45,6 +46,10 @@ class IncompatibleResponseType(BaseAPIException):
     default_detail = u"Response must be represented as a Python's dictionary."
 
 
+class IncorrectArgument(BaseAPIException):
+    default_detail = u"Check `args` in query on errors and try again."
+
+
 class IncorrectMethodNameType(BaseAPIException):
     default_detail = u"Method name should be a string type."
 
@@ -56,6 +61,11 @@ class InvalidHandler(BaseAPIException):
 
 class InvalidPathArgument(BaseAPIException):
     default_detail = u"Received path value not valid."
+
+
+class InvalidSerializer(BaseAPIException):
+    default_detail = "Attribute `serializers` should be defined as list or " \
+                     "tuple of inherited from BaseSerializer classes."
 
 
 class NotImplementedMethod(BaseAPIException):
