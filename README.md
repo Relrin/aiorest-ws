@@ -5,6 +5,7 @@ This library represents as a flexible toolkit for building Web APIs, which used 
 
 Requirements
 -----
+- Python 3.4+
 - Autobahn.ws
 - asyncio
 
