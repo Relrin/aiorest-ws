@@ -8,10 +8,10 @@ __all__ = (
     'IncorrectArgument', 'IncorrectMethodNameType', 'InvalidHandler',
     'InvalidPathArgument', 'InvalidSerializer', 'NotImplementedMethod',
     'NotSpecifiedError', 'NotSpecifiedHandler', 'NotSpecifiedMethodName',
-    'NotSpecifiedURL', 'NotSupportedArgumentType',
+    'NotSpecifiedURL', 'NotSupportedArgumentType', 'SerializerError'
 )
 
-import status
+from . import status
 
 
 class BaseAPIException(Exception):
@@ -43,7 +43,7 @@ class EndpointValueError(BaseAPIException):
 
 
 class IncompatibleResponseType(BaseAPIException):
-    default_detail = u"Response must be represented as a Python's dictionary."
+    default_detail = u"Response must be represented as a dictionary or list."
 
 
 class IncorrectArgument(BaseAPIException):
@@ -90,3 +90,7 @@ class NotSpecifiedURL(NotSpecifiedError):
 
 class NotSupportedArgumentType(BaseAPIException):
     default_detail = u"Check your arguments on supported types."
+
+
+class SerializerError(BaseAPIException):
+    default_detail = u"Error occurred inside serializer class."
