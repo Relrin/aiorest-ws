@@ -66,5 +66,6 @@ class TestXMLSerializer(unittest.TestCase):
     def test_valid_serialization(self):
         data = {'objects': [1, 2, 3]}
         output = self.xml.serialize(data)
-        self.assertIn('<objects><list-item>1</list-item><list-item>2</list-item>'
-                      '<list-item>3</list-item></objects>', output)
+        self.assertIn('<objects><list-item>1</list-item><list-item>2'
+                      '</list-item>''<list-item>3</list-item></objects>',
+                      output)

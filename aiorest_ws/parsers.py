@@ -6,8 +6,8 @@ __all__ = ('URLParser', )
 
 import re
 
-from endpoints import PlainRoute, DynamicRoute
-from exceptions import EndpointValueError
+from .endpoints import PlainRoute, DynamicRoute
+from .exceptions import EndpointValueError
 
 
 class URLParser(object):

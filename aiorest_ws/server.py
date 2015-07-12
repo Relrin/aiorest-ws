@@ -12,8 +12,8 @@ from time import gmtime, strftime
 from autobahn.asyncio.websocket import WebSocketServerProtocol, \
     WebSocketServerFactory
 
-from __init__ import __version__
-from routers import RestWSRouter
+from .__init__ import __version__
+from .routers import RestWSRouter
 
 
 class RestWSServer(WebSocketServerProtocol):
@@ -41,21 +41,20 @@ class RestWSServer(WebSocketServerProtocol):
         # message in base64
         if isBinary:
             payload = b64decode(payload)
-        input_data = payload.decode('utf8')
+        input_data = payload.decode('utf-8')
         return json.loads(input_data)
 
     def _encode_message(self, response, isBinary=False):
-        """Encoding output message to JSON or base64 object.
+        """Encoding output message (to base64 if necessary).
 
         :param response: output message.
         :param isBinary: boolean value, means that received data had a binary
                          format.
         """
-        output_data = response.encode('utf8')
         # convert to base64 if necessary
         if isBinary:
-            output_data = b64encode(output_data)
-        return output_data
+            response = b64encode(response)
+        return response
 
     @asyncio.coroutine
     def onMessage(self, payload, isBinary):
