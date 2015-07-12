@@ -9,3 +9,5 @@ install:
 script:
   - make flake
   - make test_parallel
+after_success:
+  - coveralls
