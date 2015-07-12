@@ -14,13 +14,13 @@ __all__ = ('RestWSRouter', )
 
 import inspect
 
-from exceptions import BaseAPIException, NotSupportedArgumentType, \
+from .exceptions import BaseAPIException, NotSupportedArgumentType, \
     InvalidPathArgument, InvalidHandler, EndpointValueError, \
     IncompatibleResponseType, NotSpecifiedHandler
-from endpoints import BaseRoute
-from serializers import JSONSerializer
-from views import MethodBasedView
-from parsers import URLParser
+from .endpoints import BaseRoute
+from .serializers import JSONSerializer
+from .views import MethodBasedView
+from .parsers import URLParser
 
 
 class RestWSRouter(object):
@@ -117,7 +117,7 @@ class RestWSRouter(object):
             if handler:
                 response = handler.dispatch(request, *args, **kwargs)
 
-                if type(response) is not dict:
+                if type(response) not in (dict, list):
                     raise IncompatibleResponseType()
 
                 # search serializer for response

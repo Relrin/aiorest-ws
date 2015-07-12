@@ -4,12 +4,17 @@
 """
 __all__ = ('BaseSerializer', 'JSONSerializer', 'XMLSerializer', )
 
-from exceptions import NotImplementedMethod
+import json
+
+from io import StringIO
+from .exceptions import NotImplementedMethod, SerializerError
+from .utils.formatting import SHORT_SEPARATORS, LONG_SEPARATORS, \
+    WRONG_UNICODE_SYMBOLS
+from .utils.xmlutils import SimpleXMLGenerator
 
 
 class BaseSerializer(object):
 
-    media_type = None
     format = None
     charset = 'utf-8'
 
@@ -24,18 +29,54 @@ class BaseSerializer(object):
 
 class JSONSerializer(BaseSerializer):
 
-    media_type = 'application/json'
     format = 'json'
     # don't set a charset because JSON is a binary encoding, that can be
     # encoded as utf-8, utf-16 or utf-32.
     # for more details see: http://www.ietf.org/rfc/rfc4627.txt
     # and Armin Ronacher's article http://goo.gl/MExCKv
     charset = None
-    # TODO: override serialize() method
+    compact = False
+    ensure_ascii = True
+
+    def serialize(self, data):
+        """Serialize input data into JSON.
+
+        :param data: dictionary or list object (response).
+        """
+        separators = SHORT_SEPARATORS if self.compact else LONG_SEPARATORS
+
+        try:
+            render = json.dumps(
+                data, ensure_ascii=self.ensure_ascii, separators=separators
+            )
+
+            # Unicode symbols \u2028 and \u2029 are invisible in JSON and
+            # make output are invalid. To avoid this situations, necessary
+            # replace this symbols.
+            # for more information read this article: http://goo.gl/ImC89E
+            for wrong_symbol, expected in WRONG_UNICODE_SYMBOLS:
+                render = render.replace(wrong_symbol, expected)
+
+            render = bytes(render.encode('utf-8'))
+        except Exception as exc:
+            raise SerializerError(exc)
+        return render
 
 
 class XMLSerializer(BaseSerializer):
 
-    media_type = 'application/xml'
     format = 'xml'
-    # TODO: override serialize() method
+    xml_generator = SimpleXMLGenerator
+
+    def serialize(self, data):
+        """Serialize input data into XML.
+
+        :param data: dictionary or list object (response).
+        """
+        try:
+            render = StringIO()
+            xml = self.xml_generator(render, self.charset)
+            xml.parse(data)
+        except Exception as exc:
+            raise SerializerError(exc)
+        return render.getvalue()
