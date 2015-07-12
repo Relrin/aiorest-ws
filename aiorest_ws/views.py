@@ -1,49 +1,17 @@
 # -*- coding: utf-8 -*-
 """
-    This module provide a class-based views inspired by Django/Flask
-    frameworks and can be used with aiorest-ws routers.
+    This module provide a function and class-based views and can be used
+    with aiorest-ws routers.
 """
-__all__ = ('http_methods', 'View', 'MethodViewMeta', 'MethodBasedView', )
+__all__ = ('MethodBasedView', )
 
 from .exceptions import NotSpecifiedHandler, NotSpecifiedMethodName, \
     IncorrectMethodNameType, InvalidSerializer
 from .serializers import JSONSerializer
 
-http_methods = frozenset(['get', 'post', 'head', 'options', 'delete', 'put',
-                          'trace', 'patch'])
 
-
-class View(object):
-    """Subclass for implementing class-based views."""
-    @classmethod
-    def as_view(cls, name, *class_args, **class_kwargs):
-        """Converts the class into an actual view function that can be used
-        with the routing system.
-        """
-        pass
-
-
-class MethodViewMeta(type):
-    """Metaclass, which helps to define list of supported methods in
-    class-based views.
-    """
-    def __new__(cls, name, bases, attrs):
-        obj = type.__new__(cls, name, bases, attrs)
-        # if not defined 'method' attribute, then make and append him to
-        # our class-based view
-        if 'methods' not in attrs:
-            methods = set(obj.methods or [])
-            for key in attrs:
-                if key in http_methods:
-                    methods.add(key.upper())
-            # this action necessary for appending list of supported methods
-            if methods:
-                obj.methods = sorted(methods)
-        return obj
-
-
-class MethodBasedView(View, metaclass=MethodViewMeta):
-    """Class-based view for aiorest-ws framework."""
+class MethodBasedView(object):
+    """Method-based view for aiorest-ws framework."""
     serializers = ()
 
     def dispatch(self, request, *args, **kwargs):
@@ -62,6 +30,10 @@ class MethodBasedView(View, metaclass=MethodViewMeta):
             raise IncorrectMethodNameType()
 
         # trying to find the most suitable handler
+        # for that what we are doing:
+        # 1) make string in lowercase (e.c. 'GET' -> 'get')
+        # 2) look into class and try to get handler with this name
+        # 3) if extracting is successful, then invoke handler with arguments
         method = method.lower().strip()
         handler = getattr(self, method, None)
         if not handler:
