@@ -11,14 +11,14 @@ Requirements
 
 License
 -----
-This library published under MIT license. Feel free for using and customizing.
+This library published under BSD license. For more information read LICENSE file.
 
 Roadmap (by priority) to releases:
 -----
 v1.0:
 - JSON/XML serializers
 - Routing
-- Views (function and class-based)
+- Views (function and method-based)
 - Authentication
 - Documentation over all code
 
@@ -28,4 +28,7 @@ v1.1:
 - Filters support over querysets
 
 v1.2:
+- Improve scalability of aiorest-ws (balancer instance)
+
+v1.3:
 - Web browsable API (similar on swagger?)

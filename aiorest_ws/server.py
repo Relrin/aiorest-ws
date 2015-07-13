@@ -26,7 +26,7 @@ class RestWSServer(WebSocketServerProtocol):
 
         :param router: user-defined router.
         """
-        if not issubclass(router, RestWSRouter):
+        if not issubclass(type(router), RestWSRouter):
             raise TypeError('Custom router class must be inherited from '
                             'RestWSRouter class.')
         cls.router = router

@@ -51,7 +51,8 @@ class RestWSRouter(object):
             if not issubclass(handler, (MethodBasedView, )):
                 raise InvalidHandler(u"Your class should be inherited from "
                                      u"the MethodBasedView class")
-        raise InvalidHandler()
+        else:
+            raise InvalidHandler()
 
     def _check_methods(self, methods):
         """Validate passed methods variable.
@@ -72,7 +73,16 @@ class RestWSRouter(object):
                 raise NotSupportedArgumentType(u'name variable must '
                                                u'be string type')
 
-    def add(self, path, handler, methods, name=None):
+    def _correct_path(self, path):
+        """Convert path to valid value.
+
+        :param path: URL, which used to get access to API.
+        """
+        if not path.endswith('/'):
+            path = path + '/'
+        return path.strip()
+
+    def register(self, path, handler, methods, name=None):
         """Add new endpoint to server router.
 
         :param path: URL, which used to get access to API.
@@ -82,18 +92,17 @@ class RestWSRouter(object):
                         concrete method name.
         :param name: the base to use for the URL names that are created.
         """
-        if not path.endswith('/'):
-            path = path + '/'
+        path = self._correct_path(path)
 
         self._check_path(path)
         self._check_methods(methods)
         self._check_handler(handler)
         self._check_name(name)
 
-        route = URLParser.define_route(path, methods, handler, name)
+        route = self.url_parser.define_route(path, methods, handler, name)
         self._register_url(route)
 
-    def dispatch(self, request, *args, **kwargs):
+    def dispatch(self, request):
         """Handling received request from user.
 
         :param request: request from user.
@@ -104,27 +113,34 @@ class RestWSRouter(object):
             if not url:
                 raise IncompatibleResponseType()
 
+            url = self._correct_path(url)
+
             # search handler by URL
+            args = ()
+            kwargs = {}
             handler = None
             for route in self._urls:
                 match = route.match(url)
-                if match:
+                if match is not None:
                     handler = route.handler()
-                    kwargs.update({'vars': match})
+                    args = match
+                    params = request.get('args', None)
+                    if params:
+                        kwargs.update({'params': params})
                     break
 
             # invoke handler for request
             if handler:
                 response = handler.dispatch(request, *args, **kwargs)
 
-                if type(response) not in (dict, list):
+                if type(response) not in (dict, list, tuple, str):
                     raise IncompatibleResponseType()
 
                 # search serializer for response
                 format = self.get_argument(request, 'format')
                 serializer = handler.get_serializer(format, *args, **kwargs)
-
-            raise NotSpecifiedHandler()
+            else:
+                raise NotSpecifiedHandler()
         except BaseAPIException as exc:
             response = {'details': exc.detail}
             serializer = JSONSerializer()
@@ -158,7 +174,7 @@ class RestWSRouter(object):
 
         :param route: instance of class, which inherited from BaseRouter.
         """
-        if not issubclass(route, (BaseRoute, )):
+        if not issubclass(type(route), (BaseRoute, )):
             raise TypeError(u"Custom route must be inherited from the "
                             u"BaseRouter class.")
 

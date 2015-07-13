@@ -43,7 +43,8 @@ class EndpointValueError(BaseAPIException):
 
 
 class IncompatibleResponseType(BaseAPIException):
-    default_detail = u"Response must be represented as a dictionary or list."
+    default_detail = u"Response must be represented as a dictionary, list, " \
+                     u"tuple, or a string."
 
 
 class IncorrectArgument(BaseAPIException):

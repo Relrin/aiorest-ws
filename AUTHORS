@@ -1,0 +1,32 @@
+aiorest-ws is written and maintained by Valeryi Savich and
+various contributors:
+
+Project Leader / Developer:
+
+- Valeryi Savich <relrin78@gmail.com>
+
+Contributors of code for aiorest-ws are:
+
+The serializer classes and exception style was taken from the Django
+REST Framework. The original code is BSD licensed. The following copyrights
+apply:
+
+- (c) 2015 Tom Christie
+
+The to_xml() function was taken from the django-rest-framework-xml module.
+The original code is BSD licensed with the following copyrights from that
+module:
+
+- (c) 2014, Jose Padilla <hello@jpadilla.com>
+
+The routing classes and URL parser code originally placed in aiohttp library.
+The original code is Apache 2.0 licensed. The following copyrights apply:
+
+- (c) 2015 Andrew Svetlov <andrew.svetlov@gmail.com>
+
+The View, MethodViewMeta, MethodBasedView from the views partly modified,
+and they base realization was taken from the Flask project (view module).
+The original code is BSD licensed with the following copyrights from
+that module:
+
+- (c) 2015 Armin Ronacher <armin.ronacher@active-4.com>
