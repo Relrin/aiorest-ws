@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <script type="text/javascript">
+         var ws = null;
+         var isopen = false;
+
+         function getRandomInt() {
+            var min = 1;
+            var max = 100;
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+         }
+
+         window.onload = function() {
+
+            ws = new WebSocket("ws://127.0.0.1:8080");
+
+            ws.onopen = function() {
+               console.log("Connected!");
+               isopen = true;
+            };
+
+            ws.onmessage = function(e) {
+                console.log("Result: " +  e.data);
+            };
+
+            ws.onclose = function(e) {
+               console.log("Connection closed.");
+               ws = null;
+               isopen = false;
+            }
+         };
+
+         function sendOnStaticURL() {
+            if (isopen) {
+               ws.send(JSON.stringify(
+                       {'method': 'GET',
+                           'url': '/hello'}
+               ));
+               console.log("sendOnStaticURL() clicked.");
+            } else {
+               console.log("Connection not opened.")
+            }
+         }
+
+         function sendOnDynamicURL() {
+            if (isopen) {
+               ws.send(JSON.stringify(
+                       {'method': 'GET',
+                           'url': '/hello/user/' + getRandomInt()}
+               ));
+               console.log("sendOnDynamicURL() clicked.");
+            } else {
+               console.log("Connection not opened.")
+            }
+         }
+
+         function calculateSumm() {
+            if (isopen) {
+               var digits = [getRandomInt(), getRandomInt(), getRandomInt()]
+               console.log(digits)
+               ws.send(JSON.stringify(
+                       {'method': 'GET',
+                           'url': '/calc/sum',
+                          'args': {'digits': digits}
+                       }
+               ));
+               console.log("sendOnDynamicURL() clicked.");
+            } else {
+               console.log("Connection not opened.")
+            }
+         }
+      </script>
+   </head>
+   <body>
+      <p>NOTE: Open your browser's JavaScript console and click on the buttons (hit F12).</p>
+      <button onclick='sendOnStaticURL();'>Static endpoint</button>
+      <button onclick='sendOnDynamicURL();'>Dynamic endpoint</button>
+      <button onclick='calculateSumm();'>Calculate summ endpoint</button>
+   </body>
+</html>

@@ -17,5 +17,5 @@ run_server(ip=args.ip, port=args.port)
 
 # variant 3
 # if necessary to create encrypted WebSockets, just add to arguments
-# your certificate and private key
+# your paths to certificate and private key
 # run_server(cert=path_to_my_cert, key=my_private_key)
