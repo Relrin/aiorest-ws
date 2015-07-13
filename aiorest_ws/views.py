@@ -3,14 +3,46 @@
     This module provide a function and class-based views and can be used
     with aiorest-ws routers.
 """
-__all__ = ('MethodBasedView', )
+__all__ = ('http_methods', 'View', 'MethodViewMeta', 'MethodBasedView', )
 
 from .exceptions import NotSpecifiedHandler, NotSpecifiedMethodName, \
     IncorrectMethodNameType, InvalidSerializer
 from .serializers import JSONSerializer
 
+http_methods = frozenset(['get', 'post', 'head', 'options', 'delete', 'put',
+                          'trace', 'patch'])
 
-class MethodBasedView(object):
+
+class View(object):
+    """Subclass for implementing method-based views."""
+    @classmethod
+    def as_view(cls, name, *class_args, **class_kwargs):
+        """Converts the class into an actual view function that can be used
+        with the routing system.
+        """
+        pass
+
+
+class MethodViewMeta(type):
+    """Metaclass, which helps to define list of supported methods in
+    class-based views.
+    """
+    def __new__(cls, name, bases, attrs):
+        obj = type.__new__(cls, name, bases, attrs)
+        # if not defined 'method' attribute, then make and append him to
+        # our class-based view
+        if 'methods' not in attrs:
+            methods = set(obj.methods if hasattr(obj, 'methods') else [])
+            for key in attrs:
+                if key in http_methods:
+                    methods.add(key.lower())
+            # this action necessary for appending list of supported methods
+            if methods:
+                obj.methods = sorted(methods)
+        return obj
+
+
+class MethodBasedView(View, metaclass=MethodViewMeta):
     """Method-based view for aiorest-ws framework."""
     serializers = ()
 

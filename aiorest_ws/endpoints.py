@@ -57,8 +57,7 @@ class DynamicRoute(BaseRoute):
         :param path: URL, which used for get access to API.
         """
         match_result = self._pattern.match(path)
-        # if comparing has successful, then return dictionary of
-        # parsed arguments
+        # if comparing has successful, then return list of parsed values
         if match_result:
-            match_result = match_result.groupdict()
+            match_result = match_result.groups()
         return match_result
