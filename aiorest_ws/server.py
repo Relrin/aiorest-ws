@@ -13,6 +13,7 @@ from autobahn.asyncio.websocket import WebSocketServerProtocol, \
     WebSocketServerFactory
 
 from .__init__ import __version__
+from .abstract import AbstractRouter
 from .routers import RestWSRouter
 
 
@@ -26,9 +27,9 @@ class RestWSServer(WebSocketServerProtocol):
 
         :param router: user-defined router.
         """
-        if not issubclass(type(router), RestWSRouter):
+        if not issubclass(type(router), AbstractRouter):
             raise TypeError('Custom router class must be inherited from '
-                            'RestWSRouter class.')
+                            'AbstractRouter class.')
         cls.router = router
 
     def _decode_message(self, payload, isBinary=False):

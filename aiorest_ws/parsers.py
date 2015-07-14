@@ -6,7 +6,7 @@ __all__ = ('URLParser', )
 
 import re
 
-from .endpoints import PlainRoute, DynamicRoute
+from .endpoints import PlainEndpoint, DynamicEndpoint
 from .exceptions import EndpointValueError
 
 
@@ -18,7 +18,7 @@ class URLParser(object):
     DYNAMIC_PARAMETER = re.compile(r'({\s*[\w\d_]+\s*})')
     VALID_DYNAMIC_PARAMETER = re.compile(r'{(?P<var>[\w][\w\d_]*)}')
 
-    def define_route(self, path, methods, handler, name=None):
+    def define_route(self, path, handler, methods, name=None):
         """Define a router as instance of BaseRoute subclass, which passed
         from register method in RestWSRouter.
 
@@ -31,7 +31,7 @@ class URLParser(object):
         """
         # it's PlainRoute, when don't have any "dynamic symbols"
         if all(symbol not in path for symbol in ['{', '}']):
-            return PlainRoute(path, methods, handler, name)
+            return PlainEndpoint(path, handler, methods, name)
 
         # try to processing as a dynamic path
         pattern = ''
@@ -52,4 +52,4 @@ class URLParser(object):
         except re.error as exc:
             raise EndpointValueError("Bad pattern '{}': {}"
                                      .format(pattern, exc))
-        return DynamicRoute(path, methods, handler, name, compiled)
+        return DynamicEndpoint(path, handler, methods, name, compiled)
