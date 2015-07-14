@@ -7,7 +7,7 @@ __all__ = ('BaseSerializer', 'JSONSerializer', 'XMLSerializer', )
 import json
 
 from io import StringIO
-from .exceptions import NotImplementedMethod, SerializerError
+from .exceptions import SerializerError
 from .utils.formatting import SHORT_SEPARATORS, LONG_SEPARATORS, \
     WRONG_UNICODE_SYMBOLS
 from .utils.xmlutils import SimpleXMLGenerator
@@ -23,8 +23,7 @@ class BaseSerializer(object):
 
         :param data: dictionary object.
         """
-        raise NotImplementedMethod(u"Error occurred in not implemented "
-                                   u"method of serializer.")
+        pass
 
 
 class JSONSerializer(BaseSerializer):
@@ -77,6 +76,7 @@ class XMLSerializer(BaseSerializer):
             render = StringIO()
             xml = self.xml_generator(render, self.charset)
             xml.parse(data)
+            render = bytes(render.getvalue().encode('utf-8'))
         except Exception as exc:
             raise SerializerError(exc)
-        return render.getvalue()
+        return render

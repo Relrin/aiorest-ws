@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from fixtures.command_line import default_command_line as cmd  # noqa
 
 

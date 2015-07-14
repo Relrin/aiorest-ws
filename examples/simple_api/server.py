@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from aiorest_ws.command_line import CommandLine
 from aiorest_ws.routers import RestWSRouter
 from aiorest_ws.server import run_server

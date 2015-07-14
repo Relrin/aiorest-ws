@@ -12,75 +12,33 @@
 """
 __all__ = ('RestWSRouter', )
 
-import inspect
-
-from .exceptions import BaseAPIException, NotSupportedArgumentType, \
-    InvalidPathArgument, InvalidHandler, EndpointValueError, \
-    IncompatibleResponseType, NotSpecifiedHandler
-from .endpoints import BaseRoute
+from .abstract import AbstractEndpoint, AbstractRouter
+from .exceptions import BaseAPIException, EndpointValueError, \
+    NotSpecifiedHandler, NotSpecifiedURL
 from .serializers import JSONSerializer
-from .views import MethodBasedView
 from .parsers import URLParser
+from .validators import RouterArgumentsValidator
 
 
-class RestWSRouter(object):
+class RestWSRouter(AbstractRouter):
     """Default router class, used for working with REST over WebSockets."""
+    args_validator = RouterArgumentsValidator()
     url_parser = URLParser()
-    supported_methods_types = (list, str)
 
     def __init__(self):
         super(RestWSRouter, self).__init__()
         self._urls = []
         self._routes = {}
 
-    def _check_path(self, path):
-        """Validate passed path for endpoint.
-
-        :param path: path to endpoint (string)
-        """
-        if not path.startswith('/'):
-            raise InvalidPathArgument(u"Path should be started with `/` "
-                                      u"symbol")
-
-    def _check_handler(self, handler):
-        """Validate passed handler for requests.
-
-        :param handler: class or function, used for generating response.
-        """
-        if inspect.isclass(handler):
-            if not issubclass(handler, (MethodBasedView, )):
-                raise InvalidHandler(u"Your class should be inherited from "
-                                     u"the MethodBasedView class")
-        else:
-            raise InvalidHandler()
-
-    def _check_methods(self, methods):
-        """Validate passed methods variable.
-
-        :param methods: list of methods or string with concrete method name.
-        """
-        if type(methods) not in self.supported_methods_types:
-            raise NotSupportedArgumentType('Variable with name "methods" must'
-                                           ' he `list` or `str` type.')
-
-    def _check_name(self, name):
-        """Validate passed name variable.
-
-        :param name: the base to use for the URL names that are created.
-        """
-        if name:
-            if type(name) is not str:
-                raise NotSupportedArgumentType(u'name variable must '
-                                               u'be string type')
-
     def _correct_path(self, path):
         """Convert path to valid value.
 
         :param path: URL, which used to get access to API.
         """
+        path = path.strip()
         if not path.endswith('/'):
             path = path + '/'
-        return path.strip()
+        return path
 
     def register(self, path, handler, methods, name=None):
         """Add new endpoint to server router.
@@ -94,56 +52,65 @@ class RestWSRouter(object):
         """
         path = self._correct_path(path)
 
-        self._check_path(path)
-        self._check_methods(methods)
-        self._check_handler(handler)
-        self._check_name(name)
+        self.args_validator.validate(path, handler, methods, name)
 
-        route = self.url_parser.define_route(path, methods, handler, name)
+        route = self.url_parser.define_route(path, handler, methods, name)
         self._register_url(route)
 
+    def extract_url(self, request):
+        """Extracting URL parameter for request.
+
+        :param request: request from the user
+        """
+        url = request.get('url', None)
+        if not url:
+            raise NotSpecifiedURL()
+        url = self._correct_path(url)
+        return url
+
+    def search_handler(self, request, url):
+        """Searching handler by URL.
+
+        :param request: request from user.
+        :param url: path to the registered endpoint.
+        """
+        args = ()
+        kwargs = {}
+        handler = None
+        for route in self._urls:
+            match = route.match(url)
+            if match is not None:
+                handler = route.handler()
+                args = match
+                params = request.get('args', None)
+                if params:
+                    kwargs.update({'params': params})
+                break
+        return handler, args, kwargs
+
     def dispatch(self, request):
-        """Handling received request from user.
+        """Handle received request from user.
 
         :param request: request from user.
         """
+        serializer = None
         try:
-            # extract URL from request
-            url = request.get('url', None)
-            if not url:
-                raise IncompatibleResponseType()
-
-            url = self._correct_path(url)
-
-            # search handler by URL
-            args = ()
-            kwargs = {}
-            handler = None
-            for route in self._urls:
-                match = route.match(url)
-                if match is not None:
-                    handler = route.handler()
-                    args = match
-                    params = request.get('args', None)
-                    if params:
-                        kwargs.update({'params': params})
-                    break
+            url = self.extract_url(request)
+            handler, args, kwargs = self.search_handler(request, url)
 
             # invoke handler for request
             if handler:
-                response = handler.dispatch(request, *args, **kwargs)
-
-                if type(response) not in (dict, list, tuple, str):
-                    raise IncompatibleResponseType()
-
                 # search serializer for response
                 format = self.get_argument(request, 'format')
                 serializer = handler.get_serializer(format, *args, **kwargs)
+
+                response = handler.dispatch(request, *args, **kwargs)
             else:
                 raise NotSpecifiedHandler()
         except BaseAPIException as exc:
             response = {'details': exc.detail}
-            serializer = JSONSerializer()
+            if not serializer:
+                serializer = JSONSerializer()
         return serializer.serialize(response)
 
     def get_argument(self, request, name):
@@ -158,25 +125,14 @@ class RestWSRouter(object):
             argument = request_args.get(name, None)
         return argument
 
-    def reverse(self, name):
-        """Get path to endpoint, using his short name.
-
-        :param name: short name of endpoint.
-        """
-        try:
-            path = self._routes[name].path
-        except KeyError:
-            path = None
-        return path
-
     def _register_url(self, route):
-        """Register new route.
+        """Register new endpoint.
 
-        :param route: instance of class, which inherited from BaseRouter.
+        :param route: instance of class, inherited from AbstractEndpoint.
         """
-        if not issubclass(type(route), (BaseRoute, )):
+        if not issubclass(type(route), (AbstractEndpoint, )):
             raise TypeError(u"Custom route must be inherited from the "
-                            u"BaseRouter class.")
+                            u"AbstractEndpoint class.")
 
         name = route.name
         if name is not None:

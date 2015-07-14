@@ -11,7 +11,7 @@ Requirements
 
 License
 -----
-This library published under BSD license. For more information read LICENSE file.
+This library published under BSD license. For more details read LICENSE file.
 
 Roadmap (by priority) to releases:
 -----

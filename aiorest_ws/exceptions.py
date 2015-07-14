@@ -4,11 +4,11 @@
     Django REST framework.
 """
 __all__ = (
-    'BaseAPIException', 'EndpointValueError', 'IncompatibleResponseType',
-    'IncorrectArgument', 'IncorrectMethodNameType', 'InvalidHandler',
-    'InvalidPathArgument', 'InvalidSerializer', 'NotImplementedMethod',
-    'NotSpecifiedError', 'NotSpecifiedHandler', 'NotSpecifiedMethodName',
-    'NotSpecifiedURL', 'NotSupportedArgumentType', 'SerializerError'
+    'BaseAPIException', 'EndpointValueError', 'IncorrectArgument',
+    'IncorrectMethodNameType', 'InvalidHandler', 'InvalidPathArgument',
+    'InvalidSerializer', 'NotImplementedMethod', 'NotSpecifiedError',
+    'NotSpecifiedHandler', 'NotSpecifiedMethodName', 'NotSpecifiedURL',
+    'NotSupportedArgumentType', 'SerializerError'
 )
 
 from . import status
@@ -40,11 +40,6 @@ class BaseAPIException(Exception):
 
 class EndpointValueError(BaseAPIException):
     default_detail = u"Incorrect endpoint. Check path to your API."
-
-
-class IncompatibleResponseType(BaseAPIException):
-    default_detail = u"Response must be represented as a dictionary, list, " \
-                     u"tuple, or a string."
 
 
 class IncorrectArgument(BaseAPIException):

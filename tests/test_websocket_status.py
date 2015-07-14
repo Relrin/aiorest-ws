@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import pytest
 
 from aiorest_ws.status import is_not_used, is_reserved, is_library, is_private
