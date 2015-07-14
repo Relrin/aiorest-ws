@@ -31,7 +31,7 @@ class HelloClientProtocol(WebSocketClientProtocol):
         self.sendMessage(json.dumps(request).encode('utf8'))
 
     def onMessage(self, payload, isBinary):
-        print("Result: {0}".format(json.loads(payload.decode('utf8'))))
+        print("Result: {0}".format(payload.decode('utf8')))
 
 
 if __name__ == '__main__':
