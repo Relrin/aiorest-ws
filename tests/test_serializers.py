@@ -1,24 +1,25 @@
+# -*- coding: utf-8 -*-
 import unittest
 
-from aiorest_ws.exceptions import NotImplementedMethod, SerializerError
+from aiorest_ws.exceptions import SerializerError
 from aiorest_ws.serializers import BaseSerializer, JSONSerializer, \
     XMLSerializer
 
 
-class TestBaseSerializer(unittest.TestCase):
+class BaseSerializerTestCase(unittest.TestCase):
 
     def setUp(self):
-        super(TestBaseSerializer, self).setUp()
+        super(BaseSerializerTestCase, self).setUp()
         self.bs = BaseSerializer()
 
-    def test_fail_serialize(self):
-        self.assertRaises(NotImplementedMethod, self.bs.serialize, {})
+    def test_serialize(self):
+        self.assertIsNone(self.bs.serialize({}))
 
 
-class TestJSONSerializer(unittest.TestCase):
+class JSONSerializerTestCase(unittest.TestCase):
 
     def setUp(self):
-        super(TestJSONSerializer, self).setUp()
+        super(JSONSerializerTestCase, self).setUp()
         self.json = JSONSerializer()
 
     def test_serialize_invalid_data(self):
@@ -54,10 +55,10 @@ class TestJSONSerializer(unittest.TestCase):
         self.assertEqual(output, b'["\\u2028", "\\u2029"]')
 
 
-class TestXMLSerializer(unittest.TestCase):
+class XMLSerializerTestCase(unittest.TestCase):
 
     def setUp(self):
-        super(TestXMLSerializer, self).setUp()
+        super(XMLSerializerTestCase, self).setUp()
         self.xml = XMLSerializer()
 
     def test_serialize_invalid_data(self):
@@ -66,6 +67,7 @@ class TestXMLSerializer(unittest.TestCase):
     def test_valid_serialization(self):
         data = {'objects': [1, 2, 3]}
         output = self.xml.serialize(data)
-        self.assertIn('<objects><list-item>1</list-item><list-item>2'
-                      '</list-item>''<list-item>3</list-item></objects>',
-                      output)
+        expected = '<objects><list-item>1</list-item><list-item>2' \
+                   '</list-item><list-item>3</list-item>' \
+                   '</objects>'.encode('utf-8')
+        self.assertIn(bytes(expected), output)
