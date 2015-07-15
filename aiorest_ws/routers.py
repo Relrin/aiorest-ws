@@ -17,12 +17,12 @@ from .exceptions import BaseAPIException, EndpointValueError, \
     NotSpecifiedHandler, NotSpecifiedURL
 from .serializers import JSONSerializer
 from .parsers import URLParser
-from .validators import RouterArgumentsValidator
+from .validators import RouteArgumentsValidator
 
 
 class RestWSRouter(AbstractRouter):
     """Default router class, used for working with REST over WebSockets."""
-    args_validator = RouterArgumentsValidator()
+    args_validator = RouteArgumentsValidator()
     url_parser = URLParser()
 
     def __init__(self):
@@ -51,7 +51,6 @@ class RestWSRouter(AbstractRouter):
         :param name: the base to use for the URL names that are created.
         """
         path = self._correct_path(path)
-
         self.args_validator.validate(path, handler, methods, name)
 
         route = self.url_parser.define_route(path, handler, methods, name)
@@ -93,7 +92,6 @@ class RestWSRouter(AbstractRouter):
 
         :param request: request from user.
         """
-        serializer = None
         try:
             url = self.extract_url(request)
             handler, args, kwargs = self.search_handler(request, url)
@@ -109,8 +107,7 @@ class RestWSRouter(AbstractRouter):
                 raise NotSpecifiedHandler()
         except BaseAPIException as exc:
             response = {'details': exc.detail}
-            if not serializer:
-                serializer = JSONSerializer()
+            serializer = JSONSerializer()
         return serializer.serialize(response)
 
     def get_argument(self, request, name):

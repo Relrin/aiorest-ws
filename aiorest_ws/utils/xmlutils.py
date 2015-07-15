@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
     XML classes and functions, used for serializing and de-serializing.
 """

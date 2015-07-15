@@ -2,7 +2,7 @@
 """
     Validator classes for checkign passed arguments
 """
-__all__ = ('BaseValidator', 'RouterArgumentsValidator', )
+__all__ = ('BaseValidator', 'RouteArgumentsValidator', )
 
 import inspect
 
@@ -19,7 +19,7 @@ class BaseValidator(object):
         pass
 
 
-class RouterArgumentsValidator(BaseValidator):
+class RouteArgumentsValidator(BaseValidator):
     """Validator for arguments of RestWSRouter."""
     supported_methods_types = (list, str)
 
