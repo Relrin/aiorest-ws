@@ -3,7 +3,7 @@ import unittest
 
 from aiorest_ws.exceptions import InvalidPathArgument, InvalidHandler, \
     NotSupportedArgumentType
-from aiorest_ws.validators import BaseValidator, RouterArgumentsValidator
+from aiorest_ws.validators import BaseValidator, RouteArgumentsValidator
 from aiorest_ws.views import MethodBasedView
 
 
@@ -21,7 +21,7 @@ class RouterArgumentsValidatorTestCase(unittest.TestCase):
 
     def setUp(self):
         super(RouterArgumentsValidatorTestCase, self).setUp()
-        self.validator = RouterArgumentsValidator()
+        self.validator = RouteArgumentsValidator()
 
     def test_check_path(self):
         invalid_path = 'api'

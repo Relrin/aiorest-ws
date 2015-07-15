@@ -5,17 +5,17 @@ from aiorest_ws.server import run_server
 from aiorest_ws.views import MethodBasedView
 
 
-class hello_static(MethodBasedView):
+class HelloWorld(MethodBasedView):
     def get(self, request, *args, **kwargs):
         return "Hello, username!"
 
 
-class hello_dynamic(MethodBasedView):
+class HelloWorldCustom(MethodBasedView):
     def get(self, request, user, id, *args, **kwargs):
         return "Hello, {0} with ID={1}".format(user, id)
 
 
-class calc_sum(MethodBasedView):
+class CalculateSum(MethodBasedView):
     def get(self, request, *args, **kwargs):
         try:
             digits = kwargs['params']['digits']
@@ -25,9 +25,9 @@ class calc_sum(MethodBasedView):
 
 
 router = RestWSRouter()
-router.register('/hello', hello_static, 'GET')
-router.register('/hello/{user}/{id}', hello_dynamic, 'GET')
-router.register('/calc/sum', calc_sum, 'GET')
+router.register('/hello', HelloWorld, 'GET')
+router.register('/hello/{user}/{id}', HelloWorldCustom, 'GET')
+router.register('/calc/sum', CalculateSum, 'GET')
 
 
 if __name__ == '__main__':
