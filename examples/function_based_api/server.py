@@ -6,12 +6,12 @@ from aiorest_ws.decorators import endpoint
 
 
 @endpoint(path='/hello', methods='GET')
-def hello_world(self, request, *args, **kwargs):
+def hello_world(request, *args, **kwargs):
     return "Hello, world!"
 
 
 @endpoint(path='/sum/{digit_1}/{digit_2}', methods='GET')
-def summ(self, request, digit_1, digit_2, *args, **kwargs):
+def summ(request, digit_1, digit_2, *args, **kwargs):
 
     def convert_to_int(digit):
         try:
