@@ -56,6 +56,15 @@ class RestWSRouter(AbstractRouter):
         route = self.url_parser.define_route(path, handler, methods, name)
         self._register_url(route)
 
+    def register_endpoint(self, endpoint):
+        """Add new endpoint to server router.
+
+        :param endpoint: function with @endpoint decorator, which used for
+                         processing request.
+        """
+        path, handler, methods, name = endpoint()
+        self.register(path, handler, methods, name)
+
     def extract_url(self, request):
         """Extracting URL parameter for request.
 

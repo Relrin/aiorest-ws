@@ -15,20 +15,13 @@ class HelloClientProtocol(WebSocketClientProtocol):
                    'url': '/hello/'}
         self.sendMessage(json.dumps(request).encode('utf8'))
 
-        # hello endpoint with arg in URL path (`user` and random digit)
+        # sum endpoint with arg in URL path (two random digits)
         for _ in range(0, 10):
-            user_id = str(randint(1, 100))
+            digit_1 = str(randint(1, 100))
+            digit_2 = str(randint(1, 100))
             request = {'method': 'GET',
-                       'url': '/hello/user/' + user_id}
+                       'url': '/sum/{0}/{1}'.format(digit_1, digit_2)}
             self.sendMessage(json.dumps(request).encode('utf8'))
-
-        # send request and parameters are separately
-        digits = [randint(1, 10) for _ in range(3)]
-        print("calculate sum for {}".format(digits))
-        request = {'method': 'GET',
-                   'url': '/calc/sum',
-                   'args': {'digits': digits}}
-        self.sendMessage(json.dumps(request).encode('utf8'))
 
     def onMessage(self, payload, isBinary):
         print("Result: {0}".format(payload.decode('utf8')))
