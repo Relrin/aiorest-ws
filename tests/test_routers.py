@@ -3,8 +3,10 @@ import unittest
 
 from fixtures.fakes import InvalidEndpoint, FakeView, FakeGetView, FakeEndpoint
 
+from aiorest_ws.decorators import endpoint
 from aiorest_ws.exceptions import EndpointValueError, NotSpecifiedURL
 from aiorest_ws.routers import RestWSRouter
+from aiorest_ws.views import MethodBasedView
 
 
 class RestWSRouterTestCase(unittest.TestCase):
@@ -39,6 +41,14 @@ class RestWSRouterTestCase(unittest.TestCase):
     def test_register(self):
         self.router.register('/api', FakeView, 'GET')
         self.assertEqual(FakeView, self.router._urls[0].handler)
+
+    def test_register_endpoint(self):
+        @endpoint(path='/api', methods='GET')
+        def fake_handler(request, *args, **kwargs):
+            pass
+
+        self.router.register_endpoint(fake_handler)
+        assert issubclass(self.router._urls[0].handler, MethodBasedView)
 
     def test_extract_url(self):
         request = {}
