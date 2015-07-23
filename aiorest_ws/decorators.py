@@ -11,9 +11,11 @@ from .views import MethodBasedView
 def endpoint(path, methods, name=None):
     """Decorator function, which turn handler into MethodBasedView class."""
     def endpoint_decorator(func):
-        def wrapper(*args, **kwargs):
+        def wrapper():
             class FunctionView(MethodBasedView):
-                pass
+                def handler(self, request, *args, **kwargs):
+                    return func(request, *args, **kwargs)
+
             view = FunctionView
 
             supported_methods = methods
@@ -24,7 +26,7 @@ def endpoint(path, methods, name=None):
                 supported_methods = [supported_methods, ]
 
             for method in supported_methods:
-                setattr(view, method.lower(), func)
+                setattr(view, method.lower(), view.handler)
             return path, view, methods, name
         return wrapper
     return endpoint_decorator
