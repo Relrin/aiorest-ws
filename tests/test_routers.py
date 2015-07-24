@@ -42,6 +42,10 @@ class RestWSRouterTestCase(unittest.TestCase):
         self.router.register('/api', FakeView, 'GET')
         self.assertEqual(FakeView, self.router._urls[0].handler)
 
+    def test_register_with_list_methods(self):
+        self.router.register('/api', FakeView, ['GET', 'POST', ])
+        self.assertEqual(FakeView, self.router._urls[0].handler)
+
     def test_register_endpoint(self):
         @endpoint(path='/api', methods='GET')
         def fake_handler(request, *args, **kwargs):
@@ -106,6 +110,15 @@ class RestWSRouterTestCase(unittest.TestCase):
             self.router.dispatch(request),
             b'{"details": "In query not specified `url` argument."}'
         )
+
+    def test_dispatch_wrapped_function(self):
+        @endpoint('/api', 'GET')
+        def fake_handler(request, *args, **kwargs):
+            return "fake"
+
+        self.router.register_endpoint(fake_handler)
+        result = self.router.dispatch({'url': '/api', 'method': 'GET'})
+        self.assertEqual(result, b'"fake"')
 
     def test_register_url(self):
         endpoint = InvalidEndpoint
