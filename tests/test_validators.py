@@ -4,7 +4,9 @@ import unittest
 from aiorest_ws.exceptions import InvalidPathArgument, InvalidHandler, \
     NotSupportedArgumentType
 from aiorest_ws.validators import BaseValidator, EndpointNameValidator, \
-    HandlerValidator, MethodValidator, PathValidator, RouteArgumentsValidator
+    HandlerValidator, MethodValidator, PathValidator, RouteArgumentsValidator, \
+    validate_subclass
+from aiorest_ws.server import RestWSServerFactory
 from aiorest_ws.views import MethodBasedView
 
 
@@ -165,3 +167,44 @@ class RouterArgumentsValidatorTestCase(unittest.TestCase):
     def test_validate(self):
         args = '/api/', MethodBasedView, 'GET', None
         self.validator.validate(*args)
+
+
+class ValidateSubclassFunctionTestCase(unittest.TestCase):
+
+    def setUp(self):
+        class FakeFactory(object):
+            pass
+        self.fake_factory = FakeFactory()
+
+        class FactorySubclass(RestWSServerFactory):
+            pass
+        self.factory_subclass = FactorySubclass()
+
+        super(ValidateSubclassFunctionTestCase, self).setUp()
+        self.factory = RestWSServerFactory()
+
+    def test_valid_subclass_1(self):
+        validate_subclass(
+            self, 'factory', self.factory_subclass, RestWSServerFactory
+        )
+        self.assertEqual(self.factory, self.factory_subclass)
+
+    def test_valid_subclass_2(self):
+        validate_subclass(
+            self, 'factory', self.factory_subclass, (RestWSServerFactory, )
+        )
+        self.assertEqual(self.factory, self.factory_subclass)
+
+    def test_invalid_subclass_1(self):
+        self.assertRaises(
+            TypeError,
+            validate_subclass,
+            self, 'factory', self.fake_factory, RestWSServerFactory
+        )
+
+    def test_invalid_subclass_2(self):
+        self.assertRaises(
+            TypeError,
+            validate_subclass,
+            self, 'factory', self.fake_factory, (RestWSServerFactory, str)
+        )

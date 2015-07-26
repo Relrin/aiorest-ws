@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
 """
-    Validator classes for checkign passed arguments
+    Validator classes and functions for checking passed arguments.
 """
-__all__ = ('BaseValidator', 'EndpointNameValidator', 'HandlerValidator',
-           'MethodValidator', 'PathValidator', 'RouteArgumentsValidator', )
+__all__ = (
+    'BaseValidator', 'EndpointNameValidator', 'HandlerValidator',
+    'MethodValidator', 'PathValidator', 'RouteArgumentsValidator',
+    'validate_subclass',
+)
 
 import inspect
 
@@ -99,3 +102,24 @@ class RouteArgumentsValidator(BaseValidator):
         self.handler_validator.validate(handler)
         self.methods_validator.validate(methods)
         self.endpoint_name_validator.validate(name)
+
+
+def validate_subclass(instance, attribute, value, subclasses):
+    """Validate subclass of passed value on supported type and set him for
+    instance of some class.
+
+    :param instance: object, for with necessary make check and sets value.
+    :param attribute: name of attribute (string), at which write ``value``
+                      when checking passed without any errors.
+    :param value: passed value to validate.
+    :param subclasses: class or a list/tuple with acceptable classes.
+    """
+    if issubclass(type(value), subclasses):
+        setattr(instance, attribute, value)
+    else:
+        if type(subclasses) in (list, tuple):
+            string = "/".join(subclasses)
+        else:
+            string = subclasses.__name__
+        raise TypeError('Custom class must be inherited from the '
+                        '{} class.'.format(string))

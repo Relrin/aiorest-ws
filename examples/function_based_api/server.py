@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
+from aiorest_ws.app import Application
 from aiorest_ws.command_line import CommandLine
 from aiorest_ws.routers import RestWSRouter
-from aiorest_ws.server import run_server
 from aiorest_ws.decorators import endpoint
 
 
@@ -35,4 +35,6 @@ if __name__ == '__main__':
     cmd.define('-ip', default='127.0.0.1', help='used ip', type=str)
     cmd.define('-port', default=8080, help='listened port', type=int)
     args = cmd.parse_command_line()
-    run_server(ip=args.ip, port=args.port, router=router)
+
+    app = Application()
+    app.run(ip=args.ip, port=args.port, router=router)
