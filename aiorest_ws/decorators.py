@@ -8,7 +8,7 @@ from .validators import MethodValidator
 from .views import MethodBasedView
 
 
-def endpoint(path, methods, name=None):
+def endpoint(path, methods, name=None, **attrs):
     """Decorator function, which turn handler into MethodBasedView class."""
     def endpoint_decorator(func):
         def wrapper():
@@ -27,6 +27,9 @@ def endpoint(path, methods, name=None):
 
             for method in supported_methods:
                 setattr(view, method.lower(), view.handler)
+
+            for attr in attrs:
+                setattr(view, str(attr).lower(), attrs[attr])
             return path, view, methods, name
         return wrapper
     return endpoint_decorator
