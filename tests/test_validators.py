@@ -174,14 +174,14 @@ class ValidateSubclassFunctionTestCase(unittest.TestCase):
     def setUp(self):
         class FakeFactory(object):
             pass
-        self.fake_factory = FakeFactory()
+        self.fake_factory = FakeFactory
 
         class FactorySubclass(RestWSServerFactory):
             pass
-        self.factory_subclass = FactorySubclass()
+        self.factory_subclass = FactorySubclass
 
         super(ValidateSubclassFunctionTestCase, self).setUp()
-        self.factory = RestWSServerFactory()
+        self.factory = RestWSServerFactory
 
     def test_valid_subclass_1(self):
         validate_subclass(
@@ -195,6 +195,14 @@ class ValidateSubclassFunctionTestCase(unittest.TestCase):
         )
         self.assertEqual(self.factory, self.factory_subclass)
 
+    def test_valid_subclass_3(self):
+        validate_subclass(
+            self, 'factory',
+            self.factory_subclass(),
+            (RestWSServerFactory, ), extract_type=True
+        )
+        self.assertEqual(type(self.factory), self.factory_subclass)
+
     def test_invalid_subclass_1(self):
         self.assertRaises(
             TypeError,
@@ -207,4 +215,12 @@ class ValidateSubclassFunctionTestCase(unittest.TestCase):
             TypeError,
             validate_subclass,
             self, 'factory', self.fake_factory, (RestWSServerFactory, str)
+        )
+
+    def test_invalid_subclass_3(self):
+        self.assertRaises(
+            TypeError,
+            validate_subclass,
+            self, 'factory', self.fake_factory(), (RestWSServerFactory, str),
+            extract_type=True
         )
