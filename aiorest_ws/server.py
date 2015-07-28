@@ -70,4 +70,6 @@ class RestWSServerFactory(WebSocketServerFactory):
 
     @router.setter
     def router(self, router):
-        validate_subclass(self, '_router', router, AbstractRouter)
+        if router:
+            validate_subclass(self, '_router', router, AbstractRouter,
+                              extract_type=True)
