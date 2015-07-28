@@ -3,6 +3,7 @@ import unittest
 
 from aiorest_ws.decorators import endpoint
 from aiorest_ws.exceptions import NotSupportedArgumentType
+from aiorest_ws.serializers import JSONSerializer
 
 
 class EndpointTestCase(unittest.TestCase):
@@ -22,6 +23,14 @@ class EndpointTestCase(unittest.TestCase):
 
         path, handler, methods, name = fake_handler()
         self.assertEqual(methods, ['GET', 'post'])
+
+    def test_set_attr_for_endpoint(self):
+        @endpoint('/api', ['GET', 'post'], serializers=(JSONSerializer, ))
+        def fake_handler(request, *args, **kwargs):
+            pass
+
+        path, handler, methods, name = fake_handler()
+        self.assertEqual(handler.serializers, (JSONSerializer, ))
 
     def test_create_handler_with_invalid_method_type(self):
         @endpoint('/api', None)
