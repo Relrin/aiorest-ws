@@ -46,7 +46,7 @@ Download lastest stable release of Python 3rd branch from [Python language websi
 
 We have a several ways to create a virtual environment.
 
-For **virtualenv**:
+For **virtualenv** use this:
 ```bash
 cd aiorest_ws
 virtualenv --python=`which python3` venv
