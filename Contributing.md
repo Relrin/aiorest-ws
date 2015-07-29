@@ -97,6 +97,6 @@ P.S. For debug cases use single thread approach.
 For future pull requests
 ------------------------
 For every part of code, which you will make as PR(=Pull Request), necessary to satisfy few conditions:  
-1. All previois tests are passed.  
+1. All previous tests are passed.  
 2. If necessary (in most situations it really does important) write test for cover your own part of code.  
 3. ```make flake``` doesn't print any errors/warning.  
