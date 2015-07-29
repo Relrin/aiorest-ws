@@ -37,3 +37,90 @@ v1.2:
 
 v1.3:
 - Web browsable API (similar on swagger?)
+
+Getting started
+---------------
+#### Client (JavaScript)
+```javascript
+var ws = null;
+var isopen = false;
+
+window.onload = function() 
+{
+  ws = new WebSocket("ws://127.0.0.1:8080");
+  ws.onopen = function() {
+    console.log("Connected!");
+    isopen = true;
+  };
+  
+  ws.onmessage = function(e) {
+    console.log("Result: " +  e.data);
+  };
+  
+  ws.onclose = function(e) {
+    console.log("Connection closed.");
+    ws = null;
+    isopen = false;
+  }
+};
+
+function sendOnStaticURL() {
+  if (isopen) {
+    ws.send(JSON.stringify({'method': 'GET', 'url': '/hello'}));
+  } else {
+    console.log("Connection not opened.") 
+  }
+}
+```
+
+#### Client (Python)
+```python
+import asyncio
+import json
+
+from autobahn.asyncio.websocket import WebSocketClientProtocol, \
+    WebSocketClientFactory
+
+
+class HelloClientProtocol(WebSocketClientProtocol):
+
+    def onOpen(self):
+        request = {'method': 'GET',
+                   'url': '/hello/'}
+        self.sendMessage(json.dumps(request).encode('utf8'))
+
+    def onMessage(self, payload, isBinary):
+        message = payload.decode('utf8')
+        print(message)
+
+
+if __name__ == '__main__':
+    factory = WebSocketClientFactory("ws://localhost:8080", debug=False)
+    factory.protocol = HelloClientProtocol
+
+    loop = asyncio.get_event_loop()
+    coro = loop.create_connection(factory, '127.0.0.1', 8080)
+    loop.run_until_complete(coro)
+    loop.run_forever()
+    loop.close()
+```
+
+#### Server
+```python
+from aiorest_ws.app import Application
+from aiorest_ws.routers import RestWSRouter
+from aiorest_ws.views import MethodBasedView
+
+class HelloWorld(MethodBasedView):
+    def get(self, request, *args, **kwargs):
+        return "Hello, world!"
+
+router = RestWSRouter()
+router.register('/hello', HelloWorld, 'GET')
+
+if __name__ == '__main__':
+    app = Application()
+    app.run(host=args.ip, port=args.port, router=router)
+```
+
+Also you can look more examples with this framework [there](https://github.com/Relrin/aiorest-ws/tree/master/examples).
