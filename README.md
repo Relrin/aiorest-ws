@@ -123,4 +123,4 @@ if __name__ == '__main__':
     app.run(host=args.ip, port=args.port, router=router)
 ```
 
-Also you can look more examples with this framework [there](https://github.com/Relrin/aiorest-ws/tree/master/examples).
+Also you can look more examples [there](https://github.com/Relrin/aiorest-ws/tree/master/examples).
