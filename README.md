@@ -119,7 +119,7 @@ router.register('/hello', HelloWorld, 'GET')
 
 if __name__ == '__main__':
     app = Application()
-    app.run(host=args.ip, port=args.port, router=router)
+    app.run(host='127.0.0.1', port=8080, router=router)
 ```
 
 Also you can look more examples [there](https://github.com/Relrin/aiorest-ws/tree/master/examples).
