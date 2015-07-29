@@ -11,16 +11,20 @@ Requirements
 
 License
 -----
-This library published under BSD license. For more details read LICENSE file.
+This library published under BSD license. For more details read [LICENSE](https://github.com/Relrin/aiorest-ws/blob/master/LICENSE) file.
+
+Contributing
+-----
+Read [CONTRIBUTING](https://github.com/Relrin/aiorest-ws/blob/master/Contributing.md) file for more information.
 
 Roadmap (by priority) to releases:
 -----
 v1.0:
-- JSON/XML serializers
-- Routing
-- Views (function and method-based)
-- Authentication
-- Documentation over all code
+- [x] JSON/XML serializers
+- [x] Routing
+- [x] Views (function and method-based)
+- [ ] Authentication
+- [ ] Documentation over all code (~70-80% done)
 
 v1.1:
 - Settings file for overriding behavior of serializers, routers, etc
@@ -29,6 +33,7 @@ v1.1:
 
 v1.2:
 - Improve scalability of aiorest-ws (balancer instance)
+- Notification support
 
 v1.3:
 - Web browsable API (similar on swagger?)
