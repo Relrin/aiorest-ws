@@ -117,6 +117,7 @@ class HelloWorld(MethodBasedView):
 router = RestWSRouter()
 router.register('/hello', HelloWorld, 'GET')
 
+
 if __name__ == '__main__':
     app = Application()
     app.run(host='127.0.0.1', port=8080, router=router)
