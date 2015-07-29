@@ -85,8 +85,7 @@ from autobahn.asyncio.websocket import WebSocketClientProtocol, \
 class HelloClientProtocol(WebSocketClientProtocol):
 
     def onOpen(self):
-        request = {'method': 'GET',
-                   'url': '/hello/'}
+        request = {'method': 'GET', 'url': '/hello/'}
         self.sendMessage(json.dumps(request).encode('utf8'))
 
     def onMessage(self, payload, isBinary):
