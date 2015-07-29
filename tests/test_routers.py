@@ -4,6 +4,7 @@ import unittest
 from fixtures.fakes import InvalidEndpoint, FakeView, FakeGetView, FakeEndpoint
 
 from aiorest_ws.decorators import endpoint
+from aiorest_ws.endpoints import PlainEndpoint
 from aiorest_ws.exceptions import EndpointValueError, NotSpecifiedURL
 from aiorest_ws.routers import RestWSRouter
 from aiorest_ws.views import MethodBasedView
@@ -131,3 +132,24 @@ class RestWSRouterTestCase(unittest.TestCase):
 
         endpoint.name = None
         self.router._register_url(endpoint)
+
+    def test_include(self):
+        class AnotherRouter(RestWSRouter):
+            pass
+
+        another_router = AnotherRouter()
+        another_router.register('/api', FakeView, 'GET', name='test_api')
+
+        self.assertEqual(len(self.router._urls), 0)
+        self.assertEqual(len(self.router._routes), 0)
+
+        self.router.include(another_router)
+
+        self.assertEqual(len(self.router._urls), 1)
+        self.assertEqual(len(self.router._routes), 1)
+        self.assertEqual(type(self.router._urls[0]), PlainEndpoint)
+        self.assertEqual(type(self.router._routes['test_api']), PlainEndpoint)
+
+    def test_include_fail(self):
+        another_router = None
+        self.assertRaises(TypeError, self.router.include, another_router)

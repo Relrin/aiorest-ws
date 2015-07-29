@@ -149,3 +149,14 @@ class RestWSRouter(AbstractRouter):
             else:
                 self._routes[name] = route
         self._urls.append(route)
+
+    def include(self, router):
+        """Appending endpoints from another router to self.
+
+        :param router: instance of subclass, derived from AbstractRouter
+        """
+        if not issubclass(type(router), (RestWSRouter, )):
+            raise TypeError(u"Passed router must be inherited from the "
+                            u"RestWSRouter class.")
+        self._urls.extend(router._urls)
+        self._routes.update(router._routes)
