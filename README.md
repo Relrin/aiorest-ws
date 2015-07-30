@@ -15,7 +15,7 @@ This library published under BSD license. For more details read [LICENSE](https:
 
 Contributing
 -----
-Read [CONTRIBUTING](https://github.com/Relrin/aiorest-ws/blob/master/Contributing.md) file for more information.
+Read [CONTRIBUTING](https://github.com/Relrin/aiorest-ws/blob/master/CONTRIBUTING.md) file for more information.
 
 Roadmap (by priority) to releases:
 -----
@@ -85,7 +85,7 @@ from autobahn.asyncio.websocket import WebSocketClientProtocol, \
 class HelloClientProtocol(WebSocketClientProtocol):
 
     def onOpen(self):
-        request = {'method': 'GET', 'url': '/hello/'}
+        request = {'method': 'GET', 'url': '/hello'}
         self.sendMessage(json.dumps(request).encode('utf8'))
 
     def onMessage(self, payload, isBinary):
