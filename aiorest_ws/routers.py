@@ -111,12 +111,14 @@ class RestWSRouter(AbstractRouter):
                 format = self.get_argument(request, 'format')
                 serializer = handler.get_serializer(format, *args, **kwargs)
 
-                response = handler.dispatch(request, *args, **kwargs)
+                data = handler.dispatch(request, *args, **kwargs)
+                response = {'data': data}
             else:
                 raise NotSpecifiedHandler()
         except BaseAPIException as exc:
             response = {'details': exc.detail}
             serializer = JSONSerializer()
+        response.update({'request': request})
         return serializer.serialize(response)
 
     def get_argument(self, request, name):

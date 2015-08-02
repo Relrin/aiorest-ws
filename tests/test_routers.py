@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import json
 import unittest
 
 from fixtures.fakes import InvalidEndpoint, FakeView, FakeGetView, FakeEndpoint
@@ -94,23 +95,35 @@ class RestWSRouterTestCase(unittest.TestCase):
         self.router.register('/api/get/', FakeGetView, 'GET')
 
         request = {'method': 'GET', 'url': '/api/get/'}
-        self.assertEqual(self.router.dispatch(request), b'"fake"')
+        response = json.loads(self.router.dispatch(request).decode('utf-8'))
+        self.assertIn('data', response.keys())
+        self.assertEqual(response['data'], 'fake')
+        self.assertEqual(response['request'], request)
 
         request = {'method': 'GET', 'url': '/api/get/',
                    'args': {'format': 'xml'}}
-        self.assertEqual(self.router.dispatch(request), b'"fake"')
+        response = json.loads(self.router.dispatch(request).decode('utf-8'))
+        self.assertIn('data', response.keys())
+        self.assertEqual(response['data'], 'fake')
+        self.assertEqual(response['request'], request)
 
         request = {'method': 'GET', 'url': '/api/invalid/'}
+        response = json.loads(self.router.dispatch(request).decode('utf-8'))
+        self.assertIn('details', response.keys())
         self.assertEqual(
-            self.router.dispatch(request),
-            b'{"details": "For URL, typed in request, handler not specified."}'
+            response['details'],
+            "For URL, typed in request, handler not specified."
         )
+        self.assertEqual(response['request'], request)
 
         request = {'method': 'GET'}
+        response = json.loads(self.router.dispatch(request).decode('utf-8'))
+        self.assertIn('details', response.keys())
         self.assertEqual(
-            self.router.dispatch(request),
-            b'{"details": "In query not specified `url` argument."}'
+            response['details'],
+            "In query not specified `url` argument."
         )
+        self.assertEqual(response['request'], request)
 
     def test_dispatch_wrapped_function(self):
         @endpoint('/api', 'GET')
@@ -118,8 +131,11 @@ class RestWSRouterTestCase(unittest.TestCase):
             return "fake"
 
         self.router.register_endpoint(fake_handler)
-        result = self.router.dispatch({'url': '/api', 'method': 'GET'})
-        self.assertEqual(result, b'"fake"')
+        request = {'url': '/api', 'method': 'GET'}
+        response = json.loads(self.router.dispatch(request).decode('utf-8'))
+        self.assertIn('data', response.keys())
+        self.assertEqual(response['data'], 'fake')
+        self.assertEqual(response['request'], request)
 
     def test_register_url(self):
         endpoint = InvalidEndpoint
