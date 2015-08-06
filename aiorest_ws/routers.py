@@ -68,13 +68,11 @@ class RestWSRouter(AbstractRouter):
     def extract_url(self, request):
         """Extracting URL parameter for request.
 
-        :param request: request from the user
+        :param request: request from the user.
         """
-        url = request.get('url', None)
-        if not url:
+        if not request.url:
             raise NotSpecifiedURL()
-        url = self._correct_path(url)
-        return url
+        return self._correct_path(request.url)
 
     def search_handler(self, request, url):
         """Searching handler by URL.
@@ -90,7 +88,7 @@ class RestWSRouter(AbstractRouter):
             if match is not None:
                 handler = route.handler()
                 args = match
-                params = request.get('args', None)
+                params = request.args
                 if params:
                     kwargs.update({'params': params})
                 break
@@ -118,7 +116,7 @@ class RestWSRouter(AbstractRouter):
         except BaseAPIException as exc:
             response = {'details': exc.detail}
             serializer = JSONSerializer()
-        response.update({'request': request})
+        response.update({'request': request.to_representation()})
         return serializer.serialize(response)
 
     def get_argument(self, request, name):
@@ -127,10 +125,9 @@ class RestWSRouter(AbstractRouter):
         :param request: request, passed from a dispatcher
         :param name: name of extracted argument in dictionary.
         """
-        request_args = request.get('args', None)
         argument = None
-        if request_args:
-            argument = request_args.get(name, None)
+        if request.args:
+            argument = request.args.get(name, None)
         return argument
 
     def _register_url(self, route):

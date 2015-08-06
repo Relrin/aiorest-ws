@@ -51,7 +51,7 @@ class MethodBasedView(View, metaclass=MethodViewMeta):
 
         :param request: passed request from user.
         """
-        method = request.get('method', None)
+        method = request.method
 
         # invoked, when user not specified method in query (e.c. get, post)
         if not method:

@@ -92,22 +92,17 @@ class Application(object):
         """Generate URL to application."""
         return self.url.format(host, port)
 
-    def run(self, host='127.0.0.1', port=8080, router=None, debug=False,
-            **options):
+    def run(self, **options):
         """Create and start web server with some IP and PORT.
 
-        :param host: the hostname to listen on. Defaults to ``'127.0.0.1'``.
-        :param port: the port of the server. Defaults to ``8080``.
-        :param router: instance of AbstractRouter subclass.
-        :param debug: enable or disable debug mode. By default debug mode
-                      is disabled.
-        :param options: other parameters, which can be used for configuration
+        :param options: parameters, which can be used for configuration
                         of the Application.
         """
+        host = options.get('host', '127.0.0.1')
+        port = options.get('port', 8080)
         url = self.generate_url(host, port)
 
-        factory = self.create_factory(url, debug=debug, router=router,
-                                      **options)
+        factory = self.create_factory(url, **options)
 
         loop = asyncio.get_event_loop()
         server_coroutine = loop.create_server(factory, host, port)
