@@ -24,18 +24,15 @@ class RestWSServerProtocolTestCase(unittest.TestCase):
         )
 
     def test_decode_message(self):
-        data = {'key': 'value'}
+        data = {'url': '/api'}
 
         message = json.dumps(data).encode('utf-8')
-        self.assertEqual(
-            self.protocol._decode_message(message),
-            data
-        )
+        request = self.protocol._decode_message(message)
+        self.assertEqual({'url': request.url}, data)
 
-        self.assertEqual(
-            self.protocol._decode_message(b64encode(message), isBinary=True),
-            data
-        )
+        message = b64encode(message)
+        request = self.protocol._decode_message(message, isBinary=True)
+        self.assertEqual({'url': request.url}, data)
 
 
 class RestWSServerFactoryTestCase(unittest.TestCase):

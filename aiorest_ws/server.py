@@ -14,6 +14,7 @@ from autobahn.asyncio.websocket import WebSocketServerProtocol, \
 from .abstract import AbstractRouter
 from .routers import RestWSRouter
 from .validators import validate_subclass
+from .wrappers import Request
 
 
 class RestWSServerProtocol(WebSocketServerProtocol):
@@ -31,8 +32,8 @@ class RestWSServerProtocol(WebSocketServerProtocol):
         # message in base64
         if isBinary:
             payload = b64decode(payload)
-        input_data = payload.decode('utf-8')
-        return json.loads(input_data)
+        input_data = json.loads(payload.decode('utf-8'))
+        return Request(input_data)
 
     def _encode_message(self, response, isBinary=False):
         """Encoding output message (to base64 if necessary).

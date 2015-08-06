@@ -7,6 +7,7 @@ from aiorest_ws.exceptions import NotSpecifiedHandler, NotSpecifiedMethodName, \
     IncorrectMethodNameType, InvalidSerializer
 from aiorest_ws.serializers import JSONSerializer
 from aiorest_ws.views import View
+from aiorest_ws.wrappers import Request
 
 
 class ViewTestCase(unittest.TestCase):
@@ -26,18 +27,18 @@ class MethodBaseViewTestCase(unittest.TestCase):
         self.view = FakeGetView()
 
     def test_dispatch(self):
-        request = {}
+        request = Request({})
         self.assertRaises(NotSpecifiedMethodName, self.view.dispatch, request)
 
-        request = {'method': ['POST', ]}
+        request = Request({'method': ['POST', ]})
         self.assertRaises(IncorrectMethodNameType, self.view.dispatch,
                           request)
 
-        request = {'method': 'POST'}
+        request = Request({'method': 'POST'})
         self.view.methods = ['GET', ]
         self.assertRaises(NotSpecifiedHandler, self.view.dispatch, request)
 
-        request = {'method': 'GET'}
+        request = Request({'method': 'GET'})
         self.assertEqual(self.view.dispatch(request), 'fake')
 
     def test_get_serializer(self):
