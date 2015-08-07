@@ -124,7 +124,7 @@ class RestWSRouterTestCase(unittest.TestCase):
             response['details'],
             "For URL, typed in request, handler not specified."
         )
-        self.assertEqual(response['request'], decoded_json)
+        self.assertNotIn('request', response.keys())
 
         decoded_json = {'method': 'GET'}
         request = Request(decoded_json)
@@ -134,7 +134,7 @@ class RestWSRouterTestCase(unittest.TestCase):
             response['details'],
             "In query not specified `url` argument."
         )
-        self.assertEqual(response['request'], {'method': 'GET', 'url': None})
+        self.assertNotIn('request', response.keys())
 
     def test_dispatch_wrapped_function(self):
         @endpoint('/api', 'GET')

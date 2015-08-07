@@ -35,4 +35,21 @@ class Request(object):
 
 
 class Response(object):
-    pass
+
+    def __init__(self):
+        super(Response, self).__init__()
+        self._content = {}
+
+    @property
+    def content(self):
+        return self._content
+
+    @content.setter
+    def content(self, value):
+        if type(value) is dict and 'details' in value.keys():
+            self._content = value
+        else:
+            self._content['data'] = value
+
+    def append_request(self, request):
+        self._content.update({'request': request.to_representation()})

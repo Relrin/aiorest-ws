@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import unittest
 
-from aiorest_ws.wrappers import Request
+from aiorest_ws.wrappers import Request, Response
 
 
 class RequestTestCase(unittest.TestCase):
@@ -68,5 +68,40 @@ class RequestTestCase(unittest.TestCase):
         request = Request({'url': '/api', 'method': 'GET'})
         self.assertEqual(
             request.to_representation(),
-            {'method': 'GET', 'url' : '/api', }
+            {'method': 'GET', 'url': '/api', }
+        )
+
+
+class ResponseTestCase(unittest.TestCase):
+
+    def test_init(self):
+        response = Response()
+        self.assertEqual(response._content, {})
+
+    def test_content_getter(self):
+        response = Response()
+        self.assertEqual(response.content, {})
+
+        response._content = data = {'key': 'value'}
+        self.assertEqual(response.content, data)
+
+    def test_content_setter(self):
+        response = Response()
+        self.assertEqual(response.content, {})
+
+        response.content = data = {'details': 'some error'}
+        self.assertEqual(response._content, data)
+
+        response.content = data = {'key': 'value'}
+        self.assertEqual(response._content['data'], data)
+
+        response.content = data = [1, 2, 3, 4, 5]
+        self.assertEqual(response._content['data'], data)
+
+    def test_append_request(self):
+        request = Request({'url': '/api', 'method': 'GET'})
+        response = Response()
+        response.append_request(request)
+        self.assertEqual(
+            response.content['request'], request.to_representation()
         )

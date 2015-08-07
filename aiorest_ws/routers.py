@@ -18,6 +18,7 @@ from .exceptions import BaseAPIException, EndpointValueError, \
 from .serializers import JSONSerializer
 from .parsers import URLParser
 from .validators import RouteArgumentsValidator
+from .wrappers import Response
 
 
 class RestWSRouter(AbstractRouter):
@@ -99,6 +100,8 @@ class RestWSRouter(AbstractRouter):
 
         :param request: request from user.
         """
+        response = Response()
+
         try:
             url = self.extract_url(request)
             handler, args, kwargs = self.search_handler(request, url)
@@ -109,15 +112,15 @@ class RestWSRouter(AbstractRouter):
                 format = self.get_argument(request, 'format')
                 serializer = handler.get_serializer(format, *args, **kwargs)
 
-                data = handler.dispatch(request, *args, **kwargs)
-                response = {'data': data}
+                response.content = handler.dispatch(request, *args, **kwargs)
+                response.append_request(request)
             else:
                 raise NotSpecifiedHandler()
         except BaseAPIException as exc:
-            response = {'details': exc.detail}
+            response.content = {'details': exc.detail}
             serializer = JSONSerializer()
-        response.update({'request': request.to_representation()})
-        return serializer.serialize(response)
+
+        return serializer.serialize(response.content)
 
     def get_argument(self, request, name):
         """Extracting argument from the request.
