@@ -1,7 +1,7 @@
 # aiorest-ws [![Build Status](https://travis-ci.org/Relrin/aiorest-ws.svg)](https://travis-ci.org/Relrin/aiorest-ws) [![Coverage Status](https://coveralls.io/repos/Relrin/aiorest-ws/badge.svg?branch=master&service=github)](https://coveralls.io/github/Relrin/aiorest-ws?branch=master)
 REST framework with WebSockets support
 
-This library represents as a flexible toolkit for building Web APIs, which used WebSockets and asyncio package.
+This library represents as a flexible toolkit for building Web APIs, which using WebSockets and asyncio package.
 
 Requirements
 -----
