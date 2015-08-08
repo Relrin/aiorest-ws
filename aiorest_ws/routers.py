@@ -95,7 +95,7 @@ class RestWSRouter(AbstractRouter):
                 break
         return handler, args, kwargs
 
-    def dispatch(self, request):
+    def process_request(self, request):
         """Handle received request from user.
 
         :param request: request from user.

@@ -5,7 +5,7 @@
 __all__ = (
     'BaseValidator', 'EndpointNameValidator', 'HandlerValidator',
     'MethodValidator', 'PathValidator', 'RouteArgumentsValidator',
-    'validate_subclass',
+    'check_and_set_subclass',
 )
 
 import inspect
@@ -13,6 +13,7 @@ import inspect
 from .exceptions import NotSupportedArgumentType, InvalidPathArgument, \
     InvalidHandler
 from .views import MethodBasedView
+from .utils.validators import to_str, get_object_type
 
 
 class BaseValidator(object):
@@ -104,8 +105,7 @@ class RouteArgumentsValidator(BaseValidator):
         self.endpoint_name_validator.validate(name)
 
 
-def validate_subclass(instance, attribute, value, subclasses,
-                      extract_type=False):
+def check_and_set_subclass(instance, attribute, value, subclasses):
     """Validate subclass of passed value on supported type and set him for
     instance of some class.
 
@@ -114,19 +114,10 @@ def validate_subclass(instance, attribute, value, subclasses,
                       when checking passed without any errors.
     :param value: passed value to validate.
     :param subclasses: class or a list/tuple with acceptable classes.
-    :param extract_type: boolean flag, means that necessary get object type.
     """
-    if extract_type:
-        obj_type = type(value)
-    else:
-        obj_type = value
-
+    obj_type = get_object_type(value)
     if issubclass(obj_type, subclasses):
         setattr(instance, attribute, value)
     else:
-        if type(subclasses) in (list, tuple):
-            string = "/".join(subclasses)
-        else:
-            string = subclasses.__name__
         raise TypeError('Custom class must be inherited from the '
-                        '{} class.'.format(string))
+                        '{} class.'.format(to_str(subclasses)))

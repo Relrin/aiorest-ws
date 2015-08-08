@@ -10,7 +10,7 @@ from time import gmtime, strftime
 
 from .__init__ import __version__
 from .server import RestWSServerFactory, RestWSServerProtocol
-from .validators import validate_subclass
+from .validators import check_and_set_subclass
 
 
 class Application(object):
@@ -39,7 +39,8 @@ class Application(object):
     @factory.setter
     def factory(self, factory):
         if factory:
-            validate_subclass(self, '_factory', factory, RestWSServerFactory)
+            check_and_set_subclass(self, '_factory', factory,
+                                   RestWSServerFactory)
 
     @property
     def protocol(self):
@@ -48,8 +49,8 @@ class Application(object):
     @protocol.setter
     def protocol(self, protocol):
         if protocol:
-            validate_subclass(self, '_protocol', protocol,
-                              RestWSServerProtocol)
+            check_and_set_subclass(self, '_protocol', protocol,
+                                   RestWSServerProtocol)
 
     @property
     def certificate(self):

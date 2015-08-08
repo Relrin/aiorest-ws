@@ -13,7 +13,7 @@ from autobahn.asyncio.websocket import WebSocketServerProtocol, \
 
 from .abstract import AbstractRouter
 from .routers import RestWSRouter
-from .validators import validate_subclass
+from .validators import check_and_set_subclass
 from .wrappers import Request
 
 
@@ -23,7 +23,7 @@ class RestWSServerProtocol(WebSocketServerProtocol):
     APIs) asynchronously.
     """
     def _decode_message(self, payload, isBinary=False):
-        """Decoding input message to JSON or base64 object.
+        """Decoding input message to Request object.
 
         :param payload: input message.
         :param isBinary: boolean value, means that received data had a binary
@@ -36,13 +36,13 @@ class RestWSServerProtocol(WebSocketServerProtocol):
         return Request(input_data)
 
     def _encode_message(self, response, isBinary=False):
-        """Encoding output message (to base64 if necessary).
+        """Encoding output message.
 
         :param response: output message.
         :param isBinary: boolean value, means that received data had a binary
                          format.
         """
-        # convert to base64 if necessary
+        # encode additionally to base64 if necessary
         if isBinary:
             response = b64encode(response)
         return response
@@ -50,7 +50,7 @@ class RestWSServerProtocol(WebSocketServerProtocol):
     @asyncio.coroutine
     def onMessage(self, payload, isBinary):
         request = self._decode_message(payload, isBinary)
-        response = self.factory.router.dispatch(request)
+        response = self.factory.router.process_request(request)
         out_payload = self._encode_message(response, isBinary)
         self.sendMessage(out_payload, isBinary=isBinary)
 
@@ -72,5 +72,4 @@ class RestWSServerFactory(WebSocketServerFactory):
     @router.setter
     def router(self, router):
         if router:
-            validate_subclass(self, '_router', router, AbstractRouter,
-                              extract_type=True)
+            check_and_set_subclass(self, '_router', router, AbstractRouter)

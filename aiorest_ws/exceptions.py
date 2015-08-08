@@ -11,7 +11,7 @@ __all__ = (
     'NotSupportedArgumentType', 'SerializerError'
 )
 
-from . import status
+from .status import WS_PROTOCOL_ERROR
 
 
 class BaseAPIException(Exception):
@@ -20,7 +20,7 @@ class BaseAPIException(Exception):
     All subclasses should provide `.status_code` and `.default_detail`
     properties.
     """
-    status_code = status.WS_PROTOCOL_ERROR
+    status_code = WS_PROTOCOL_ERROR
     default_detail = u"A server error occurred."
 
     def __init__(self, detail=None):
