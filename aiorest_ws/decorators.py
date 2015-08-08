@@ -9,7 +9,13 @@ from .views import MethodBasedView
 
 
 def endpoint(path, methods, name=None, **attrs):
-    """Decorator function, which turn handler into MethodBasedView class."""
+    """Decorator function, which turn handler into MethodBasedView class.
+
+    :param path: URL, used for get access to APIs
+    :param methods: acceptable method name or list of methods
+    :param name: short name of endpoint
+    :param attrs: any other attributes, which must be initialized
+    """
     def endpoint_decorator(func):
         def wrapper():
             class FunctionView(MethodBasedView):
@@ -30,6 +36,7 @@ def endpoint(path, methods, name=None, **attrs):
 
             for attr in attrs:
                 setattr(view, str(attr).lower(), attrs[attr])
+
             return path, view, methods, name
         return wrapper
     return endpoint_decorator

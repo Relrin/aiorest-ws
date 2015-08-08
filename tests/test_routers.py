@@ -97,44 +97,48 @@ class RestWSRouterTestCase(unittest.TestCase):
 
         decoded_json = {'method': 'GET', 'url': '/api/get/'}
         request = Request(decoded_json)
-        response = json.loads(self.router.dispatch(request).decode('utf-8'))
-        self.assertIn('data', response.keys())
-        self.assertEqual(response['data'], 'fake')
+        response = self.router.process_request(request).decode('utf-8')
+        json_response = json.loads(response)
+        self.assertIn('data', json_response.keys())
+        self.assertEqual(json_response['data'], 'fake')
         self.assertEqual(
-            response['request'],
+            json_response['request'],
             {'method': 'GET', 'url': '/api/get/'}
         )
 
         decoded_json = {'method': 'GET', 'url': '/api/get/',
                         'args': {'format': 'xml'}}
         request = Request(decoded_json)
-        response = json.loads(self.router.dispatch(request).decode('utf-8'))
-        self.assertIn('data', response.keys())
-        self.assertEqual(response['data'], 'fake')
+        response = self.router.process_request(request).decode('utf-8')
+        json_response = json.loads(response)
+        self.assertIn('data', json_response.keys())
+        self.assertEqual(json_response['data'], 'fake')
         self.assertEqual(
-            response['request'],
+            json_response['request'],
             {'method': 'GET', 'url': '/api/get/'}
         )
 
         decoded_json = {'method': 'GET', 'url': '/api/invalid/'}
         request = Request(decoded_json)
-        response = json.loads(self.router.dispatch(request).decode('utf-8'))
-        self.assertIn('details', response.keys())
+        response = self.router.process_request(request).decode('utf-8')
+        json_response = json.loads(response)
+        self.assertIn('details', json_response.keys())
         self.assertEqual(
-            response['details'],
+            json_response['details'],
             "For URL, typed in request, handler not specified."
         )
-        self.assertNotIn('request', response.keys())
+        self.assertNotIn('request', json_response.keys())
 
         decoded_json = {'method': 'GET'}
         request = Request(decoded_json)
-        response = json.loads(self.router.dispatch(request).decode('utf-8'))
-        self.assertIn('details', response.keys())
+        response = self.router.process_request(request).decode('utf-8')
+        json_response = json.loads(response)
+        self.assertIn('details', json_response.keys())
         self.assertEqual(
-            response['details'],
+            json_response['details'],
             "In query not specified `url` argument."
         )
-        self.assertNotIn('request', response.keys())
+        self.assertNotIn('request', json_response.keys())
 
     def test_dispatch_wrapped_function(self):
         @endpoint('/api', 'GET')
@@ -144,10 +148,11 @@ class RestWSRouterTestCase(unittest.TestCase):
         self.router.register_endpoint(fake_handler)
         decoded_json = {'url': '/api', 'method': 'GET'}
         request = Request(decoded_json)
-        response = json.loads(self.router.dispatch(request).decode('utf-8'))
-        self.assertIn('data', response.keys())
-        self.assertEqual(response['data'], 'fake')
-        self.assertEqual(response['request'], decoded_json)
+        response = self.router.process_request(request).decode('utf-8')
+        json_response = json.loads(response)
+        self.assertIn('data', json_response.keys())
+        self.assertEqual(json_response['data'], 'fake')
+        self.assertEqual(json_response['request'], decoded_json)
 
     def test_register_url(self):
         endpoint = InvalidEndpoint

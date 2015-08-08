@@ -29,7 +29,7 @@ class AbstractEndpoint(metaclass=ABCMeta):
 class AbstractRouter(metaclass=ABCMeta):
 
     @abstractmethod
-    def dispatch(self, request):
+    def process_request(self, request):
         """Handling received request from user.
 
         :param request: request from user.
