@@ -11,12 +11,12 @@ from time import gmtime, strftime
 from .__init__ import __version__
 from .server import RestWSServerFactory, RestWSServerProtocol
 from .validators import check_and_set_subclass
+from .utils.websocket import deflate_offer_accept as accept
 
 
 class Application(object):
     """Main application of aiorest-ws framework."""
     # TODO: Add logger
-    # TODO: Add compressing messages
     # TODO: Add SSL support
 
     _factory = RestWSServerFactory
@@ -79,10 +79,14 @@ class Application(object):
     def create_factory(self, url, **options):
         """Create a factory instance."""
         debug = options.get('debug', False)
+        compress = options.get('compress', False)
         router = options.get('router')
 
         factory = self.factory(url, debug=debug)
         factory.protocol = self.protocol
+
+        if compress:
+            factory.setProtocolOptions(perMessageCompressionAccept=accept)
 
         if router:
             factory.router = router
