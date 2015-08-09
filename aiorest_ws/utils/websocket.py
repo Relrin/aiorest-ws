@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
     This module contains classes and functions, used for configuration
-    issue with websockets.
+    issues with websockets.
 """
 __all__ = ('deflate_offer_accept', )
 
