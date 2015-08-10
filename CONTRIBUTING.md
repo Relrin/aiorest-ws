@@ -1,7 +1,7 @@
 Contributing
 ============
 
-As an open source project, I'm accept contributions in many forms.
+As an open source project, aiorest-ws accept contributions in many forms.
 
 Examples of contributions include:
 * Implementing features for future releases
