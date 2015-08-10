@@ -1,6 +1,14 @@
 Contributing
 ============
 
+As an open source project, I'm accept contributions in many forms.
+
+Examples of contributions include:
+* Implementing features for future releases
+* Code patches
+* Documentation improvements
+* Bug reports and patch reviews
+
 Instructions for contributors
 -----------------------------
 
