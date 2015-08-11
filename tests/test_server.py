@@ -25,11 +25,13 @@ class RestWSServerProtocolTestCase(unittest.TestCase):
 
     def test_decode_message(self):
         data = {'url': '/api'}
-
         message = json.dumps(data).encode('utf-8')
         request = self.protocol._decode_message(message)
         self.assertEqual({'url': request.url}, data)
 
+    def test_decode_message_binary(self):
+        data = {'url': '/api'}
+        message = json.dumps(data).encode('utf-8')
         message = b64encode(message)
         request = self.protocol._decode_message(message, isBinary=True)
         self.assertEqual({'url': request.url}, data)
@@ -45,13 +47,14 @@ class RestWSServerFactoryTestCase(unittest.TestCase):
         self.assertEqual(self.factory.router, self.factory._router)
 
     def test_router_setter(self):
-        class InvalidRouter(object):
-            pass
-
         class ImplementedRouter(RestWSRouter):
             pass
 
-        self.assertRaises(TypeError, self.factory.router, InvalidRouter())
-
         self.factory.router = ImplementedRouter()
         self.assertIsInstance(self.factory.router, ImplementedRouter)
+
+    def test_router_setter_with_invalid_router_class(self):
+        class InvalidRouter(object):
+            pass
+
+        self.assertRaises(TypeError, self.factory.router, InvalidRouter())
