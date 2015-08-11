@@ -30,16 +30,19 @@ class MethodBaseViewTestCase(unittest.TestCase):
         request = Request({})
         self.assertRaises(NotSpecifiedMethodName, self.view.dispatch, request)
 
+    def test_dispatch_2(self):
+        request = Request({'method': 'GET'})
+        self.assertEqual(self.view.dispatch(request), 'fake')
+
+    def test_dispatch_failed(self):
         request = Request({'method': ['POST', ]})
         self.assertRaises(IncorrectMethodNameType, self.view.dispatch,
                           request)
 
+    def test_dispatch_failed_2(self):
         request = Request({'method': 'POST'})
         self.view.methods = ['GET', ]
         self.assertRaises(NotSpecifiedHandler, self.view.dispatch, request)
-
-        request = Request({'method': 'GET'})
-        self.assertEqual(self.view.dispatch(request), 'fake')
 
     def test_get_serializer(self):
         format = None
@@ -47,14 +50,19 @@ class MethodBaseViewTestCase(unittest.TestCase):
         self.assertIsInstance(self.view.get_serializer(format),
                               JSONSerializer)
 
-        self.view.serializers = 'JSONSerializer'
-        self.assertRaises(InvalidSerializer, self.view.get_serializer, format)
-
+    def test_get_serializer_2(self):
         format = 'json'
         self.view.serializers = (JSONSerializer, )
         self.assertIsInstance(self.view.get_serializer(format),
                               JSONSerializer)
 
+    def test_get_serializer_3(self):
         format = 'xml'
+        self.view.serializers = (JSONSerializer, )
         self.assertIsInstance(self.view.get_serializer(format),
                               JSONSerializer)
+
+    def test_get_serializer_failed(self):
+        format = None
+        self.view.serializers = 'JSONSerializer'
+        self.assertRaises(InvalidSerializer, self.view.get_serializer, format)

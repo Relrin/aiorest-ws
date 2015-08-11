@@ -23,10 +23,13 @@ class RestWSRouterTestCase(unittest.TestCase):
         fixed_path = self.router._correct_path(broken_path)
         self.assertEqual(fixed_path, 'api/')
 
+    def test_correct_path_2(self):
         broken_path = ' api  '
         fixed_path = self.router._correct_path(broken_path)
         self.assertEqual(fixed_path, 'api/')
 
+    def test_correct_path_3(self):
+        broken_path = 'api'
         correct_path = 'api/'
         fixed_path = self.router._correct_path(broken_path)
         self.assertEqual(fixed_path, correct_path)
@@ -35,9 +38,11 @@ class RestWSRouterTestCase(unittest.TestCase):
         request = Request({'args': {'param': 'test'}})
         self.assertEqual(self.router.get_argument(request, 'param'), 'test')
 
+    def test_get_argument_with_unfilled_dict(self):
         request = Request({'args': {}})
         self.assertIsNone(self.router.get_argument(request, 'param'), None)
 
+    def test_get_argument_with_unfilled_dict_2(self):
         request = Request({})
         self.assertIsNone(self.router.get_argument(request, 'param'))
 
@@ -61,15 +66,16 @@ class RestWSRouterTestCase(unittest.TestCase):
         request = Request({})
         self.assertRaises(NotSpecifiedURL, self.router.extract_url, request)
 
+    def test_extract_url_2(self):
         request = Request({'url': '/api'})
         self.assertEqual(self.router.extract_url(request), '/api/')
 
+    def test_extract_url_3(self):
         request = Request({'url': '/api/'})
         self.assertEqual(self.router.extract_url(request), '/api/')
 
-    def test_search_handler(self):
+    def test_search_handler_with_plain_endpoint(self):
         self.router.register('/api/', FakeView, 'GET')
-        self.router.register('/api/{version}/', FakeView, 'GET')
 
         request = Request({})
         url = '/api/'
@@ -78,12 +84,18 @@ class RestWSRouterTestCase(unittest.TestCase):
         self.assertEqual(args, ())
         self.assertEqual(kwargs, {})
 
+    def test_search_handler_with_dynamic_endpoint(self):
+        self.router.register('/api/{version}/', FakeView, 'GET')
+
         request = Request({})
         url = '/api/v1/'
         handler, args, kwargs = self.router.search_handler(request, url)
         self.assertIsInstance(handler, FakeView)
         self.assertEqual(args, ('v1',))
         self.assertEqual(kwargs, {})
+
+    def test_search_handler_with_dynamic_endpoint_2(self):
+        self.router.register('/api/{version}/', FakeView, 'GET')
 
         request = Request({'args': {'format': 'json'}})
         url = '/api/v2/'
@@ -106,6 +118,8 @@ class RestWSRouterTestCase(unittest.TestCase):
             {'method': 'GET', 'url': '/api/get/'}
         )
 
+    def test_dispatch_2(self):
+        self.router.register('/api/get/', FakeGetView, 'GET')
         decoded_json = {'method': 'GET', 'url': '/api/get/',
                         'args': {'format': 'xml'}}
         request = Request(decoded_json)
@@ -118,6 +132,8 @@ class RestWSRouterTestCase(unittest.TestCase):
             {'method': 'GET', 'url': '/api/get/'}
         )
 
+    def test_dispatch_3(self):
+        self.router.register('/api/get/', FakeGetView, 'GET')
         decoded_json = {'method': 'GET', 'url': '/api/invalid/'}
         request = Request(decoded_json)
         response = self.router.process_request(request).decode('utf-8')
@@ -129,6 +145,8 @@ class RestWSRouterTestCase(unittest.TestCase):
         )
         self.assertNotIn('request', json_response.keys())
 
+    def test_dispatch_4(self):
+        self.router.register('/api/get/', FakeGetView, 'GET')
         decoded_json = {'method': 'GET'}
         request = Request(decoded_json)
         response = self.router.process_request(request).decode('utf-8')
@@ -155,16 +173,18 @@ class RestWSRouterTestCase(unittest.TestCase):
         self.assertEqual(json_response['request'], decoded_json)
 
     def test_register_url(self):
-        endpoint = InvalidEndpoint
-        self.assertRaises(TypeError, self.router._register_url, endpoint)
-
         endpoint = FakeEndpoint('/api/', None, 'GET', 'good')
         self.router._register_url(endpoint)
         self.assertRaises(EndpointValueError, self.router._register_url,
                           endpoint)
 
-        endpoint.name = None
+    def test_register_url_without_endpoint_name(self):
+        endpoint = FakeEndpoint('/api/', None, 'GET', None)
         self.router._register_url(endpoint)
+
+    def test_register_url_failed(self):
+        endpoint = InvalidEndpoint
+        self.assertRaises(TypeError, self.router._register_url, endpoint)
 
     def test_include(self):
         class AnotherRouter(RestWSRouter):

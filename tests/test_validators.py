@@ -29,12 +29,14 @@ class EndpointNameValidatorTestCase(unittest.TestCase):
     def test_check_name(self):
         self.assertIsNone(self.validator.validate(None))
 
+    def test_check_name_2(self):
+        valid_name = 'basename'
+        self.assertIsNone(self.validator.validate(valid_name))
+
+    def test_check_name_failed(self):
         invalid_name = ('basename', )
         self.assertRaises(NotSupportedArgumentType, self.validator.validate,
                           invalid_name)
-
-        valid_name = 'basename'
-        self.assertIsNone(self.validator.validate(valid_name))
 
 
 class HandlerValidatorTestCase(unittest.TestCase):
@@ -44,15 +46,17 @@ class HandlerValidatorTestCase(unittest.TestCase):
         self.validator = HandlerValidator()
 
     def test_check_handler(self):
+        valid_handler = MethodBasedView
+        self.assertIsNone(self.validator.validate(valid_handler))
+
+    def test_check_handler_failed(self):
         invalid_handler = object
         self.assertRaises(
             InvalidHandler,
             self.validator.validate, invalid_handler
         )
 
-        valid_handler = MethodBasedView
-        self.assertIsNone(self.validator.validate(valid_handler))
-
+    def test_check_handler_failed_2(self):
         invalid_handler = ['not a class', ]
         self.assertRaises(
             InvalidHandler,
@@ -67,17 +71,19 @@ class MethodValidatorTestCase(unittest.TestCase):
         self.validator = MethodValidator()
 
     def test_check_methods(self):
+        valid_methods = ['get', ]
+        self.assertIsNone(self.validator.validate(valid_methods))
+
+    def test_check_methods_2(self):
+        valid_methods = 'get'
+        self.assertIsNone(self.validator.validate(valid_methods))
+
+    def test_check_methods_failed(self):
         invalid_methods = ('get', )
         self.assertRaises(
             NotSupportedArgumentType,
             self.validator.validate, invalid_methods
         )
-
-        valid_methods = ['get', ]
-        self.assertIsNone(self.validator.validate(valid_methods))
-
-        valid_methods = 'get'
-        self.assertIsNone(self.validator.validate(valid_methods))
 
 
 class PathValidatorTestCase(unittest.TestCase):
@@ -87,14 +93,15 @@ class PathValidatorTestCase(unittest.TestCase):
         self.validator = PathValidator()
 
     def test_check_path(self):
+        valid_path = '/api'
+        self.assertIsNone(self.validator.validate(valid_path))
+
+    def test_check_path_failed(self):
         invalid_path = 'api'
         self.assertRaises(
             InvalidPathArgument,
             self.validator.validate, invalid_path
         )
-
-        valid_path = '/api'
-        self.assertIsNone(self.validator.validate(valid_path))
 
 
 class RouterArgumentsValidatorTestCase(unittest.TestCase):
@@ -114,17 +121,19 @@ class RouterArgumentsValidatorTestCase(unittest.TestCase):
         self.assertIsNone(self.validator.path_validator.validate(valid_path))
 
     def test_check_handler(self):
+        valid_handler = MethodBasedView
+        self.assertIsNone(
+            self.validator.handler_validator.validate(valid_handler)
+        )
+
+    def test_check_handler_failed(self):
         invalid_handler = object
         self.assertRaises(
             InvalidHandler,
             self.validator.handler_validator.validate, invalid_handler
         )
 
-        valid_handler = MethodBasedView
-        self.assertIsNone(
-            self.validator.handler_validator.validate(valid_handler)
-        )
-
+    def test_check_handler_with_none_function(self):
         invalid_handler = ['not a class', ]
         self.assertRaises(
             InvalidHandler,
@@ -132,36 +141,40 @@ class RouterArgumentsValidatorTestCase(unittest.TestCase):
         )
 
     def test_check_methods(self):
+        valid_methods = ['get', ]
+        self.assertIsNone(
+            self.validator.methods_validator.validate(valid_methods)
+        )
+
+    def test_check_methods_2(self):
+        valid_methods = 'get'
+        self.assertIsNone(
+            self.validator.methods_validator.validate(valid_methods)
+        )
+
+    def test_check_methods_failed(self):
         invalid_methods = ('get', )
         self.assertRaises(
             NotSupportedArgumentType,
             self.validator.methods_validator.validate, invalid_methods
         )
 
-        valid_methods = ['get', ]
-        self.assertIsNone(
-            self.validator.methods_validator.validate(valid_methods)
-        )
-
-        valid_methods = 'get'
-        self.assertIsNone(
-            self.validator.methods_validator.validate(valid_methods)
-        )
-
     def test_check_name(self):
+        valid_name = 'basename'
+        self.assertIsNone(
+            self.validator.endpoint_name_validator.validate(valid_name)
+        )
+
+    def test_check_name_2(self):
         self.assertIsNone(
             self.validator.endpoint_name_validator.validate(None)
         )
 
+    def test_check_name_failed(self):
         invalid_name = ('basename', )
         self.assertRaises(
             NotSupportedArgumentType,
             self.validator.endpoint_name_validator.validate, invalid_name
-        )
-
-        valid_name = 'basename'
-        self.assertIsNone(
-            self.validator.endpoint_name_validator.validate(valid_name)
         )
 
     def test_validate(self):
@@ -172,6 +185,8 @@ class RouterArgumentsValidatorTestCase(unittest.TestCase):
 class ValidateSubclassFunctionTestCase(unittest.TestCase):
 
     def setUp(self):
+        super(ValidateSubclassFunctionTestCase, self).setUp()
+
         class FakeFactory(object):
             pass
         self.fake_factory = FakeFactory
@@ -179,11 +194,9 @@ class ValidateSubclassFunctionTestCase(unittest.TestCase):
         class FactorySubclass(RestWSServerFactory):
             pass
         self.factory_subclass = FactorySubclass
-
-        super(ValidateSubclassFunctionTestCase, self).setUp()
         self.factory = RestWSServerFactory
 
-    def test_valid_subclass_1(self):
+    def test_valid_subclass(self):
         check_and_set_subclass(
             self, 'factory', self.factory_subclass, RestWSServerFactory
         )
@@ -203,7 +216,7 @@ class ValidateSubclassFunctionTestCase(unittest.TestCase):
         )
         self.assertEqual(type(self.factory), self.factory_subclass)
 
-    def test_invalid_subclass_1(self):
+    def test_invalid_subclass(self):
         self.assertRaises(
             TypeError,
             check_and_set_subclass,

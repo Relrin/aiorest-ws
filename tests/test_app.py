@@ -60,11 +60,15 @@ class ApplicationTestCase(unittest.TestCase):
 
     def test_create_factory_1(self):
         url = self.app.generate_url('127.0.0.1', 8080)
-        self.app.create_factory(url, debug=True)
+        factory = self.app.create_factory(url, debug=True)
+        self.assertTrue(factory.debug)
+        self.assertIsInstance(factory.router, RestWSRouter)
 
     def test_create_factory_2(self):
         url = self.app.generate_url('127.0.0.1', 8080)
-        self.app.create_factory(url, router=RestWSRouter())
+        factory = self.app.create_factory(url, router=RestWSRouter())
+        self.assertFalse(factory.debug)
+        self.assertIsInstance(factory.router, RestWSRouter)
 
     def test_generate_url_1(self):
         self.app.certificate = u'web/keys/server.crt'
