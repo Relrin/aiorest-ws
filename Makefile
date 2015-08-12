@@ -5,7 +5,7 @@ develop:
 	python setup.py develop
 
 test:
-	py.test -q --cov aiorest_ws --cov-report term-missing --tb=native
+	py.test -q -s --cov aiorest_ws --cov-report term-missing --tb=native
 
 test_parallel:
-	py.test -q --cov aiorest_ws --cov-report term-missing --tb=native -n4
+	py.test -q -s --cov aiorest_ws --cov-report term-missing --tb=native -n4

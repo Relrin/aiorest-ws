@@ -93,7 +93,7 @@ python tests/runtests.py
 ```  
 
 P.S. For debug cases use single thread approach.
-P.S.S. Pudb supported in the second way of starting test suites. If necessary, you can change Makefile for yourself by appending `-s` argument into `test` command.
+
 
 For future pull requests
 ------------------------
