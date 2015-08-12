@@ -12,6 +12,8 @@
 """
 __all__ = ('RestWSRouter', )
 
+import logging
+
 from .abstract import AbstractEndpoint, AbstractRouter
 from .exceptions import BaseAPIException, EndpointValueError, \
     NotSpecifiedHandler, NotSpecifiedURL
@@ -19,6 +21,8 @@ from .serializers import JSONSerializer
 from .parsers import URLParser
 from .validators import RouteArgumentsValidator
 from .wrappers import Response
+
+logger = logging.getLogger('aiorest-ws')
 
 
 class RestWSRouter(AbstractRouter):
@@ -100,6 +104,11 @@ class RestWSRouter(AbstractRouter):
 
         :param request: request from user.
         """
+        logger.info("\"{method} {url}\" args={args}".format(
+            method=request.method,
+            url=request.url,
+            args=request.args)
+        )
         response = Response()
 
         try:
@@ -117,6 +126,7 @@ class RestWSRouter(AbstractRouter):
             else:
                 raise NotSpecifiedHandler()
         except BaseAPIException as exc:
+            logger.exception(exc)
             response.content = {'details': exc.detail}
             serializer = JSONSerializer()
 
