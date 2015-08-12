@@ -4,6 +4,7 @@ import unittest
 from aiorest_ws.app import Application
 from aiorest_ws.routers import RestWSRouter
 from aiorest_ws.server import RestWSServerFactory, RestWSServerProtocol
+from aiorest_ws.utils.websocket import deflate_offer_accept as accept
 
 
 class ApplicationTestCase(unittest.TestCase):
@@ -69,6 +70,14 @@ class ApplicationTestCase(unittest.TestCase):
         factory = self.app.create_factory(url, router=RestWSRouter())
         self.assertFalse(factory.debug)
         self.assertIsInstance(factory.router, RestWSRouter)
+
+    def test_create_factory_3(self):
+        url = self.app.generate_url('127.0.0.1', 8080)
+        factory = self.app.create_factory(url, router=RestWSRouter(),
+                                          compress=True)
+        self.assertFalse(factory.debug)
+        self.assertIsInstance(factory.router, RestWSRouter)
+        self.assertEqual(factory.perMessageCompressionAccept, accept)
 
     def test_generate_url_1(self):
         self.app.certificate = u'web/keys/server.crt'

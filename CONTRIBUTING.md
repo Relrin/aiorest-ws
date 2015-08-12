@@ -88,11 +88,12 @@ We have few ways to start test suites:
  a. In single thread use ```make test```  
  b. In parallel (4 threads) ```make test_parallel```
 2. Using ```runtests.py``` script (single-threaded):
-```python  
+```python
 python tests/runtests.py
 ```  
 
 P.S. For debug cases use single thread approach.
+P.S.S. Pudb support in the second way of starting test suites. If necessary, you can change Makefile for yourself by appending `-s` argument into `test` command.
 
 For future pull requests
 ------------------------
