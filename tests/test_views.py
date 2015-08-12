@@ -27,20 +27,24 @@ class MethodBaseViewTestCase(unittest.TestCase):
         self.view = FakeGetView()
 
     def test_dispatch(self):
-        request = Request({})
+        data = {}
+        request = Request(**data)
         self.assertRaises(NotSpecifiedMethodName, self.view.dispatch, request)
 
     def test_dispatch_2(self):
-        request = Request({'method': 'GET'})
+        data = {'method': 'GET'}
+        request = Request(**data)
         self.assertEqual(self.view.dispatch(request), 'fake')
 
     def test_dispatch_failed(self):
-        request = Request({'method': ['POST', ]})
+        data = {'method': ['POST', ]}
+        request = Request(**data)
         self.assertRaises(IncorrectMethodNameType, self.view.dispatch,
                           request)
 
     def test_dispatch_failed_2(self):
-        request = Request({'method': 'POST'})
+        data = {'method': 'POST'}
+        request = Request(**data)
         self.view.methods = ['GET', ]
         self.assertRaises(NotSpecifiedHandler, self.view.dispatch, request)
 
