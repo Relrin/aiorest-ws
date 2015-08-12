@@ -12,17 +12,15 @@
 """
 __all__ = ('RestWSRouter', )
 
-import logging
 
 from .abstract import AbstractEndpoint, AbstractRouter
 from .exceptions import BaseAPIException, EndpointValueError, \
     NotSpecifiedHandler, NotSpecifiedURL
+from .log import logger
 from .serializers import JSONSerializer
 from .parsers import URLParser
 from .validators import RouteArgumentsValidator
 from .wrappers import Response
-
-logger = logging.getLogger('aiorest-ws')
 
 
 class RestWSRouter(AbstractRouter):

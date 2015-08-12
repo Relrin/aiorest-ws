@@ -9,7 +9,6 @@ import asyncio
 from time import gmtime, strftime
 
 from .__init__ import __version__
-from .log import configure_logger
 from .server import RestWSServerFactory, RestWSServerProtocol
 from .validators import check_and_set_subclass
 from .utils.websocket import deflate_offer_accept as accept
@@ -27,7 +26,6 @@ class Application(object):
     def __init__(self, *args, **options):
         """Initialization of Application instance."""
         super(Application, self).__init__()
-        configure_logger()
         self.factory = options.get('factory')
         self.protocol = options.get('protocol')
         self.certificate = options.get('certificate')

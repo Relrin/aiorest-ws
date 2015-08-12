@@ -2,7 +2,7 @@
 """
     Logging tool for aiorest-ws framework.
 """
-__all__ = ('DEFAULT_LOGGING_SETTINGS', 'configure_logger', )
+__all__ = ('DEFAULT_LOGGING_SETTINGS', 'logger', )
 
 import logging
 import logging.config
@@ -49,11 +49,5 @@ DEFAULT_LOGGING_SETTINGS = {
 }
 
 
-def configure_logger(logger_settings={}):
-    """Configure logger, based on the user settings."""
-    config = DEFAULT_LOGGING_SETTINGS
-
-    if logger_settings and type(logger_settings) is dict:
-        config = logger_settings
-
-    logging.config.dictConfig(config)
+logging.config.dictConfig(DEFAULT_LOGGING_SETTINGS)
+logger = logging.getLogger('aiorest-ws')
