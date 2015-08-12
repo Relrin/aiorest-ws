@@ -35,15 +35,18 @@ class RestWSRouterTestCase(unittest.TestCase):
         self.assertEqual(fixed_path, correct_path)
 
     def test_get_argument(self):
-        request = Request({'args': {'param': 'test'}})
+        data = {'args': {'param': 'test'}}
+        request = Request(**data)
         self.assertEqual(self.router.get_argument(request, 'param'), 'test')
 
     def test_get_argument_with_unfilled_dict(self):
-        request = Request({'args': {}})
+        data = {'args': {}}
+        request = Request(**data)
         self.assertIsNone(self.router.get_argument(request, 'param'), None)
 
     def test_get_argument_with_unfilled_dict_2(self):
-        request = Request({})
+        data = {}
+        request = Request(**data)
         self.assertIsNone(self.router.get_argument(request, 'param'))
 
     def test_register(self):
@@ -63,21 +66,25 @@ class RestWSRouterTestCase(unittest.TestCase):
         assert issubclass(self.router._urls[0].handler, MethodBasedView)
 
     def test_extract_url(self):
-        request = Request({})
+        data = {}
+        request = Request(**data)
         self.assertRaises(NotSpecifiedURL, self.router.extract_url, request)
 
     def test_extract_url_2(self):
-        request = Request({'url': '/api'})
+        data = {'url': '/api'}
+        request = Request(**data)
         self.assertEqual(self.router.extract_url(request), '/api/')
 
     def test_extract_url_3(self):
-        request = Request({'url': '/api/'})
+        data = {'url': '/api/'}
+        request = Request(**data)
         self.assertEqual(self.router.extract_url(request), '/api/')
 
     def test_search_handler_with_plain_endpoint(self):
         self.router.register('/api/', FakeView, 'GET')
 
-        request = Request({})
+        data = {}
+        request = Request(**data)
         url = '/api/'
         handler, args, kwargs = self.router.search_handler(request, url)
         self.assertIsInstance(handler, FakeView)
@@ -87,7 +94,8 @@ class RestWSRouterTestCase(unittest.TestCase):
     def test_search_handler_with_dynamic_endpoint(self):
         self.router.register('/api/{version}/', FakeView, 'GET')
 
-        request = Request({})
+        data = {}
+        request = Request(**data)
         url = '/api/v1/'
         handler, args, kwargs = self.router.search_handler(request, url)
         self.assertIsInstance(handler, FakeView)
@@ -97,7 +105,8 @@ class RestWSRouterTestCase(unittest.TestCase):
     def test_search_handler_with_dynamic_endpoint_2(self):
         self.router.register('/api/{version}/', FakeView, 'GET')
 
-        request = Request({'args': {'format': 'json'}})
+        data = {'args': {'format': 'json'}}
+        request = Request(**data)
         url = '/api/v2/'
         handler, args, kwargs = self.router.search_handler(request, url)
         self.assertIsInstance(handler, FakeView)
@@ -108,7 +117,7 @@ class RestWSRouterTestCase(unittest.TestCase):
         self.router.register('/api/get/', FakeGetView, 'GET')
 
         decoded_json = {'method': 'GET', 'url': '/api/get/'}
-        request = Request(decoded_json)
+        request = Request(**decoded_json)
         response = self.router.process_request(request).decode('utf-8')
         json_response = json.loads(response)
         self.assertIn('data', json_response.keys())
@@ -122,7 +131,7 @@ class RestWSRouterTestCase(unittest.TestCase):
         self.router.register('/api/get/', FakeGetView, 'GET')
         decoded_json = {'method': 'GET', 'url': '/api/get/',
                         'args': {'format': 'xml'}}
-        request = Request(decoded_json)
+        request = Request(**decoded_json)
         response = self.router.process_request(request).decode('utf-8')
         json_response = json.loads(response)
         self.assertIn('data', json_response.keys())
@@ -135,7 +144,7 @@ class RestWSRouterTestCase(unittest.TestCase):
     def test_dispatch_3(self):
         self.router.register('/api/get/', FakeGetView, 'GET')
         decoded_json = {'method': 'GET', 'url': '/api/invalid/'}
-        request = Request(decoded_json)
+        request = Request(**decoded_json)
         response = self.router.process_request(request).decode('utf-8')
         json_response = json.loads(response)
         self.assertIn('details', json_response.keys())
@@ -148,7 +157,7 @@ class RestWSRouterTestCase(unittest.TestCase):
     def test_dispatch_4(self):
         self.router.register('/api/get/', FakeGetView, 'GET')
         decoded_json = {'method': 'GET'}
-        request = Request(decoded_json)
+        request = Request(**decoded_json)
         response = self.router.process_request(request).decode('utf-8')
         json_response = json.loads(response)
         self.assertIn('details', json_response.keys())
@@ -165,7 +174,7 @@ class RestWSRouterTestCase(unittest.TestCase):
 
         self.router.register_endpoint(fake_handler)
         decoded_json = {'url': '/api', 'method': 'GET'}
-        request = Request(decoded_json)
+        request = Request(**decoded_json)
         response = self.router.process_request(request).decode('utf-8')
         json_response = json.loads(response)
         self.assertIn('data', json_response.keys())

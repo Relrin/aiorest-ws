@@ -3,15 +3,12 @@
     Wrappers, similar on HTTP requests/responses.
 """
 __all__ = ('Request', 'Response', )
-from .exceptions import NotSupportedArgumentType
 
 
 class Request(object):
 
-    def __init__(self, kwargs):
+    def __init__(self, *args, **kwargs):
         super(Request, self).__init__()
-        if type(kwargs) is not dict:
-            raise NotSupportedArgumentType('kwargs argument should be a dict.')
         self._method = kwargs.get('method', None)
         self._url = kwargs.get('url', None)
         self._args = kwargs.get('args', {})

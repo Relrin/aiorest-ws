@@ -33,7 +33,7 @@ class RestWSServerProtocol(WebSocketServerProtocol):
         if isBinary:
             payload = b64decode(payload)
         input_data = json.loads(payload.decode('utf-8'))
-        return Request(input_data)
+        return Request(**input_data)
 
     def _encode_message(self, response, isBinary=False):
         """Encoding output message.
