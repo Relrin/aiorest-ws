@@ -131,9 +131,9 @@ Running server with SSL
 Aiorest-ws framework support running server with SSL. Just append ```certificate``` and ```key``` options to the ```Application``` constructor:
 
 ```python
-    # WebSockets will be available on wss://127.0.0.1:8080/api
-    app = Application(certificate='path/to/my.crt', key='path/to/my.key')
-    app.run(host='127.0.0.1', port=8080, path='api', router=router)
+# WebSockets will be available on wss://127.0.0.1:8080/api
+app = Application(certificate='path/to/my.crt', key='path/to/my.key')
+app.run(host='127.0.0.1', port=8080, path='api', router=router)
 ```
 
 If you don't have any certificates and keys, but want to run server with SSL, then generate self-signed certificate via OpenSSL:
