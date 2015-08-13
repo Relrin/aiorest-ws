@@ -45,18 +45,18 @@ Getting started
 var ws = null;
 var isopen = false;
 
-window.onload = function() 
+window.onload = function()
 {
   ws = new WebSocket("ws://127.0.0.1:8080");
   ws.onopen = function() {
     console.log("Connected!");
     isopen = true;
   };
-  
+
   ws.onmessage = function(e) {
     console.log("Result: " +  e.data);
   };
-  
+
   ws.onclose = function(e) {
     console.log("Connection closed.");
     ws = null;
@@ -68,7 +68,7 @@ function sendOnStaticURL() {
   if (isopen) {
     ws.send(JSON.stringify({'method': 'GET', 'url': '/hello'}));
   } else {
-    console.log("Connection not opened.") 
+    console.log("Connection not opened.")
   }
 }
 ```
@@ -124,3 +124,23 @@ if __name__ == '__main__':
 ```
 
 Also you can look more examples [there](https://github.com/Relrin/aiorest-ws/tree/master/examples).
+
+Running server with SSL
+-----
+
+Aiorest-ws framework support running server with SSL. Just append ```certificate``` and ```key``` options to the ```Application``` constructor:
+
+```python
+    # WebSockets will be available on wss://127.0.0.1:8080/api
+    app = Application(certificate='path/to/my.crt', key='path/to/my.key')
+    app.run(host='127.0.0.1', port=8080, path='api', router=router)
+```
+
+If you don't have any certificates and keys, but want to run server with SSL, then generate self-signed certificate via OpenSSL:
+
+```bash
+openssl genrsa -out server.key 2048
+openssl req -new -key server.key -out server.csr
+openssl x509 -req -days 3650 -in server.csr -signkey server.key -out server.crt
+openssl x509 -in server.crt -out server.pem
+```
