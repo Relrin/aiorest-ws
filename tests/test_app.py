@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import ssl
 import unittest
 
 from aiorest_ws.app import Application
@@ -51,45 +52,205 @@ class ApplicationTestCase(unittest.TestCase):
         self.app.key = key_path
         self.assertEqual(self.app.key, key_path)
 
-    def test_url_1(self):
+    def test_url(self):
+        self.app.certificate = self.app.key = None
+        self.assertTrue(self.app.url, u'ws://{0}:{1}')
+
+    def test_url_2(self):
+        self.app.certificate = u'web/keys/server.crt'
+        self.app.key = None
+        self.assertTrue(self.app.url, u'ws://{0}:{1}')
+
+    def test_url_3(self):
+        self.app.certificate = None
+        self.app.key = u'web/keys/server.key'
+        self.assertTrue(self.app.url, u'ws://{0}:{1}')
+
+    def test_url_4(self):
         self.app.certificate = u'web/keys/server.crt'
         self.app.key = u'web/keys/server.key'
         self.assertTrue(self.app.url, u'wss://{0}:{1}')
 
-    def test_url_2(self):
-        self.assertTrue(self.app.url, u'ws://{0}:{1}')
+    def test_isSecure(self):
+        self.app.certificate = self.app.key = None
+        self.assertFalse(self.app.isSecure)
 
-    def test_create_factory_1(self):
+    def test_isSecure_2(self):
+        self.app.certificate = u'web/keys/server.crt'
+        self.app.key = None
+        self.assertFalse(self.app.isSecure)
+
+    def test_isSecure_3(self):
+        self.app.certificate = None
+        self.app.key = u'web/keys/server.key'
+        self.assertFalse(self.app.isSecure)
+
+    def test_isSecure_4(self):
+        self.app.certificate = u'web/keys/server.crt'
+        self.app.key = u'web/keys/server.key'
+        self.assertTrue(self.app.isSecure)
+
+    def test_get_ssl_context(self):
+        self.app.certificate = self.app.key = None
+        ssl_context = self.app._get_ssl_context()
+        self.assertIsNone(ssl_context)
+
+    def test_get_ssl_context_2(self):
+        self.app.certificate = u'web/keys/server.crt'
+        self.app.key = None
+        ssl_context = self.app._get_ssl_context()
+        self.assertIsNone(ssl_context)
+
+    def test_get_ssl_context_3(self):
+        self.app.certificate = None
+        self.app.key = u'web/keys/server.key'
+        ssl_context = self.app._get_ssl_context()
+        self.assertIsNone(ssl_context)
+
+    def test_get_ssl_context_4(self):
+        self.app.certificate = u'./tests/keys/server.crt'
+        self.app.key = u'./tests/keys/server.key'
+        ssl_context = self.app._get_ssl_context()
+        self.assertIsInstance(ssl_context, ssl.SSLContext)
+
+    def test_init_factory(self):
         url = self.app.generate_url('127.0.0.1', 8080)
-        factory = self.app.create_factory(url, debug=True)
+        factory = self.app._init_factory(url)
+        self.assertFalse(factory.debug)
+        self.assertEqual(factory.protocol, RestWSServerProtocol)
+
+    def test_init_factory_2(self):
+        url = self.app.generate_url('127.0.0.1', 8080)
+        options = {'debug': False}
+        factory = self.app._init_factory(url, **options)
+        self.assertFalse(factory.debug)
+        self.assertEqual(factory.protocol, RestWSServerProtocol)
+
+    def test_init_factory_3(self):
+        url = self.app.generate_url('127.0.0.1', 8080)
+        options = {'debug': True}
+        factory = self.app._init_factory(url, **options)
+        self.assertTrue(factory.debug)
+        self.assertEqual(factory.protocol, RestWSServerProtocol)
+
+    def test_enable_compressing(self):
+        url = self.app.generate_url('127.0.0.1', 8080)
+        options = {}
+        factory = self.app._init_factory(url)
+        self.app._enable_compressing(factory, **options)
+        self.assertTrue(callable(factory.perMessageCompressionAccept))
+        self.assertIsNone(factory.perMessageCompressionAccept('not_used_arg'))
+
+    def test_enable_compressing_2(self):
+        url = self.app.generate_url('127.0.0.1', 8080)
+        options = {'compress': False}
+        factory = self.app._init_factory(url)
+        self.app._enable_compressing(factory, **options)
+        self.assertTrue(callable(factory.perMessageCompressionAccept))
+        self.assertIsNone(factory.perMessageCompressionAccept('not_used_arg'))
+
+    def test_enable_compressing_3(self):
+        url = self.app.generate_url('127.0.0.1', 8080)
+        options = {'compress': True}
+        factory = self.app._init_factory(url)
+        self.app._enable_compressing(factory, **options)
+        self.assertTrue(callable(factory.perMessageCompressionAccept))
+        self.assertEqual(factory.perMessageCompressionAccept, accept)
+
+    def test_set_factory_router(self):
+        url = self.app.generate_url('127.0.0.1', 8080)
+        options = {}
+        factory = self.app._init_factory(url)
+        self.app._set_factory_router(factory, **options)
+        self.assertIsInstance(factory.router, RestWSRouter)
+
+    def test_set_factory_router_2(self):
+        class CustomRouter(RestWSRouter):
+            pass
+
+        url = self.app.generate_url('127.0.0.1', 8080)
+        options = {'router': CustomRouter()}
+        factory = self.app._init_factory(url)
+        self.app._set_factory_router(factory, **options)
+        self.assertIsInstance(factory.router, CustomRouter)
+
+    def test_allow_hixie76(self):
+        url = self.app.generate_url('127.0.0.1', 8080)
+        factory = self.app._init_factory(url)
+        self.assertFalse(factory.allowHixie76)
+        self.app._allow_hixie76(factory)
+        self.assertTrue(factory.allowHixie76)
+
+    def test_generate_factory(self):
+        url = self.app.generate_url('127.0.0.1', 8080)
+        factory = self.app.generate_factory(url, debug=True)
         self.assertTrue(factory.debug)
         self.assertIsInstance(factory.router, RestWSRouter)
+        self.assertTrue(factory.allowHixie76)
 
-    def test_create_factory_2(self):
+    def test_generate_factory_2(self):
         url = self.app.generate_url('127.0.0.1', 8080)
-        factory = self.app.create_factory(url, router=RestWSRouter())
+        factory = self.app.generate_factory(url, router=RestWSRouter())
         self.assertFalse(factory.debug)
         self.assertIsInstance(factory.router, RestWSRouter)
+        self.assertTrue(factory.allowHixie76)
 
-    def test_create_factory_3(self):
+    def test_generate_factory_3(self):
         url = self.app.generate_url('127.0.0.1', 8080)
-        factory = self.app.create_factory(url, router=RestWSRouter(),
-                                          compress=True)
+        factory = self.app.generate_factory(url, router=RestWSRouter(),
+                                            compress=True)
         self.assertFalse(factory.debug)
         self.assertIsInstance(factory.router, RestWSRouter)
         self.assertEqual(factory.perMessageCompressionAccept, accept)
+        self.assertTrue(factory.allowHixie76)
 
-    def test_generate_url_1(self):
+    def test_generate_url(self):
+        host, ip = u'127.0.0.1', 8080
+        self.assertEqual(
+            self.app.generate_url(host, ip),
+            u'ws://{0}:{1}/'.format(host, ip)
+        )
+
+    def test_generate_url_2(self):
+        host, ip, path = u'127.0.0.1', 8080, ''
+        self.assertEqual(
+            self.app.generate_url(host, ip, path),
+            u'ws://{0}:{1}/'.format(host, ip, path)
+        )
+
+    def test_generate_url_3(self):
+        host, ip, path = u'127.0.0.1', 8080, 'ssl'
+        self.assertEqual(
+            self.app.generate_url(host, ip, path),
+            u'ws://{0}:{1}/{2}'.format(host, ip, path)
+        )
+
+    def test_generate_url_4(self):
         self.app.certificate = u'web/keys/server.crt'
         self.app.key = u'web/keys/server.key'
 
         host, ip = u'127.0.0.1', 8080
         self.assertEqual(
-            self.app.generate_url(host, ip), u'wss://{0}:{1}'.format(host, ip)
+            self.app.generate_url(host, ip),
+            u'wss://{0}:{1}/'.format(host, ip)
         )
 
-    def test_generate_url_2(self):
-        host, ip = u'127.0.0.1', 8080
+    def test_generate_url_5(self):
+        self.app.certificate = u'web/keys/server.crt'
+        self.app.key = u'web/keys/server.key'
+
+        host, ip, path = u'127.0.0.1', 8080, ''
         self.assertEqual(
-            self.app.generate_url(host, ip), u'ws://{0}:{1}'.format(host, ip)
+            self.app.generate_url(host, ip, path),
+            u'wss://{0}:{1}/'.format(host, ip, path)
+        )
+
+    def test_generate_url_6(self):
+        self.app.certificate = u'web/keys/server.crt'
+        self.app.key = u'web/keys/server.key'
+
+        host, ip, path = u'127.0.0.1', 8080, 'ssl'
+        self.assertEqual(
+            self.app.generate_url(host, ip, path),
+            u'wss://{0}:{1}/{2}'.format(host, ip, path)
         )
