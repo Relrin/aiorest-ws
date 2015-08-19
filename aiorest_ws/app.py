@@ -10,7 +10,7 @@ import ssl
 from time import gmtime, strftime
 
 from .__init__ import __version__
-from .server import RestWSServerFactory, RestWSServerProtocol
+from .request import RequestHandlerFactory, RequestHandlerProtocol
 from .validators import check_and_set_subclass
 from .utils.websocket import deflate_offer_accept as accept
 
@@ -18,8 +18,8 @@ from .utils.websocket import deflate_offer_accept as accept
 class Application(object):
     """Main application of aiorest-ws framework."""
 
-    _factory = RestWSServerFactory
-    _protocol = RestWSServerProtocol
+    _factory = RequestHandlerFactory
+    _protocol = RequestHandlerProtocol
     _certificate = None
     _key = None
 
@@ -39,7 +39,7 @@ class Application(object):
     def factory(self, factory):
         if factory:
             check_and_set_subclass(self, '_factory', factory,
-                                   RestWSServerFactory)
+                                   RequestHandlerFactory)
 
     @property
     def protocol(self):
@@ -49,7 +49,7 @@ class Application(object):
     def protocol(self, protocol):
         if protocol:
             check_and_set_subclass(self, '_protocol', protocol,
-                                   RestWSServerProtocol)
+                                   RequestHandlerProtocol)
 
     @property
     def certificate(self):
@@ -77,7 +77,7 @@ class Application(object):
 
     @property
     def isSecure(self):
-        """Property, which help us to understand, using SSL or not."""
+        """Property, which help us to understand, use SSL or not."""
         if self.certificate and self.key:
             isSecure = True
         else:

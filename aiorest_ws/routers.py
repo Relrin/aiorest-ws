@@ -10,7 +10,7 @@
         router.add('user/register', register_handler, methods='POST')
         router.add('user/{user_name}', user_handler, methods=['GET', 'PUT'])
 """
-__all__ = ('RestWSRouter', )
+__all__ = ('SimpleRouter', )
 
 
 from .abstract import AbstractEndpoint, AbstractRouter
@@ -23,13 +23,13 @@ from .validators import RouteArgumentsValidator
 from .wrappers import Response
 
 
-class RestWSRouter(AbstractRouter):
+class SimpleRouter(AbstractRouter):
     """Default router class, used for working with REST over WebSockets."""
     args_validator = RouteArgumentsValidator()
     url_parser = URLParser()
 
     def __init__(self):
-        super(RestWSRouter, self).__init__()
+        super(SimpleRouter, self).__init__()
         self._urls = []
         self._routes = {}
 
@@ -44,7 +44,7 @@ class RestWSRouter(AbstractRouter):
         return path
 
     def register(self, path, handler, methods, name=None):
-        """Add new endpoint to server router.
+        """Add new endpoint to the router.
 
         :param path: URL, which used to get access to API.
         :param handler: inherited class from the MethodBasedView, which used
@@ -60,7 +60,7 @@ class RestWSRouter(AbstractRouter):
         self._register_url(route)
 
     def register_endpoint(self, endpoint):
-        """Add new endpoint to server router.
+        """Add new endpoint to the router.
 
         :param endpoint: function with @endpoint decorator, which used for
                          processing request.
@@ -165,8 +165,8 @@ class RestWSRouter(AbstractRouter):
 
         :param router: instance of subclass, derived from AbstractRouter
         """
-        if not issubclass(type(router), (RestWSRouter, )):
+        if not issubclass(type(router), (SimpleRouter, )):
             raise TypeError(u"Passed router must be inherited from the "
-                            u"RestWSRouter class.")
+                            u"SimpleRouter class.")
         self._urls.extend(router._urls)
         self._routes.update(router._routes)
