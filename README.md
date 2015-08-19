@@ -107,14 +107,14 @@ if __name__ == '__main__':
 #### Server
 ```python
 from aiorest_ws.app import Application
-from aiorest_ws.routers import RestWSRouter
+from aiorest_ws.routers import SimpleRouter
 from aiorest_ws.views import MethodBasedView
 
 class HelloWorld(MethodBasedView):
     def get(self, request, *args, **kwargs):
         return "Hello, world!"
 
-router = RestWSRouter()
+router = SimpleRouter()
 router.register('/hello', HelloWorld, 'GET')
 
 
