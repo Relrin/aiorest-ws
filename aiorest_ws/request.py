@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-    Classes and function for creating and starting web server.
+    Classes and function for creating and processing requests from user.
 """
-__all__ = ('RestWSServerProtocol', 'RestWSServerFactory', )
+__all__ = ('RequestHandlerProtocol', 'RequestHandlerFactory', )
 
 import asyncio
 import json
@@ -12,12 +12,12 @@ from autobahn.asyncio.websocket import WebSocketServerProtocol, \
     WebSocketServerFactory
 
 from .abstract import AbstractRouter
-from .routers import RestWSRouter
+from .routers import SimpleRouter
 from .validators import check_and_set_subclass
 from .wrappers import Request
 
 
-class RestWSServerProtocol(WebSocketServerProtocol):
+class RequestHandlerProtocol(WebSocketServerProtocol):
     """REST WebSocket protocol instance, creating for every client connection.
     This protocol describe how to process network events (users requests to
     APIs) asynchronously.
@@ -55,15 +55,15 @@ class RestWSServerProtocol(WebSocketServerProtocol):
         self.sendMessage(out_payload, isBinary=isBinary)
 
 
-class RestWSServerFactory(WebSocketServerFactory):
+class RequestHandlerFactory(WebSocketServerFactory):
     """REST WebSocket server factory, which instantiates client connections.
 
     NOTE: Persistent configuration information is not saved in the instantiated
     protocol. For such cases kept data in a Factory classes, databases, etc.
     """
     def __init__(self, *args, **kwargs):
-        super(RestWSServerFactory, self).__init__(*args, **kwargs)
-        self._router = kwargs.get('router', RestWSRouter())
+        super(RequestHandlerFactory, self).__init__(*args, **kwargs)
+        self._router = kwargs.get('router', SimpleRouter())
 
     @property
     def router(self):

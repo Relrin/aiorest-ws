@@ -3,8 +3,8 @@ import ssl
 import unittest
 
 from aiorest_ws.app import Application
-from aiorest_ws.routers import RestWSRouter
-from aiorest_ws.server import RestWSServerFactory, RestWSServerProtocol
+from aiorest_ws.routers import SimpleRouter
+from aiorest_ws.request import RequestHandlerFactory, RequestHandlerProtocol
 from aiorest_ws.utils.websocket import deflate_offer_accept as accept
 
 
@@ -18,7 +18,7 @@ class ApplicationTestCase(unittest.TestCase):
         self.assertEqual(self.app.factory, self.app._factory)
 
     def test_factory_setter_1(self):
-        self.app.factory = RestWSServerFactory
+        self.app.factory = RequestHandlerFactory
         self.assertEqual(type(self.app.factory), type(self.app._factory))
 
     def test_factory_setter_2(self):
@@ -29,7 +29,7 @@ class ApplicationTestCase(unittest.TestCase):
         self.assertEqual(self.app.protocol, self.app._protocol)
 
     def test_protocol_setter_1(self):
-        self.app.protocol = RestWSServerProtocol
+        self.app.protocol = RequestHandlerProtocol
         self.assertEqual(type(self.app.protocol), type(self.app._protocol))
 
     def test_protocol_setter_2(self):
@@ -117,21 +117,21 @@ class ApplicationTestCase(unittest.TestCase):
         url = self.app.generate_url('127.0.0.1', 8080)
         factory = self.app._init_factory(url)
         self.assertFalse(factory.debug)
-        self.assertEqual(factory.protocol, RestWSServerProtocol)
+        self.assertEqual(factory.protocol, RequestHandlerProtocol)
 
     def test_init_factory_2(self):
         url = self.app.generate_url('127.0.0.1', 8080)
         options = {'debug': False}
         factory = self.app._init_factory(url, **options)
         self.assertFalse(factory.debug)
-        self.assertEqual(factory.protocol, RestWSServerProtocol)
+        self.assertEqual(factory.protocol, RequestHandlerProtocol)
 
     def test_init_factory_3(self):
         url = self.app.generate_url('127.0.0.1', 8080)
         options = {'debug': True}
         factory = self.app._init_factory(url, **options)
         self.assertTrue(factory.debug)
-        self.assertEqual(factory.protocol, RestWSServerProtocol)
+        self.assertEqual(factory.protocol, RequestHandlerProtocol)
 
     def test_enable_compressing(self):
         url = self.app.generate_url('127.0.0.1', 8080)
@@ -162,10 +162,10 @@ class ApplicationTestCase(unittest.TestCase):
         options = {}
         factory = self.app._init_factory(url)
         self.app._set_factory_router(factory, **options)
-        self.assertIsInstance(factory.router, RestWSRouter)
+        self.assertIsInstance(factory.router, SimpleRouter)
 
     def test_set_factory_router_2(self):
-        class CustomRouter(RestWSRouter):
+        class CustomRouter(SimpleRouter):
             pass
 
         url = self.app.generate_url('127.0.0.1', 8080)
@@ -185,22 +185,22 @@ class ApplicationTestCase(unittest.TestCase):
         url = self.app.generate_url('127.0.0.1', 8080)
         factory = self.app.generate_factory(url, debug=True)
         self.assertTrue(factory.debug)
-        self.assertIsInstance(factory.router, RestWSRouter)
+        self.assertIsInstance(factory.router, SimpleRouter)
         self.assertTrue(factory.allowHixie76)
 
     def test_generate_factory_2(self):
         url = self.app.generate_url('127.0.0.1', 8080)
-        factory = self.app.generate_factory(url, router=RestWSRouter())
+        factory = self.app.generate_factory(url, router=SimpleRouter())
         self.assertFalse(factory.debug)
-        self.assertIsInstance(factory.router, RestWSRouter)
+        self.assertIsInstance(factory.router, SimpleRouter)
         self.assertTrue(factory.allowHixie76)
 
     def test_generate_factory_3(self):
         url = self.app.generate_url('127.0.0.1', 8080)
-        factory = self.app.generate_factory(url, router=RestWSRouter(),
+        factory = self.app.generate_factory(url, router=SimpleRouter(),
                                             compress=True)
         self.assertFalse(factory.debug)
-        self.assertIsInstance(factory.router, RestWSRouter)
+        self.assertIsInstance(factory.router, SimpleRouter)
         self.assertEqual(factory.perMessageCompressionAccept, accept)
         self.assertTrue(factory.allowHixie76)
 

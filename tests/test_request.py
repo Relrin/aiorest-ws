@@ -4,15 +4,15 @@ import unittest
 
 from base64 import b64encode
 
-from aiorest_ws.routers import RestWSRouter
-from aiorest_ws.server import RestWSServerFactory, RestWSServerProtocol
+from aiorest_ws.routers import SimpleRouter
+from aiorest_ws.request import RequestHandlerFactory, RequestHandlerProtocol
 
 
-class RestWSServerProtocolTestCase(unittest.TestCase):
+class RequestHandlerProtocolTestCase(unittest.TestCase):
 
     def setUp(self):
-        super(RestWSServerProtocolTestCase, self).setUp()
-        self.protocol = RestWSServerProtocol()
+        super(RequestHandlerProtocolTestCase, self).setUp()
+        self.protocol = RequestHandlerProtocol()
 
     def test_encode_message(self):
         message = json.dumps({'key': 'value'}).encode('utf-8')
@@ -37,17 +37,17 @@ class RestWSServerProtocolTestCase(unittest.TestCase):
         self.assertEqual({'url': request.url}, data)
 
 
-class RestWSServerFactoryTestCase(unittest.TestCase):
+class RequestHandlerFactoryTestCase(unittest.TestCase):
 
     def setUp(self):
-        super(RestWSServerFactoryTestCase, self).setUp()
-        self.factory = RestWSServerFactory()
+        super(RequestHandlerFactoryTestCase, self).setUp()
+        self.factory = RequestHandlerFactory()
 
     def test_router_getter(self):
         self.assertEqual(self.factory.router, self.factory._router)
 
     def test_router_setter(self):
-        class ImplementedRouter(RestWSRouter):
+        class ImplementedRouter(SimpleRouter):
             pass
 
         self.factory.router = ImplementedRouter()

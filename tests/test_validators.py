@@ -6,7 +6,7 @@ from aiorest_ws.exceptions import InvalidPathArgument, InvalidHandler, \
 from aiorest_ws.validators import BaseValidator, EndpointNameValidator, \
     HandlerValidator, MethodValidator, PathValidator, RouteArgumentsValidator, \
     check_and_set_subclass
-from aiorest_ws.server import RestWSServerFactory
+from aiorest_ws.request import RequestHandlerFactory
 from aiorest_ws.views import MethodBasedView
 
 
@@ -191,20 +191,20 @@ class ValidateSubclassFunctionTestCase(unittest.TestCase):
             pass
         self.fake_factory = FakeFactory
 
-        class FactorySubclass(RestWSServerFactory):
+        class FactorySubclass(RequestHandlerFactory):
             pass
         self.factory_subclass = FactorySubclass
-        self.factory = RestWSServerFactory
+        self.factory = RequestHandlerFactory
 
     def test_valid_subclass(self):
         check_and_set_subclass(
-            self, 'factory', self.factory_subclass, RestWSServerFactory
+            self, 'factory', self.factory_subclass, RequestHandlerFactory
         )
         self.assertEqual(self.factory, self.factory_subclass)
 
     def test_valid_subclass_2(self):
         check_and_set_subclass(
-            self, 'factory', self.factory_subclass, (RestWSServerFactory, )
+            self, 'factory', self.factory_subclass, (RequestHandlerFactory, )
         )
         self.assertEqual(self.factory, self.factory_subclass)
 
@@ -212,7 +212,7 @@ class ValidateSubclassFunctionTestCase(unittest.TestCase):
         check_and_set_subclass(
             self, 'factory',
             self.factory_subclass(),
-            (RestWSServerFactory, )
+            (RequestHandlerFactory, )
         )
         self.assertEqual(type(self.factory), self.factory_subclass)
 
@@ -220,19 +220,19 @@ class ValidateSubclassFunctionTestCase(unittest.TestCase):
         self.assertRaises(
             TypeError,
             check_and_set_subclass,
-            self, 'factory', self.fake_factory, RestWSServerFactory
+            self, 'factory', self.fake_factory, RequestHandlerFactory
         )
 
     def test_invalid_subclass_2(self):
         self.assertRaises(
             TypeError,
             check_and_set_subclass,
-            self, 'factory', self.fake_factory, (RestWSServerFactory, str)
+            self, 'factory', self.fake_factory, (RequestHandlerFactory, str)
         )
 
     def test_invalid_subclass_3(self):
         self.assertRaises(
             TypeError,
             check_and_set_subclass,
-            self, 'factory', self.fake_factory(), (RestWSServerFactory, str)
+            self, 'factory', self.fake_factory(), (RequestHandlerFactory, str)
         )

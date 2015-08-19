@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from aiorest_ws.app import Application
 from aiorest_ws.command_line import CommandLine
-from aiorest_ws.routers import RestWSRouter
+from aiorest_ws.routers import SimpleRouter
 from aiorest_ws.decorators import endpoint
 
 
@@ -25,7 +25,7 @@ def summ(request, digit_1, digit_2, *args, **kwargs):
     return "{0} + {1} = {2}".format(digit_1, digit_2, digit_1 + digit_2)
 
 
-router = RestWSRouter()
+router = SimpleRouter()
 router.register_endpoint(hello_world)
 router.register_endpoint(summ)
 

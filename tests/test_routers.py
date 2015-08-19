@@ -8,7 +8,7 @@ from fixtures.fakes import InvalidEndpoint, FakeView, FakeGetView, FakeEndpoint
 from aiorest_ws.decorators import endpoint
 from aiorest_ws.endpoints import PlainEndpoint
 from aiorest_ws.exceptions import EndpointValueError, NotSpecifiedURL
-from aiorest_ws.routers import RestWSRouter
+from aiorest_ws.routers import SimpleRouter
 from aiorest_ws.views import MethodBasedView
 from aiorest_ws.wrappers import Request
 
@@ -17,7 +17,7 @@ class RestWSRouterTestCase(unittest.TestCase):
 
     def setUp(self):
         super(RestWSRouterTestCase, self).setUp()
-        self.router = RestWSRouter()
+        self.router = SimpleRouter()
 
     def test_correct_path(self):
         broken_path = 'api'
@@ -204,7 +204,7 @@ class RestWSRouterTestCase(unittest.TestCase):
         self.assertRaises(TypeError, self.router._register_url, endpoint)
 
     def test_include(self):
-        class AnotherRouter(RestWSRouter):
+        class AnotherRouter(SimpleRouter):
             pass
 
         another_router = AnotherRouter()

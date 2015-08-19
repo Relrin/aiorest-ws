@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from aiorest_ws.app import Application
 from aiorest_ws.command_line import CommandLine
-from aiorest_ws.routers import RestWSRouter
+from aiorest_ws.routers import SimpleRouter
 from aiorest_ws.views import MethodBasedView
 
 
@@ -24,7 +24,7 @@ class CalculateSum(MethodBasedView):
         return {"sum": sum(digits)}
 
 
-router = RestWSRouter()
+router = SimpleRouter()
 router.register('/hello', HelloWorld, 'GET')
 router.register('/hello/{user}/{id}', HelloWorldCustom, 'GET')
 router.register('/calc/sum', CalculateSum, 'GET')
