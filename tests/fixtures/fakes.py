@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from aiorest_ws.abstract import AbstractEndpoint
+from aiorest_ws.exceptions import BaseAPIException
 from aiorest_ws.views import MethodBasedView
 
 
@@ -20,3 +21,14 @@ class FakeView(MethodBasedView):
 class FakeGetView(MethodBasedView):
     def get(self, request, *args, **kwargs):
         return "fake"
+
+
+class FakeTokenMiddleware(object):
+    def process_request(self, request):
+        setattr(request, 'token', None)
+        return request
+
+
+class FakeTokenMiddlewareWithExc(object):
+    def process_request(self, request):
+        raise BaseAPIException('No token provided')
