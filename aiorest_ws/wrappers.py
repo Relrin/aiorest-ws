@@ -12,7 +12,6 @@ class Request(object):
         self._method = kwargs.get('method', None)
         self._url = kwargs.get('url', None)
         self._args = kwargs.get('args', {})
-        self._token = kwargs.get('token', None)
 
     @property
     def method(self):
@@ -26,12 +25,18 @@ class Request(object):
     def args(self):
         return self._args
 
-    @property
-    def token(self):
-        return self._token
-
     def to_representation(self):
         return {'method': self.method, 'url': self.url}
+
+    def get_argument(self, name):
+        """Extracting argument from the request.
+
+        :param name: name of extracted argument in dictionary.
+        """
+        argument = None
+        if self.args:
+            argument = self.args.get(name, None)
+        return argument
 
 
 class Response(object):
