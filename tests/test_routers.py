@@ -3,7 +3,8 @@ import json
 import unittest
 import unittest.mock
 
-from fixtures.fakes import InvalidEndpoint, FakeView, FakeGetView, FakeEndpoint
+from fixtures.fakes import InvalidEndpoint, FakeView, FakeGetView, \
+    FakeEndpoint, FakeTokenMiddleware, FakeTokenMiddlewareWithExc
 
 from aiorest_ws.decorators import endpoint
 from aiorest_ws.endpoints import PlainEndpoint
@@ -34,21 +35,6 @@ class RestWSRouterTestCase(unittest.TestCase):
         correct_path = 'api/'
         fixed_path = self.router._correct_path(broken_path)
         self.assertEqual(fixed_path, correct_path)
-
-    def test_get_argument(self):
-        data = {'args': {'param': 'test'}}
-        request = Request(**data)
-        self.assertEqual(self.router.get_argument(request, 'param'), 'test')
-
-    def test_get_argument_with_unfilled_dict(self):
-        data = {'args': {}}
-        request = Request(**data)
-        self.assertIsNone(self.router.get_argument(request, 'param'), None)
-
-    def test_get_argument_with_unfilled_dict_2(self):
-        data = {}
-        request = Request(**data)
-        self.assertIsNone(self.router.get_argument(request, 'param'))
 
     def test_register(self):
         self.router.register('/api', FakeView, 'GET')
@@ -115,7 +101,7 @@ class RestWSRouterTestCase(unittest.TestCase):
         self.assertEqual(kwargs, {'params': {'format': 'json'}})
 
     @unittest.mock.patch('aiorest_ws.log.logger.info')
-    def test_dispatch(self, m_logger):
+    def test_process_request(self, m_logger):
         self.router.register('/api/get/', FakeGetView, 'GET')
 
         decoded_json = {'method': 'GET', 'url': '/api/get/'}
@@ -130,8 +116,9 @@ class RestWSRouterTestCase(unittest.TestCase):
         )
 
     @unittest.mock.patch('aiorest_ws.log.logger.info')
-    def test_dispatch_2(self, m_logger):
+    def test_process_request_2(self, m_logger):
         self.router.register('/api/get/', FakeGetView, 'GET')
+
         decoded_json = {'method': 'GET', 'url': '/api/get/',
                         'args': {'format': 'xml'}}
         request = Request(**decoded_json)
@@ -146,8 +133,9 @@ class RestWSRouterTestCase(unittest.TestCase):
 
     @unittest.mock.patch('aiorest_ws.log.logger.info')
     @unittest.mock.patch('aiorest_ws.log.logger.exception')
-    def test_dispatch_3(self, m_logger_info, m_logger_exc):
+    def test_process_request_3(self, m_logger_info, m_logger_exc):
         self.router.register('/api/get/', FakeGetView, 'GET')
+
         decoded_json = {'method': 'GET', 'url': '/api/invalid/'}
         request = Request(**decoded_json)
         response = self.router.process_request(request).decode('utf-8')
@@ -161,8 +149,9 @@ class RestWSRouterTestCase(unittest.TestCase):
 
     @unittest.mock.patch('aiorest_ws.log.logger.info')
     @unittest.mock.patch('aiorest_ws.log.logger.exception')
-    def test_dispatch_4(self, m_logger_info, m_logger_exc):
+    def test_process_request_4(self, m_logger_info, m_logger_exc):
         self.router.register('/api/get/', FakeGetView, 'GET')
+
         decoded_json = {'method': 'GET'}
         request = Request(**decoded_json)
         response = self.router.process_request(request).decode('utf-8')
@@ -175,12 +164,42 @@ class RestWSRouterTestCase(unittest.TestCase):
         self.assertNotIn('request', json_response.keys())
 
     @unittest.mock.patch('aiorest_ws.log.logger.info')
-    def test_dispatch_wrapped_function(self, m_logger):
+    def test_process_request_with_middleware(self, m_logger_info):
+        self.router.middlewares = [FakeTokenMiddleware(), ]
+        self.router.register('/api/get/', FakeGetView, 'GET')
+
+        decoded_json = {'method': 'GET', 'url': '/api/get/'}
+        request = Request(**decoded_json)
+        response = self.router.process_request(request).decode('utf-8')
+        json_response = json.loads(response)
+        self.assertIn('data', json_response.keys())
+        self.assertEqual(json_response['data'], 'fake')
+        self.assertEqual(
+            json_response['request'],
+            {'method': 'GET', 'url': '/api/get/'}
+        )
+
+    @unittest.mock.patch('aiorest_ws.log.logger.info')
+    @unittest.mock.patch('aiorest_ws.log.logger.exception')
+    def test_process_request_with_middleware_2(self, m_log_info, m_log_exc):
+        self.router.middlewares = [FakeTokenMiddlewareWithExc(), ]
+        self.router.register('/api/get/', FakeGetView, 'GET')
+
+        decoded_json = {'method': 'GET', 'url': '/api/get/'}
+        request = Request(**decoded_json)
+        response = self.router.process_request(request).decode('utf-8')
+        json_response = json.loads(response)
+        self.assertIn('details', json_response.keys())
+        self.assertNotIn('data', json_response.keys())
+
+    @unittest.mock.patch('aiorest_ws.log.logger.info')
+    def test_process_request_wrapped_function(self, m_logger):
         @endpoint('/api', 'GET')
         def fake_handler(request, *args, **kwargs):
             return "fake"
 
         self.router.register_endpoint(fake_handler)
+
         decoded_json = {'url': '/api', 'method': 'GET'}
         request = Request(**decoded_json)
         response = self.router.process_request(request).decode('utf-8')
