@@ -5,10 +5,11 @@
 
     For example, we can use this features something like this:
 
-        router = RestWSRouter()
-        router.add('user/info', info_handler, methods='GET')
-        router.add('user/register', register_handler, methods='POST')
-        router.add('user/{user_name}', user_handler, methods=['GET', 'PUT'])
+        router = SimpleRouter()
+        router.register('user/info', info_handler, methods='GET')
+        router.register('user/register', register_handler, methods='POST')
+        router.register('user/profile/{user_name}', user_handler,
+                        methods=['GET', 'PUT'])
 """
 __all__ = ('SimpleRouter', )
 
@@ -28,7 +29,7 @@ class SimpleRouter(AbstractRouter):
     args_validator = RouteArgumentsValidator()
     url_parser = URLParser()
 
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         super(SimpleRouter, self).__init__()
         self._urls = []
         self._routes = {}
@@ -51,7 +52,7 @@ class SimpleRouter(AbstractRouter):
                         for processing request.
         :param methods: list of available for user methods or string with
                         concrete method name.
-        :param name: the base to use for the URL names that are created.
+        :param name: short name for endpoint.
         """
         path = self._correct_path(path)
         self.args_validator.validate(path, handler, methods, name)
@@ -113,10 +114,13 @@ class SimpleRouter(AbstractRouter):
             url = self.extract_url(request)
             handler, args, kwargs = self.search_handler(request, url)
 
+            for middleware in self.middlewares:
+                request = middleware.process_request(request)
+
             # invoke handler for request
             if handler:
                 # search serializer for response
-                format = self.get_argument(request, 'format')
+                format = request.get_argument('format')
                 serializer = handler.get_serializer(format, *args, **kwargs)
 
                 response.content = handler.dispatch(request, *args, **kwargs)
@@ -129,17 +133,6 @@ class SimpleRouter(AbstractRouter):
             serializer = JSONSerializer()
 
         return serializer.serialize(response.content)
-
-    def get_argument(self, request, name):
-        """Extracting argument from the request.
-
-        :param request: request, passed from a dispatcher
-        :param name: name of extracted argument in dictionary.
-        """
-        argument = None
-        if request.args:
-            argument = request.args.get(name, None)
-        return argument
 
     def _register_url(self, route):
         """Register new endpoint.
