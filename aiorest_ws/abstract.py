@@ -28,6 +28,18 @@ class AbstractEndpoint(metaclass=ABCMeta):
 
 class AbstractRouter(metaclass=ABCMeta):
 
+    def __init__(self, *args, **kwargs):
+        super(AbstractRouter, self).__init__()
+        self.middlewares = kwargs.get('middlewares', ())
+
+    @property
+    def middlewares(self):
+        return self._middlewares
+
+    @middlewares.setter
+    def middlewares(self, middlewares):
+        self._middlewares = list(middlewares)
+
     @abstractmethod
     def process_request(self, request):
         """Handling received request from user.
