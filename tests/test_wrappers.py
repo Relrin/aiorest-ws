@@ -51,21 +51,6 @@ class RequestTestCase(unittest.TestCase):
         request = Request(**data)
         self.assertEqual(request.args, {'key': 'value'})
 
-    def test_token_property(self):
-        data = {}
-        request = Request(**data)
-        self.assertEqual(request.token, None)
-
-    def test_token_property_2(self):
-        data = {'token': None}
-        request = Request(**data)
-        self.assertEqual(request.token, None)
-
-    def test_token_property_3(self):
-        data = {'token': 'secret_token'}
-        request = Request(**data)
-        self.assertEqual(request.token, 'secret_token')
-
     def test_to_representation(self):
         data = {}
         request = Request(**data)
@@ -97,6 +82,21 @@ class RequestTestCase(unittest.TestCase):
             request.to_representation(),
             {'method': 'GET', 'url': '/api', }
         )
+
+    def test_get_argument(self):
+        data = {'args': {'param': 'test'}}
+        request = Request(**data)
+        self.assertEqual(request.get_argument('param'), 'test')
+
+    def test_get_argument_with_unfilled_dict(self):
+        data = {'args': {}}
+        request = Request(**data)
+        self.assertIsNone(request.get_argument('param'), None)
+
+    def test_get_argument_with_unfilled_dict_2(self):
+        data = {}
+        request = Request(**data)
+        self.assertIsNone(request.get_argument('param'))
 
 
 class ResponseTestCase(unittest.TestCase):
