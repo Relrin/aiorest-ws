@@ -1,17 +1,25 @@
 # aiorest-ws [![Build Status](https://travis-ci.org/Relrin/aiorest-ws.svg)](https://travis-ci.org/Relrin/aiorest-ws) [![Coverage Status](https://coveralls.io/repos/Relrin/aiorest-ws/badge.svg?branch=master&service=github)](https://coveralls.io/github/Relrin/aiorest-ws?branch=master)
 REST framework with WebSockets support
 
-This library represents as a flexible toolkit for building Web APIs, which using WebSockets and asyncio package.
+This package represents as a flexible toolkit for building Web APIs, which based on the Autobahn.ws and asyncio packages. Use the opportunities of WebSockets for communication between clients and servers, build APIs like in popular frameworks (Django REST, Flask, Tornado, etc.) with enough simplicity, flexibility and transparency. Develop with a pleasure!
+
+Features
+-----
+- Routing
+- Views (function and method-based)
+- Authentication (using JSON Web Token)
+- Customizing behaviour of your application through settings file
+- Compressing messages for minimize of transmitted traffic (if your browser support)
+- SSL support
 
 Requirements
 -----
-- Python 3.4+
-- Autobahn.ws
-- asyncio
+- Python >= 3.4.0
+- Autobahn.ws >= 0.10.0
 
 License
 -----
-This library published under BSD license. For more details read [LICENSE](https://github.com/Relrin/aiorest-ws/blob/master/LICENSE) file.
+The aiorest-ws published under BSD license. For more details read [LICENSE](https://github.com/Relrin/aiorest-ws/blob/master/LICENSE) file.
 
 Contributing
 -----
@@ -23,20 +31,24 @@ v1.0:
 - [x] JSON/XML serializers
 - [x] Routing
 - [x] Views (function and method-based)
-- [ ] Authentication
+- [x] Authentication
+- [ ] Settings file for overriding behavior of serializers, routers, etc
 - [ ] Documentation over all code (~70-80% done)
 
 v1.1:
-- Settings file for overriding behavior of serializers, routers, etc
 - Compatible with Django and SQLAlchemy ORMs
 - Filters support over querysets
 
 v1.2:
-- Improve scalability of aiorest-ws (balancer instance)
+- Improve scalability of aiorest-ws (balancer instance or HAProxy?)
 - Notification support
 
 v1.3:
 - Web browsable API (similar on swagger?)
+
+v1.4:
+- Classes and functions for testing APIs
+- Clients for Python, JavaScript
 
 Getting started
 ---------------
@@ -136,7 +148,7 @@ app = Application(certificate='path/to/my.crt', key='path/to/my.key')
 app.run(host='127.0.0.1', port=8080, path='api', router=router)
 ```
 
-If you don't have any certificates and keys, but want to run server with SSL, then generate self-signed certificate via OpenSSL:
+If you don't have any certificates and keys, but want to run the server with SSL, then generate self-signed certificate via OpenSSL:
 
 ```bash
 openssl genrsa -out server.key 2048
