@@ -10,10 +10,10 @@ __all__ = (
 
 import inspect
 
-from .exceptions import NotSupportedArgumentType, InvalidPathArgument, \
-    InvalidHandler
-from .views import MethodBasedView
-from .utils.validators import to_str, get_object_type
+from aiorest_ws.exceptions import NotSupportedArgumentType, \
+    InvalidPathArgument, InvalidHandler
+from aiorest_ws.views import MethodBasedView
+from aiorest_ws.utils.validators import to_str, get_object_type
 
 
 class BaseValidator(object):

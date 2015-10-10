@@ -6,8 +6,8 @@ __all__ = ('URLParser', )
 
 import re
 
-from .endpoints import PlainEndpoint, DynamicEndpoint
-from .exceptions import EndpointValueError
+from aiorest_ws.endpoints import PlainEndpoint, DynamicEndpoint
+from aiorest_ws.exceptions import EndpointValueError
 
 
 class URLParser(object):

@@ -1,3 +1,12 @@
+# -*- coding: utf-8 -*-
+"""
+    Abstract classes for future implementation.
+"""
+__all__ = (
+    'AbstractEndpoint', 'AbstractRouter', 'AbstractMiddleware',
+    'AbstractPermission',
+)
+
 from abc import ABCMeta, abstractmethod
 
 
@@ -28,22 +37,43 @@ class AbstractEndpoint(metaclass=ABCMeta):
 
 class AbstractRouter(metaclass=ABCMeta):
 
+    _middlewares = ()
+
     def __init__(self, *args, **kwargs):
-        super(AbstractRouter, self).__init__()
-        self.middlewares = kwargs.get('middlewares', ())
+        pass
 
     @property
     def middlewares(self):
         return self._middlewares
-
-    @middlewares.setter
-    def middlewares(self, middlewares):
-        self._middlewares = list(middlewares)
 
     @abstractmethod
     def process_request(self, request):
         """Handling received request from user.
 
         :param request: request from user.
+        """
+        pass
+
+
+class AbstractMiddleware(metaclass=ABCMeta):
+
+    @abstractmethod
+    def process_request(self, request, handler):
+        """Processing request before calling handler.
+
+        :param request: instance of Request class.
+        :param handler: view, invoked later for the request.
+        """
+        pass
+
+
+class AbstractPermission(metaclass=ABCMeta):
+
+    @staticmethod
+    def check(request, handler):
+        """Check permission method.
+
+        :param request: instance of Request class.
+        :param handler: view, invoked later for the request.
         """
         pass

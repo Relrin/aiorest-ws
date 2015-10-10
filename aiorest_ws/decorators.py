@@ -4,8 +4,8 @@
 """
 __all__ = ('endpoint', )
 
-from .validators import MethodValidator
-from .views import MethodBasedView
+from aiorest_ws.validators import MethodValidator
+from aiorest_ws.views import MethodBasedView
 
 
 def endpoint(path, methods, name=None, **attrs):

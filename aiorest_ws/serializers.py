@@ -7,10 +7,10 @@ __all__ = ('BaseSerializer', 'JSONSerializer', 'XMLSerializer', )
 import json
 
 from io import StringIO
-from .exceptions import SerializerError
-from .utils.formatting import SHORT_SEPARATORS, LONG_SEPARATORS, \
+from aiorest_ws.exceptions import SerializerError
+from aiorest_ws.utils.formatting import SHORT_SEPARATORS, LONG_SEPARATORS, \
     WRONG_UNICODE_SYMBOLS
-from .utils.xmlutils import SimpleXMLGenerator
+from aiorest_ws.utils.xmlutils import SimpleXMLGenerator
 
 
 class BaseSerializer(object):

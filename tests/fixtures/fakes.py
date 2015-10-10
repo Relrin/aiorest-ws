@@ -24,11 +24,11 @@ class FakeGetView(MethodBasedView):
 
 
 class FakeTokenMiddleware(object):
-    def process_request(self, request):
+    def process_request(self, request, handler):
         setattr(request, 'token', None)
         return request
 
 
 class FakeTokenMiddlewareWithExc(object):
-    def process_request(self, request):
+    def process_request(self, request, handler):
         raise BaseAPIException('No token provided')

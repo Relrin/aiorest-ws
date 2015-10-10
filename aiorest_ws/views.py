@@ -5,9 +5,9 @@
 """
 __all__ = ('http_methods', 'View', 'MethodViewMeta', 'MethodBasedView', )
 
-from .exceptions import IncorrectMethodNameType, InvalidSerializer, \
-    NotSpecifiedHandler, NotSpecifiedMethodName
-from .serializers import JSONSerializer
+from aiorest_ws.exceptions import IncorrectMethodNameType, \
+    InvalidSerializer, NotSpecifiedHandler, NotSpecifiedMethodName
+from aiorest_ws.serializers import JSONSerializer
 
 http_methods = frozenset(['get', 'post', 'head', 'options', 'delete', 'put',
                           'trace', 'patch'])
