@@ -11,7 +11,7 @@ __all__ = (
     'NotSupportedArgumentType', 'SerializerError'
 )
 
-from .status import WS_PROTOCOL_ERROR
+from aiorest_ws.status import WS_PROTOCOL_ERROR, WS_DATA_CANNOT_ACCEPT
 
 
 class BaseAPIException(Exception):
@@ -25,7 +25,7 @@ class BaseAPIException(Exception):
 
     def __init__(self, detail=None):
         """Create an instance of exception with users detail information if
-         it is passed.
+        it is passed.
 
         :param detail: users detail information (string).
         """
@@ -43,6 +43,7 @@ class EndpointValueError(BaseAPIException):
 
 
 class IncorrectArgument(BaseAPIException):
+    status_code = WS_DATA_CANNOT_ACCEPT
     default_detail = u"Check `args` in query on errors and try again."
 
 
@@ -85,6 +86,7 @@ class NotSpecifiedURL(NotSpecifiedError):
 
 
 class NotSupportedArgumentType(BaseAPIException):
+    status_code = WS_DATA_CANNOT_ACCEPT
     default_detail = u"Check your arguments on supported types."
 
 

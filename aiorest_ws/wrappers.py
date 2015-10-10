@@ -4,14 +4,19 @@
 """
 __all__ = ('Request', 'Response', )
 
+from aiorest_ws.utils.modify import add_property
+
 
 class Request(object):
 
     def __init__(self, *args, **kwargs):
         super(Request, self).__init__()
-        self._method = kwargs.get('method', None)
-        self._url = kwargs.get('url', None)
-        self._args = kwargs.get('args', {})
+        self._method = kwargs.pop('method', None)
+        self._url = kwargs.pop('url', None)
+        self._args = kwargs.pop('args', {})
+
+        for key in kwargs.keys():
+            add_property(self, key, kwargs[key])
 
     @property
     def method(self):
@@ -51,10 +56,10 @@ class Response(object):
 
     @content.setter
     def content(self, value):
-        if type(value) is dict and 'details' in value.keys():
-            self._content = value
-        else:
-            self._content['data'] = value
+        self._content['data'] = value
+
+    def wrap_exception(self, exception):
+        self._content = {'detail': exception.detail}
 
     def append_request(self, request):
         self._content.update({'request': request.to_representation()})

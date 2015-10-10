@@ -14,14 +14,14 @@
 __all__ = ('SimpleRouter', )
 
 
-from .abstract import AbstractEndpoint, AbstractRouter
-from .exceptions import BaseAPIException, EndpointValueError, \
+from aiorest_ws.abstract import AbstractEndpoint, AbstractRouter
+from aiorest_ws.exceptions import BaseAPIException, EndpointValueError, \
     NotSpecifiedHandler, NotSpecifiedURL
-from .log import logger
-from .serializers import JSONSerializer
-from .parsers import URLParser
-from .validators import RouteArgumentsValidator
-from .wrappers import Response
+from aiorest_ws.log import logger
+from aiorest_ws.serializers import JSONSerializer
+from aiorest_ws.parsers import URLParser
+from aiorest_ws.validators import RouteArgumentsValidator
+from aiorest_ws.wrappers import Response
 
 
 class SimpleRouter(AbstractRouter):
@@ -41,7 +41,7 @@ class SimpleRouter(AbstractRouter):
         """
         path = path.strip()
         if not path.endswith('/'):
-            path = path + '/'
+            path += '/'
         return path
 
     def register(self, path, handler, methods, name=None):
@@ -114,11 +114,12 @@ class SimpleRouter(AbstractRouter):
             url = self.extract_url(request)
             handler, args, kwargs = self.search_handler(request, url)
 
-            for middleware in self.middlewares:
-                request = middleware.process_request(request)
-
             # invoke handler for request
             if handler:
+
+                for middleware in self.middlewares:
+                    middleware.process_request(request, handler)
+
                 # search serializer for response
                 format = request.get_argument('format')
                 serializer = handler.get_serializer(format, *args, **kwargs)
@@ -129,7 +130,7 @@ class SimpleRouter(AbstractRouter):
                 raise NotSpecifiedHandler()
         except BaseAPIException as exc:
             logger.exception(exc)
-            response.content = {'details': exc.detail}
+            response.wrap_exception(exc)
             serializer = JSONSerializer()
 
         return serializer.serialize(response.content)

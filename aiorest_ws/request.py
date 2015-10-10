@@ -11,10 +11,10 @@ from base64 import b64encode, b64decode
 from autobahn.asyncio.websocket import WebSocketServerProtocol, \
     WebSocketServerFactory
 
-from .abstract import AbstractRouter
-from .routers import SimpleRouter
-from .validators import check_and_set_subclass
-from .wrappers import Request
+from aiorest_ws.abstract import AbstractRouter
+from aiorest_ws.routers import SimpleRouter
+from aiorest_ws.validators import check_and_set_subclass
+from aiorest_ws.wrappers import Request
 
 
 class RequestHandlerProtocol(WebSocketServerProtocol):
@@ -63,7 +63,7 @@ class RequestHandlerFactory(WebSocketServerFactory):
     """
     def __init__(self, *args, **kwargs):
         super(RequestHandlerFactory, self).__init__(*args, **kwargs)
-        self._router = kwargs.get('router', SimpleRouter())
+        self._router = kwargs.get('router', SimpleRouter(*args, **kwargs))
 
     @property
     def router(self):

@@ -6,13 +6,12 @@ __all__ = ('Application', )
 
 import asyncio
 import ssl
-
 from time import gmtime, strftime
 
-from .__init__ import __version__
-from .request import RequestHandlerFactory, RequestHandlerProtocol
-from .validators import check_and_set_subclass
-from .utils.websocket import deflate_offer_accept as accept
+from aiorest_ws.__init__ import __version__
+from aiorest_ws.request import RequestHandlerFactory, RequestHandlerProtocol
+from aiorest_ws.validators import check_and_set_subclass
+from aiorest_ws.utils.websocket import deflate_offer_accept as accept
 
 
 class Application(object):
@@ -22,6 +21,7 @@ class Application(object):
     _protocol = RequestHandlerProtocol
     _certificate = None
     _key = None
+    _middlewares = []
 
     def __init__(self, *args, **options):
         """Initialization of Application instance."""
@@ -30,6 +30,10 @@ class Application(object):
         self.protocol = options.get('protocol')
         self.certificate = options.get('certificate')
         self.key = options.get('key')
+
+        middleware_classes = options.get('middlewares', ())
+        for middleware in middleware_classes:
+            self._middlewares.append(middleware())
 
     @property
     def factory(self):
@@ -40,6 +44,10 @@ class Application(object):
         if factory:
             check_and_set_subclass(self, '_factory', factory,
                                    RequestHandlerFactory)
+
+    @property
+    def middlewares(self):
+        return self._middlewares
 
     @property
     def protocol(self):
@@ -114,6 +122,7 @@ class Application(object):
 
         if router:
             factory.router = router
+            factory.router._middlewares = self.middlewares
 
     def _allow_hixie76(self, factory):
         """Allow using hixie-76 if supported.

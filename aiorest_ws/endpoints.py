@@ -4,7 +4,7 @@
 """
 __all__ = ('PlainEndpoint', 'DynamicEndpoint', )
 
-from .abstract import AbstractEndpoint
+from aiorest_ws.abstract import AbstractEndpoint
 
 
 class PlainEndpoint(AbstractEndpoint):
