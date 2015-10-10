@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import os
 import re
 import ast
@@ -9,7 +10,7 @@ with open('aiorest_ws/__init__.py', 'rb') as f:
     version = str(ast.literal_eval(_version_re.search(
         f.read().decode('utf-8')).group(1)))
 
-requirements = ['autobahn==0.10.4', ]
+requirements = ['autobahn>=0.10.0', ]
 test_requirements = requirements + ['pytest', 'pytest-asyncio',
                                     'pytest-cov', 'pytest-xdist']
 
@@ -33,7 +34,7 @@ args = dict(
     install_requires=requirements,
     tests_require=test_requirements,
     classifiers=[
-        'License :: OSI Approved :: MIT License',
+        'License :: OSI Approved :: BSD License',
         'Intended Audience :: Developers',
         'Programming Language :: Python',
         'Programming Language :: Python :: 3',
