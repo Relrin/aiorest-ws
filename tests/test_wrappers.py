@@ -1,10 +1,16 @@
 # -*- coding: utf-8 -*-
 import unittest
 
+from aiorest_ws.exceptions import BaseAPIException
 from aiorest_ws.wrappers import Request, Response
 
 
 class RequestTestCase(unittest.TestCase):
+
+    def test_init_with_patching(self):
+        data = {'token': 'base64token'}
+        request = Request(**data)
+        self.assertEqual(request.token, 'base64token')
 
     def test_method_property(self):
         data = {}
@@ -120,8 +126,8 @@ class ResponseTestCase(unittest.TestCase):
 
     def test_content_setter_2(self):
         response = Response()
-        response.content = data = {'details': 'some error'}
-        self.assertEqual(response._content, data)
+        response.content = data = {'detail': 'my description'}
+        self.assertEqual(response._content['data'], data)
 
     def test_content_setter_3(self):
         response = Response()
@@ -132,6 +138,13 @@ class ResponseTestCase(unittest.TestCase):
         response = Response()
         response.content = data = [1, 2, 3, 4, 5]
         self.assertEqual(response._content['data'], data)
+
+    def test_wrap_exception(self):
+        exception = BaseAPIException()
+        response = Response()
+        response.wrap_exception(exception)
+        self.assertIn('detail', response._content)
+        self.assertEqual(response._content['detail'], exception.detail)
 
     def test_append_request(self):
         data = {'url': '/api', 'method': 'GET'}

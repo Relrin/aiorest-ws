@@ -140,9 +140,9 @@ class RestWSRouterTestCase(unittest.TestCase):
         request = Request(**decoded_json)
         response = self.router.process_request(request).decode('utf-8')
         json_response = json.loads(response)
-        self.assertIn('details', json_response.keys())
+        self.assertIn('detail', json_response.keys())
         self.assertEqual(
-            json_response['details'],
+            json_response['detail'],
             "For URL, typed in request, handler not specified."
         )
         self.assertNotIn('request', json_response.keys())
@@ -156,16 +156,16 @@ class RestWSRouterTestCase(unittest.TestCase):
         request = Request(**decoded_json)
         response = self.router.process_request(request).decode('utf-8')
         json_response = json.loads(response)
-        self.assertIn('details', json_response.keys())
+        self.assertIn('detail', json_response.keys())
         self.assertEqual(
-            json_response['details'],
+            json_response['detail'],
             "In query not specified `url` argument."
         )
         self.assertNotIn('request', json_response.keys())
 
     @unittest.mock.patch('aiorest_ws.log.logger.info')
     def test_process_request_with_middleware(self, m_logger_info):
-        self.router.middlewares = [FakeTokenMiddleware(), ]
+        self.router._middlewares = [FakeTokenMiddleware(), ]
         self.router.register('/api/get/', FakeGetView, 'GET')
 
         decoded_json = {'method': 'GET', 'url': '/api/get/'}
@@ -182,14 +182,14 @@ class RestWSRouterTestCase(unittest.TestCase):
     @unittest.mock.patch('aiorest_ws.log.logger.info')
     @unittest.mock.patch('aiorest_ws.log.logger.exception')
     def test_process_request_with_middleware_2(self, m_log_info, m_log_exc):
-        self.router.middlewares = [FakeTokenMiddlewareWithExc(), ]
+        self.router._middlewares = [FakeTokenMiddlewareWithExc(), ]
         self.router.register('/api/get/', FakeGetView, 'GET')
 
         decoded_json = {'method': 'GET', 'url': '/api/get/'}
         request = Request(**decoded_json)
         response = self.router.process_request(request).decode('utf-8')
         json_response = json.loads(response)
-        self.assertIn('details', json_response.keys())
+        self.assertIn('detail', json_response.keys())
         self.assertNotIn('data', json_response.keys())
 
     @unittest.mock.patch('aiorest_ws.log.logger.info')
