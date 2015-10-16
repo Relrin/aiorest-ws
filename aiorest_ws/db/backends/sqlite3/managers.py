@@ -37,7 +37,8 @@ class SQLiteManager(object):
         """
         with open(filepath, 'r') as f:
             sql = f.read()
-            self.connection.executescript(sql)
+            result = self.connection.executescript(sql)
+        return result
 
     def execute_script(self, sql):
-        self.connection.executescript(sql)
+        return self.connection.executescript(sql)

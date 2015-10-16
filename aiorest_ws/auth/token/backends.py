@@ -20,7 +20,7 @@ class InMemoryTokenBackend(BaseStorageBackend):
     def __init__(self):
         super(InMemoryTokenBackend, self).__init__()
         self.db_manager = settings.DATABASES['default']['manager'] or \
-            SQLiteManager(IN_MEMORY)
+            SQLiteManager(name=IN_MEMORY)
         self.__create_models()
 
     def __create_models(self):
