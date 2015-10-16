@@ -16,7 +16,6 @@ from aiorest_ws.utils.modify import add_property
 
 class BaseTokenMiddleware(AbstractMiddleware):
     """Base token middleware class."""
-    storage_backend = InMemoryTokenBackend
 
     def init_credentials(self, request):
         """Getting credentials (user, keys, tokens) from database/cache/etc.
@@ -45,6 +44,7 @@ class BaseTokenMiddleware(AbstractMiddleware):
 
 class JSONWebTokenMiddleware(BaseTokenMiddleware):
     """The JSON Web Token middleware class."""
+    storage_backend = InMemoryTokenBackend
     manager = JSONWebTokenManager
     user_model = UserSQLiteModel
 

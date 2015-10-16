@@ -7,6 +7,8 @@ from aiorest_ws.routers import SimpleRouter
 from aiorest_ws.request import RequestHandlerFactory, RequestHandlerProtocol
 from aiorest_ws.utils.websocket import deflate_offer_accept as accept
 
+from tests.fixtures.fakes import FakeTokenMiddleware
+
 
 class ApplicationTestCase(unittest.TestCase):
 
@@ -24,6 +26,14 @@ class ApplicationTestCase(unittest.TestCase):
     def test_factory_setter_2(self):
         with self.assertRaises(TypeError):
             self.app.factory = u'NotFactory'
+
+    def test_middleware_getter_1(self):
+        self.assertEqual(self.app.middlewares, [])
+
+    def test_middleware_getter_2(self):
+        self.app = Application(middlewares=(FakeTokenMiddleware, ))
+        self.assertEqual(len(self.app.middlewares), 1)
+        self.assertIsInstance(self.app.middlewares[0], FakeTokenMiddleware)
 
     def test_protocol_getter(self):
         self.assertEqual(self.app.protocol, self.app._protocol)
