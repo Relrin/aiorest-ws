@@ -18,7 +18,7 @@ class RegisterUser(MethodBasedView):
     def post(self, request, *args, **kwargs):
         user = self.user_manager.get_user_by_username(request.args['username'])
         # only anonymous doesn't have username
-        if user.id:
+        if user.is_authenticated:
             message = "User already created."
         else:
             self.user_manager.create_user(**request.args)
@@ -57,7 +57,7 @@ class LogIn(MethodBasedView):
         user = self.user_manager.get_user_by_username(
             request.args['username'], with_id=True
         )
-        if user.id:
+        if user.is_authenticated:
             api_token = self.get_or_create_token(user, *args, **kwargs)
         else:
             api_token = None
