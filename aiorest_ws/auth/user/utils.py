@@ -3,7 +3,7 @@
     Functions and constants, which can be used for work with User models.
 """
 from aiorest_ws.db.utils import convert_db_row_to_dict
-
+from hashlib import sha256
 
 SQL_CREATE_USER_TABLE = """
     CREATE TABLE IF NOT EXISTS aiorest_auth_user
@@ -82,3 +82,7 @@ def convert_user_raw_data_to_dict(user_raw_data, with_id=False):
     for field in bool_fields:
         user_data[field] = bool(user_data[field])
     return user_data
+
+
+def generate_password_hash(password):
+    return sha256(password.encode('utf-8')).hexdigest()
