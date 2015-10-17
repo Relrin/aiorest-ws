@@ -6,7 +6,8 @@ __all__ = ('UserSQLiteModel', )
 
 from sqlite3 import OperationalError
 
-from aiorest_ws.auth.user.abstractions import User, generate_password_hash
+from aiorest_ws.auth.user.abstractions import User
+from auth.user.utils import generate_password_hash
 from aiorest_ws.auth.user.exceptions import RequiredModelFieldsNotDefined, \
     SearchCriteriaRequired, NotEnoughArguments
 from aiorest_ws.auth.user.utils import SQL_CREATE_USER_TABLE, \

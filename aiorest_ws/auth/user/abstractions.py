@@ -2,13 +2,9 @@
 """
     User abstractions for authentication.
 """
-__all__ = ('AbstractUser', 'User', 'generate_password_hash')
+__all__ = ('AbstractUser', 'User')
 
-from hashlib import sha256
-
-
-def generate_password_hash(password):
-    return sha256(password.encode('utf-8')).hexdigest()
+from aiorest_ws.auth.user.utils import generate_password_hash
 
 
 class AbstractUser(object):
@@ -57,6 +53,7 @@ class AbstractUser(object):
     def is_anonymous(self):
         return self._is_anonymous
 
+    @property
     def is_authenticated(self):
         if self.is_anonymous:
             return False
@@ -108,8 +105,6 @@ class User(AbstractUser):
 
     @permissions.setter
     def permissions(self, permissions):
-        if type(permissions) is not list:
-            permissions = [permissions, ]
         self._permissions = permissions
 
     def check_password(self, password):
