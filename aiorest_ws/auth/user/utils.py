@@ -64,8 +64,12 @@ def construct_update_sql(**parameters):
     query_args = []
     update_field_template = "{}=? "
     updated_fields = ''
-    for field, value in parameters.items():
+    for index, (field, value) in enumerate(parameters.items()):
         updated_fields += update_field_template.format(field)
+
+        if index < len(parameters) - 1:
+            updated_fields += " ,"
+
         query_args.append(value)
     sql = SQL_USER_UPDATE.format(updated_fields)
     return sql, query_args

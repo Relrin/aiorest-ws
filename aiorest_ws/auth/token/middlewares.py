@@ -90,7 +90,7 @@ class JSONWebTokenMiddleware(BaseTokenMiddleware):
         attribute to `True` value.
 
         :param request: instance of Request class.
-        :param handler: view, invoked later for the request.
+        :param view: view, invoked later for the request.
         """
         auth_required = getattr(view, 'auth_required', False)
         permission_classes = getattr(view, 'permission_classes', ())

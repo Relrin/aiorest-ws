@@ -4,11 +4,11 @@
 """
 __all__ = ('JSONWebTokenManager', )
 
+import hashlib
+import hmac
 import json
 import time
 
-import hashlib
-import hmac
 from base64 import b64encode, b64decode
 from aiorest_ws.auth.token.exceptions import ParsingTokenException, \
     InvalidSignatureException, TokenNotBeforeException, TokenExpiredException
@@ -66,29 +66,25 @@ class JSONWebTokenManager(object):
             return time.time() > float(token_timestamp)
         return False
 
-    def _is_valid_signature(self, header, payload, token_signature):
+    def _is_invalid_signature(self, header, payload, token_signature):
         server_signature = self._generate_signature(header, payload)
         if token_signature != server_signature:
-            return False
-        return True
+            return True
+        return False
 
     def _is_not_be_accepted(self, token):
-        if self._check_token_timestamp(token, 'nbf'):
-            return True
-        return False
+        return self._check_token_timestamp(token, 'nbf')
 
     def _is_expired_token(self, token):
-        if self._check_token_timestamp(token, 'exp'):
-            return True
-        return False
+        return self._check_token_timestamp(token, 'exp')
 
     def set_reserved_attribute(self, token, attribute, value):
         if attribute in self.RESERVED_NAMES and value:
-            # if user define "exp" argument, than necessary calculate timestamp
-            if attribute == 'exp':
+            # if user define "exp" or "nbf" argument, than calculate timestamp
+            if attribute in ['exp', 'nbf']:
                 current_time_in_seconds = int(time.time())
                 expired_timestamp = current_time_in_seconds + value
-                token.update({'exp': expired_timestamp})
+                token.update({attribute: expired_timestamp})
             # for any other JSON Web Token attributes just set value
             else:
                 token[attribute] = value
@@ -110,7 +106,7 @@ class JSONWebTokenManager(object):
         except:
             raise ParsingTokenException()
 
-        if not self._is_valid_signature(header, payload, signature):
+        if self._is_invalid_signature(header, payload, signature):
             raise InvalidSignatureException()
 
         token_data = self._decode_data(payload)

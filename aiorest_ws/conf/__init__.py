@@ -50,7 +50,15 @@ class Settings(object):
 
             managers_module = importlib.import_module(backend + '.managers')
             manager_cls = db_settings.get('manager') or 'SQLiteManager'
-            manager_instance = getattr(managers_module, manager_cls)(**kwargs)
+            # user defined manager_cls as string means that necessary to
+            # extract class and create one instance of this
+            if type(manager_cls) is str:
+                manager_instance = getattr(
+                    managers_module, manager_cls
+                )(**kwargs)
+            # in any other cases in can be already instantiated manager
+            else:
+                manager_instance = manager_cls
             db_settings['manager'] = manager_instance
 
 
