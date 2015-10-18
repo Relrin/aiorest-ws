@@ -23,7 +23,7 @@ class SettingsTestCase(unittest.TestCase):
 
     def test_setup_manager(self):
         os.environ.setdefault(
-            ENVIRONMENT_VARIABLE, "tests.conf.example_settings"
+            ENVIRONMENT_VARIABLE, "tests.fixtures.example_settings"
         )
         settings = Settings()
 
