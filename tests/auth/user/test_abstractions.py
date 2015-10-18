@@ -188,7 +188,7 @@ class AbstractUserTestCase(unittest.TestCase):
             'is_superuser': True
         }
         user = AbstractUser(**user_data)
-        self.assertTrue(user.is_authenticated)
+        self.assertTrue(user.is_authenticated())
 
     def test_is_authenticated_2(self):
         user_data = {
@@ -197,7 +197,7 @@ class AbstractUserTestCase(unittest.TestCase):
             'is_staff': True
         }
         user = AbstractUser(**user_data)
-        self.assertTrue(user.is_authenticated)
+        self.assertTrue(user.is_authenticated())
 
     def test_is_authenticated_3(self):
         user_data = {
@@ -206,7 +206,7 @@ class AbstractUserTestCase(unittest.TestCase):
             'is_user': True
         }
         user = AbstractUser(**user_data)
-        self.assertTrue(user.is_authenticated)
+        self.assertTrue(user.is_authenticated())
 
     def test_is_authenticated_4(self):
         user_data = {
@@ -214,7 +214,7 @@ class AbstractUserTestCase(unittest.TestCase):
             'last_name': 'user',
         }
         user = AbstractUser(**user_data)
-        self.assertFalse(user.is_authenticated)
+        self.assertFalse(user.is_authenticated())
 
 
 class UserTestCase(unittest.TestCase):
