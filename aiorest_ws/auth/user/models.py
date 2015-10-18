@@ -7,7 +7,7 @@ __all__ = ('UserSQLiteModel', )
 from sqlite3 import OperationalError
 
 from aiorest_ws.auth.user.abstractions import User
-from auth.user.utils import generate_password_hash
+from aiorest_ws.auth.user.utils import generate_password_hash
 from aiorest_ws.auth.user.exceptions import RequiredModelFieldsNotDefined, \
     SearchCriteriaRequired, NotEnoughArguments
 from aiorest_ws.auth.user.utils import SQL_CREATE_USER_TABLE, \
@@ -26,14 +26,12 @@ class UserSQLiteModel(User):
 
     def __init__(self):
         super(UserSQLiteModel, self).__init__()
-        db_path = settings.DATABASES['default']['name'] or IN_MEMORY
-        db_manager = settings.DATABASES['default']['manager'] or None
-
-        if db_manager:
-            self.db_path = None
-            self.db_manager = db_manager
+        if settings.DATABASES:
+            db_path = settings.DATABASES['default']['name']
+            self.db_manager = settings.DATABASES['default']['manager']
         else:
-            self.db_manager = self.db_manager(db_path)
+            db_path = IN_MEMORY
+            self.db_manager = self.db_manager(name=db_path)
 
         if db_path == IN_MEMORY:
             self.__create_models()
@@ -92,7 +90,7 @@ class UserSQLiteModel(User):
             logger.error(exc)
 
     def update_user(self, *args, **kwargs):
-        username = kwargs.pop('username')
+        username = kwargs.pop('username', None)
         if not username:
             raise SearchCriteriaRequired(
                 "Username for WHEN statement is required."
@@ -137,7 +135,10 @@ class UserSQLiteModel(User):
             user_row = self.db_manager.execute_sql(
                 SQL_USER_GET, (user_id, )
             ).fetchone()
-            user_data = convert_user_raw_data_to_dict(user_row)
+            if user_row:
+                user_data = convert_user_raw_data_to_dict(user_row)
+            else:
+                user_data = {}
         except OperationalError as exc:
             logger.error(exc)
             user_data = {}

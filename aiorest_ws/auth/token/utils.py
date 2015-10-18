@@ -23,7 +23,7 @@ SQL_TOKEN_GET_BY_TOKEN_USERNAME = """
     FROM aiorest_auth_token
     INNER JOIN aiorest_auth_user
     ON aiorest_auth_token.user_id=aiorest_auth_user.id
-    WHERE token=? AND username=?;
+    WHERE name=? AND username=?;
 """
 SQL_TOKEN_ADD = """
     INSERT INTO aiorest_auth_token (`name`, `token`, `expired`, `user_id`)

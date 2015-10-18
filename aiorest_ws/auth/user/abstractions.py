@@ -53,7 +53,6 @@ class AbstractUser(object):
     def is_anonymous(self):
         return self._is_anonymous
 
-    @property
     def is_authenticated(self):
         if self.is_anonymous:
             return False
