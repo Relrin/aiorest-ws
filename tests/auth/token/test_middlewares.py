@@ -7,11 +7,13 @@ from aiorest_ws.auth.token.exceptions import TokenNotProvidedException
 from aiorest_ws.auth.token.middlewares import BaseTokenMiddleware, \
     JSONWebTokenMiddleware
 from aiorest_ws.auth.user.abstractions import User
+from aiorest_ws.conf import settings
 from aiorest_ws.views import MethodBasedView
 from aiorest_ws.wrappers import Request
 from aiorest_ws.utils.modify import add_property
 
 from tests.fixtures.fakes import FakeGetView
+from tests.fixtures.example_settings import DATABASES
 
 
 class BaseTokenMiddlewareTestCase(unittest.TestCase):
@@ -39,6 +41,8 @@ class JSONWebTokenMiddlewareTestCase(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
+        settings.DATABASES = DATABASES
+        settings._create_database_managers()
         cls.middleware = JSONWebTokenMiddleware()
 
     def _create_simple_user(self, user_model, **kwargs):
