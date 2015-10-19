@@ -29,7 +29,7 @@ class RequestHandlerProtocol(WebSocketServerProtocol):
         :param isBinary: boolean value, means that received data had a binary
                          format.
         """
-        # message in base64
+        # message was taken in base64
         if isBinary:
             payload = b64decode(payload)
         input_data = json.loads(payload.decode('utf-8'))
@@ -49,6 +49,12 @@ class RequestHandlerProtocol(WebSocketServerProtocol):
 
     @asyncio.coroutine
     def onMessage(self, payload, isBinary):
+        """Handler, called for every message which was sent from the some user.
+
+        :param payload: input message.
+        :param isBinary: boolean value, means that received data had a binary
+                         format.
+        """
         request = self._decode_message(payload, isBinary)
         response = self.factory.router.process_request(request)
         out_payload = self._encode_message(response, isBinary)
@@ -67,9 +73,14 @@ class RequestHandlerFactory(WebSocketServerFactory):
 
     @property
     def router(self):
+        """Get router instance."""
         return self._router
 
     @router.setter
     def router(self, router):
+        """Set router instance.
+
+        :param router: instance of class, which derived from AbstractRouter.
+        """
         if router:
             check_and_set_subclass(self, '_router', router, AbstractRouter)

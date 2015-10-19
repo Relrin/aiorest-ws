@@ -61,6 +61,11 @@ USER_MODEL_FIELDS_WITHOUT_PK = (
 
 
 def construct_update_sql(**parameters):
+    """Create update SQL query for SQLite based on the data, provided by
+    the user.
+
+    :param parameters: dictionary, where key is updated field of user model.
+    """
     query_args = []
     update_field_template = "{}=? "
     updated_fields = ''
@@ -76,6 +81,12 @@ def construct_update_sql(**parameters):
 
 
 def convert_user_raw_data_to_dict(user_raw_data, with_id=False):
+    """Convert database row to the dictionary object.
+
+    :param user_raw_data: database row.
+    :param with_id: boolean flag, which means necessity to append to the result
+                    dictionary primary key of database row or not.
+    """
     if with_id:
         fields_tuple = USER_MODEL_FIELDS
     else:
@@ -89,4 +100,8 @@ def convert_user_raw_data_to_dict(user_raw_data, with_id=False):
 
 
 def generate_password_hash(password):
+    """Generate SHA256 hash for password.
+
+    :param password: password as a string.
+    """
     return sha256(password.encode('utf-8')).hexdigest()

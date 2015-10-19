@@ -11,6 +11,7 @@ from abc import ABCMeta, abstractmethod
 
 
 class AbstractEndpoint(metaclass=ABCMeta):
+    """Base class for endpoints."""
 
     path = None     # URL, used for get access to API
     handler = None  # class/function for processing request
@@ -36,14 +37,15 @@ class AbstractEndpoint(metaclass=ABCMeta):
 
 
 class AbstractRouter(metaclass=ABCMeta):
-
-    _middlewares = ()
+    """Base class for routers."""
+    _middlewares = []
 
     def __init__(self, *args, **kwargs):
         pass
 
     @property
     def middlewares(self):
+        """Get list of used middlewares."""
         return self._middlewares
 
     @abstractmethod
@@ -56,7 +58,7 @@ class AbstractRouter(metaclass=ABCMeta):
 
 
 class AbstractMiddleware(metaclass=ABCMeta):
-
+    """Base class for middlewares."""
     @abstractmethod
     def process_request(self, request, handler):
         """Processing request before calling handler.
@@ -68,7 +70,7 @@ class AbstractMiddleware(metaclass=ABCMeta):
 
 
 class AbstractPermission(metaclass=ABCMeta):
-
+    """Base class for permissions."""
     @staticmethod
     def check(request, handler):
         """Check permission method.

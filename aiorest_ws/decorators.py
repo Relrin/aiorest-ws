@@ -11,10 +11,10 @@ from aiorest_ws.views import MethodBasedView
 def endpoint(path, methods, name=None, **attrs):
     """Decorator function, which turn handler into MethodBasedView class.
 
-    :param path: URL, used for get access to APIs
-    :param methods: acceptable method name or list of methods
-    :param name: short name of endpoint
-    :param attrs: any other attributes, which must be initialized
+    :param path: URL, used for get access to APIs.
+    :param methods: acceptable method name or list of methods.
+    :param name: short name of endpoint.
+    :param attrs: any other attributes, which must be initialized.
     """
     def endpoint_decorator(func):
         def wrapper():
