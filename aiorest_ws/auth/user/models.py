@@ -21,7 +21,7 @@ from aiorest_ws.log import logger
 
 
 class UserSQLiteModel(User):
-
+    """SQLite user model."""
     db_manager = SQLiteManager
 
     def __init__(self):
@@ -37,6 +37,7 @@ class UserSQLiteModel(User):
             self.__create_models()
 
     def __create_models(self):
+        """Create user model and append foreign key into token table."""
         try:
             self.db_manager.execute_script(SQL_CREATE_USER_TABLE)
             self.db_manager.execute_script(SQL_CREATE_TOKEN_FOREIGN_KEY)
@@ -47,6 +48,10 @@ class UserSQLiteModel(User):
             pass
 
     def __user_defined_fields(self, init_data):
+        """Define fields in which changed data by the user.
+
+        :param init_data: data, taken from the user.
+        """
         overridden_fields = set(self.fields) & set(init_data.keys())
         user_defined_fields = {
             key: value
@@ -57,13 +62,20 @@ class UserSQLiteModel(User):
 
     @property
     def fields(self):
+        """Get list of fields with primary key."""
         return USER_MODEL_FIELDS
 
     @property
     def fields_without_pk(self):
+        """Get list of fields without primary key."""
         return USER_MODEL_FIELDS_WITHOUT_PK
 
     def create_user(self, *args, **kwargs):
+        """Create user in the database.
+
+        :param args: tuple of arguments.
+        :param kwargs: dictionary, where key is filled field of user model.
+        """
         if 'username' not in kwargs or 'password' not in kwargs:
             raise RequiredModelFieldsNotDefined(
                 "Username and password fields are required"
@@ -90,6 +102,11 @@ class UserSQLiteModel(User):
             logger.error(exc)
 
     def update_user(self, *args, **kwargs):
+        """Update user row in the database.
+
+        :param args: tuple of arguments.
+        :param kwargs: dictionary, where key is updated field of user model.
+        """
         username = kwargs.pop('username', None)
         if not username:
             raise SearchCriteriaRequired(
@@ -111,6 +128,12 @@ class UserSQLiteModel(User):
             logger.error(exc)
 
     def get_user_by_username(self, username, with_id=False):
+        """Get user by his username from the database.
+
+        :param username: username as a string.
+        :param with_id: boolean flag, which means necessity to append to the
+                        result object primary key of database row or not.
+        """
         try:
             if with_id:
                 sql = SQL_USER_GET_WITH_ID
@@ -130,6 +153,10 @@ class UserSQLiteModel(User):
         return User(**user_data)
 
     def get_user_by_token(self, token):
+        """Get user object from the database, based on the his token.
+
+        :param token: passed token as a dictionary object.
+        """
         user_id = token['user_id']
         try:
             user_row = self.db_manager.execute_sql(

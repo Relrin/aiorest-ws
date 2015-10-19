@@ -1,18 +1,6 @@
 # -*- coding: utf-8 -*-
 """
     Custom functions and classes, which help working with the command line.
-
-    Example:
-
-        from server import run_server
-        from command_line import CommandLine
-
-        cmd = CommandLine()
-        cmd.define('-ip', default='127.0.0.1', help='used ip', type=str)
-        cmd.define('-port', default=8080, help='listened port', type=int)
-        args = cmd.parse_command_line()
-
-        run_server(ip=args.ip, port=args.port)
 """
 __all__ = ('CommandLine', )
 

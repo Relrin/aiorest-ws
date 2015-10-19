@@ -37,6 +37,10 @@ class EndpointNameValidator(BaseValidator):
                                                u'be string type')
 
     def validate(self, name):
+        """Validate passed name variable.
+
+        :param name: the base to use for the URL names that are created.
+        """
         self._check_name(name)
 
 
@@ -55,6 +59,10 @@ class HandlerValidator(BaseValidator):
             raise InvalidHandler()
 
     def validate(self, handler):
+        """Validate passed handler for requests.
+
+        :param handler: class or function, used for generating response.
+        """
         self._check_handler(handler)
 
 
@@ -72,6 +80,10 @@ class MethodValidator(BaseValidator):
                                            ' be `list` or `str` type.')
 
     def validate(self, methods):
+        """Validate passed methods variable.
+
+        :param methods: list of methods or string with concrete method name.
+        """
         self._check_methods(methods)
 
 
@@ -87,6 +99,10 @@ class PathValidator(BaseValidator):
                                       u"symbol")
 
     def validate(self, path):
+        """Validate passed path for endpoint.
+
+        :param path: path to endpoint (string)
+        """
         self._check_path(path)
 
 

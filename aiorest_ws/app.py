@@ -37,46 +37,68 @@ class Application(object):
 
     @property
     def factory(self):
+        """Get factory class."""
         return self._factory
 
     @factory.setter
     def factory(self, factory):
+        """Set factory class.
+
+        :param factory: subclass of RequestHandlerFactory.
+        """
         if factory:
             check_and_set_subclass(self, '_factory', factory,
                                    RequestHandlerFactory)
 
     @property
     def middlewares(self):
+        """Get list of used middlewares."""
         return self._middlewares
 
     @property
     def protocol(self):
+        """Get protocol class."""
         return self._protocol
 
     @protocol.setter
     def protocol(self, protocol):
+        """Set protocol class.
+
+        :param factory: subclass of RequestHandlerProtocol.
+        """
         if protocol:
             check_and_set_subclass(self, '_protocol', protocol,
                                    RequestHandlerProtocol)
 
     @property
     def certificate(self):
+        """Get filepath to certificate."""
         return self._certificate
 
     @certificate.setter
     def certificate(self, certificate):
+        """Setter for certificate.
+
+        :param certificate: path to certificate file.
+        """
         self._certificate = certificate
 
     @property
     def key(self):
+        """Get private key for certificate."""
         return self._key
 
     @key.setter
     def key(self, key):
+        """Set private key for certificate.
+
+        :param key: private key for certificate.
+        """
         self._key = key
 
     @property
     def url(self):
+        """Get url to WebSocket REST API."""
         if self.isSecure:
             url = "wss://{0}:{1}/{2}"
         else:

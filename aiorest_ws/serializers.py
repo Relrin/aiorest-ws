@@ -49,7 +49,7 @@ class JSONSerializer(BaseSerializer):
                 data, ensure_ascii=self.ensure_ascii, separators=separators
             )
 
-            # Unicode symbols \u2028 and \u2029 are invisible in JSON and
+            # unicode symbols \u2028 and \u2029 are invisible in JSON and
             # make output are invalid. To avoid this situations, necessary
             # replace this symbols.
             # for more information read this article: http://goo.gl/ImC89E

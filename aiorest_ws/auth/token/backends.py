@@ -42,7 +42,7 @@ class InMemoryTokenBackend(BaseStorageBackend):
         return token_object
 
     def get_token_by_username(self, token_name, username):
-        """Get token from the storage by token_name and username
+        """Get token from the storage by token_name and username.
 
         :param token: token as string.
         """

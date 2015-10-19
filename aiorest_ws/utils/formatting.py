@@ -1,4 +1,4 @@
-# -*- coding: utf -*-
+# -*- coding: utf-8 -*-
 
 # JSON serializer options
 SHORT_SEPARATORS = (',', ':')

@@ -27,6 +27,10 @@ class SimpleXMLGenerator(XMLGenerator):
         self.endDocument()
 
     def to_str(self, value):
+        """Encode value for the string.
+
+        :param value: value, which will have converted to the string.
+        """
         return str(value).encode(self._encoding)
 
     def to_xml(self, xml, data):
