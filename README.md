@@ -33,7 +33,7 @@ v1.0:
 - [x] Views (function and method-based)
 - [x] Authentication
 - [x] Settings file for overriding behavior of serializers, routers, etc
-- [ ] Documentation over all code (~70-80% done)
+- [x] Documentation over all code
 
 v1.1:
 - Compatible with Django and SQLAlchemy ORMs
