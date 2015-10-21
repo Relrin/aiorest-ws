@@ -21,20 +21,16 @@ License
 -----
 The aiorest-ws published under BSD license. For more details read [LICENSE](https://github.com/Relrin/aiorest-ws/blob/master/LICENSE) file.
 
+Documentation
+-----
+The latest documentation for the project is available [there](http://aiorest-ws.readthedocs.org/).
+
 Contributing
 -----
 Read [CONTRIBUTING](https://github.com/Relrin/aiorest-ws/blob/master/CONTRIBUTING.md) file for more information.
 
 Roadmap (by priority) to releases:
 -----
-v1.0:
-- [x] JSON/XML serializers
-- [x] Routing
-- [x] Views (function and method-based)
-- [x] Authentication
-- [x] Settings file for overriding behavior of serializers, routers, etc
-- [x] Documentation over all code
-
 v1.1:
 - Compatible with Django and SQLAlchemy ORMs
 - Filters support over querysets
