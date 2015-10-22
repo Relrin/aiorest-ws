@@ -42,10 +42,7 @@ class Request(object):
 
         :param name: name of extracted argument in dictionary.
         """
-        argument = None
-        if self.args:
-            argument = self.args.get(name, None)
-        return argument
+        return self.args.get(name, None) if self.args else None
 
 
 class Response(object):

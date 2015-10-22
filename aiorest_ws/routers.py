@@ -87,7 +87,9 @@ class SimpleRouter(AbstractRouter):
         args = ()
         kwargs = {}
         handler = None
+        # iterate over the all endpoints
         for route in self._urls:
+            # find match between endpoint and request URL
             match = route.match(url)
             if match is not None:
                 handler = route.handler()
@@ -145,13 +147,12 @@ class SimpleRouter(AbstractRouter):
                             u"AbstractEndpoint class.")
 
         name = route.name
-        if name is not None:
-            if name in self._routes.keys():
-                raise EndpointValueError(
-                    'Duplicate {}, already handled by {}'
-                    .format(name, self._routes[name]))
-            else:
-                self._routes[name] = route
+        if name and name in self._routes.keys():
+            raise EndpointValueError(
+                'Duplicate {}, already handled by {}'
+                .format(name, self._routes[name]))
+        else:
+            self._routes[route.name] = route
         self._urls.append(route)
 
     def include(self, router):

@@ -31,10 +31,9 @@ class EndpointNameValidator(BaseValidator):
 
         :param name: the base to use for the URL names that are created.
         """
-        if name:
-            if type(name) is not str:
-                raise NotSupportedArgumentType(u'name variable must '
-                                               u'be string type')
+        if name and type(name) is not str:
+            raise NotSupportedArgumentType(u'name variable must '
+                                           u'be string type')
 
     def validate(self, name):
         """Validate passed name variable.
@@ -49,7 +48,8 @@ class HandlerValidator(BaseValidator):
     def _check_handler(self, handler):
         """Validate passed handler for requests.
 
-        :param handler: class or function, used for generating response.
+        :param handler: class or function (wrapped into MethodBasedView),
+                        which used for generating response.
         """
         if inspect.isclass(handler):
             if not issubclass(handler, (MethodBasedView, )):
