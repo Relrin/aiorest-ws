@@ -53,7 +53,7 @@ class IncorrectMethodNameType(BaseAPIException):
 
 class InvalidHandler(BaseAPIException):
     default_detail = u"Received handler isn't correct. It shall be function" \
-                     u"or class, inherited from the MethodBasedView class."
+                     u" or class, inherited from the MethodBasedView class."
 
 
 class InvalidPathArgument(BaseAPIException):

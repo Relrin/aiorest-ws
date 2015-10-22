@@ -108,11 +108,7 @@ class Application(object):
     @property
     def isSecure(self):
         """Property, which help us to understand, use SSL or not."""
-        if self.certificate and self.key:
-            isSecure = True
-        else:
-            isSecure = False
-        return isSecure
+        return self.certificate and self.key
 
     def _get_ssl_context(self):
         """Generating SSL context for asyncio loop."""

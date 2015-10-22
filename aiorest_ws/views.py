@@ -37,8 +37,7 @@ class MethodViewMeta(type):
                 if key in http_methods:
                     methods.add(key.lower())
             # this action necessary for appending list of supported methods
-            if methods:
-                obj.methods = sorted(methods)
+            obj.methods = sorted(methods)
         return obj
 
 
@@ -83,17 +82,15 @@ class MethodBasedView(View, metaclass=MethodViewMeta):
             if type(self.serializers) not in (list, tuple):
                 raise InvalidSerializer()
 
-            serializer = None
+            # by default we are take first serializer from list/tuple
+            serializer = self.serializers[0]
+
             if preferred_format:
                 # try to find suitable serializer
                 for serializer_class in self.serializers:
                     if serializer_class.format == preferred_format:
                         serializer = serializer_class
                         break
-
-            # when can't find required serializer, use first of them
-            if not serializer:
-                serializer = self.serializers[0]
 
             return serializer()
         else:
