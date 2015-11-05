@@ -2,9 +2,9 @@
 """
     Permission classes for authentication.
 """
-__all__ = ('IsAuthenticated', )
-
 from aiorest_ws.abstract import AbstractPermission
+
+__all__ = ('IsAuthenticated', )
 
 
 class IsAuthenticated(AbstractPermission):

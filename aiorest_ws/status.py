@@ -13,7 +13,7 @@ __all__ = (
     'WS_SERVER_DIDNT_RETURN_EXTENSIONS', 'WS_UNEXPECTED_CONDITION',
     'WS_FAILURE_TLS',
 
-    'is_not_used', 'is_reserved', 'is_library', 'is_private'
+    'is_not_used', 'is_reserved', 'is_library', 'is_private',
 )
 
 

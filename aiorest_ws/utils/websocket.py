@@ -3,10 +3,10 @@
     This module contains classes and functions, used for configuration
     issues with websockets.
 """
-__all__ = ('deflate_offer_accept', )
-
 from autobahn.websocket.compress import PerMessageDeflateOffer, \
     PerMessageDeflateOfferAccept
+
+__all__ = ('deflate_offer_accept', )
 
 
 def deflate_offer_accept(offers):

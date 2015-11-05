@@ -2,12 +2,12 @@
 """
     Abstract classes for future implementation.
 """
+from abc import ABCMeta, abstractmethod
+
 __all__ = (
     'AbstractEndpoint', 'AbstractRouter', 'AbstractMiddleware',
     'AbstractPermission',
 )
-
-from abc import ABCMeta, abstractmethod
 
 
 class AbstractEndpoint(metaclass=ABCMeta):

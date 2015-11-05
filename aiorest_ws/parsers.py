@@ -2,12 +2,12 @@
 """
     URL parsers, which help to define, with which endpoint router works.
 """
-__all__ = ('URLParser', )
-
 import re
 
 from aiorest_ws.endpoints import PlainEndpoint, DynamicEndpoint
 from aiorest_ws.exceptions import EndpointValueError
+
+__all__ = ('URLParser', )
 
 
 class URLParser(object):

@@ -11,9 +11,6 @@
         router.register('user/profile/{user_name}', user_handler,
                         methods=['GET', 'PUT'])
 """
-__all__ = ('SimpleRouter', )
-
-
 from aiorest_ws.abstract import AbstractEndpoint, AbstractRouter
 from aiorest_ws.exceptions import BaseAPIException, EndpointValueError, \
     NotSpecifiedHandler, NotSpecifiedURL
@@ -22,6 +19,8 @@ from aiorest_ws.serializers import JSONSerializer
 from aiorest_ws.parsers import URLParser
 from aiorest_ws.validators import RouteArgumentsValidator
 from aiorest_ws.wrappers import Response
+
+__all__ = ('SimpleRouter', )
 
 
 class SimpleRouter(AbstractRouter):

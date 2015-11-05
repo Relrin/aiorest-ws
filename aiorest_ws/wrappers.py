@@ -2,9 +2,9 @@
 """
     Wrappers, similar on HTTP requests/responses.
 """
-__all__ = ('Request', 'Response', )
-
 from aiorest_ws.utils.modify import add_property
+
+__all__ = ('Request', 'Response', )
 
 
 class Request(object):

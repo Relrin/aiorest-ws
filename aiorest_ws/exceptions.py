@@ -3,15 +3,15 @@
     Handled exceptions raised by aiorest-ws framework, which inspired under
     Django REST framework.
 """
+from aiorest_ws.status import WS_PROTOCOL_ERROR, WS_DATA_CANNOT_ACCEPT
+
 __all__ = (
     'BaseAPIException', 'EndpointValueError', 'IncorrectArgument',
     'IncorrectMethodNameType', 'InvalidHandler', 'InvalidPathArgument',
     'InvalidSerializer', 'NotImplementedMethod', 'NotSpecifiedError',
     'NotSpecifiedHandler', 'NotSpecifiedMethodName', 'NotSpecifiedURL',
-    'NotSupportedArgumentType', 'SerializerError'
+    'NotSupportedArgumentType', 'SerializerError',
 )
-
-from aiorest_ws.status import WS_PROTOCOL_ERROR, WS_DATA_CANNOT_ACCEPT
 
 
 class BaseAPIException(Exception):

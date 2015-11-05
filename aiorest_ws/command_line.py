@@ -2,9 +2,9 @@
 """
     Custom functions and classes, which help working with the command line.
 """
-__all__ = ('CommandLine', )
-
 from argparse import ArgumentParser
+
+__all__ = ('CommandLine', )
 
 
 class CommandLine(object):

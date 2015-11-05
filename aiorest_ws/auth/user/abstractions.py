@@ -2,9 +2,9 @@
 """
     User abstractions for authentication.
 """
-__all__ = ('AbstractUser', 'User')
-
 from aiorest_ws.auth.user.utils import generate_password_hash
+
+__all__ = ('AbstractUser', 'User', )
 
 
 class AbstractUser(object):

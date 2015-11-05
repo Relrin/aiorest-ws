@@ -2,10 +2,10 @@
 """
     Decorators and wrappers, used for routing issues.
 """
-__all__ = ('endpoint', )
-
 from aiorest_ws.validators import MethodValidator
 from aiorest_ws.views import MethodBasedView
+
+__all__ = ('endpoint', )
 
 
 def endpoint(path, methods, name=None, **attrs):

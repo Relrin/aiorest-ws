@@ -2,13 +2,13 @@
 """
     Exception classes for token authentication.
 """
+from aiorest_ws.exceptions import BaseAPIException
+
 __all__ = (
     'BaseTokenException', 'ParsingTokenException', 'InvalidSignatureException',
     'TokenNotBeforeException', 'TokenExpiredException',
     'TokenNotProvidedException',
 )
-
-from aiorest_ws.exceptions import BaseAPIException
 
 
 class BaseTokenException(BaseAPIException):

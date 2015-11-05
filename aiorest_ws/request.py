@@ -2,8 +2,6 @@
 """
     Classes and function for creating and processing requests from user.
 """
-__all__ = ('RequestHandlerProtocol', 'RequestHandlerFactory', )
-
 import asyncio
 import json
 from base64 import b64encode, b64decode
@@ -15,6 +13,8 @@ from aiorest_ws.abstract import AbstractRouter
 from aiorest_ws.routers import SimpleRouter
 from aiorest_ws.validators import check_and_set_subclass
 from aiorest_ws.wrappers import Request
+
+__all__ = ('RequestHandlerProtocol', 'RequestHandlerFactory', )
 
 
 class RequestHandlerProtocol(WebSocketServerProtocol):
