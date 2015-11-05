@@ -3,9 +3,9 @@
     This module contains function, which using at validators.py for type
     checking issues.
 """
-__all__ = ('to_str', 'get_object_type', )
-
 from inspect import isclass
+
+__all__ = ('to_str', 'get_object_type', )
 
 
 def to_str(obj):

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
     Functions and decorators used for modify classes on the fly.
 """

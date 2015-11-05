@@ -2,8 +2,6 @@
 """
     This module implements the central application object.
 """
-__all__ = ('Application', )
-
 import asyncio
 import ssl
 from time import gmtime, strftime
@@ -12,6 +10,8 @@ from aiorest_ws.__init__ import __version__
 from aiorest_ws.request import RequestHandlerFactory, RequestHandlerProtocol
 from aiorest_ws.validators import check_and_set_subclass
 from aiorest_ws.utils.websocket import deflate_offer_accept as accept
+
+__all__ = ('Application', )
 
 
 class Application(object):

@@ -2,8 +2,6 @@
 """
     Token managers, proposed for generating/validating tokens.
 """
-__all__ = ('JSONWebTokenManager', )
-
 import hashlib
 import hmac
 import json
@@ -12,6 +10,8 @@ import time
 from base64 import b64encode, b64decode
 from aiorest_ws.auth.token.exceptions import ParsingTokenException, \
     InvalidSignatureException, TokenNotBeforeException, TokenExpiredException
+
+__all__ = ('JSONWebTokenManager', )
 
 
 class JSONWebTokenManager(object):

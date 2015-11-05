@@ -1,9 +1,10 @@
+# -*- coding: utf-8 -*-
 """
     Exception classes for authentication.
 """
-__all__ = ('BaseAuthException', 'PermissionDeniedException', )
-
 from aiorest_ws.exceptions import BaseAPIException
+
+__all__ = ('BaseAuthException', 'PermissionDeniedException', )
 
 
 class BaseAuthException(BaseAPIException):

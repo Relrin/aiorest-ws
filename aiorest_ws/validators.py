@@ -2,18 +2,18 @@
 """
     Validator classes and functions for checking passed arguments.
 """
-__all__ = (
-    'BaseValidator', 'EndpointNameValidator', 'HandlerValidator',
-    'MethodValidator', 'PathValidator', 'RouteArgumentsValidator',
-    'check_and_set_subclass',
-)
-
 import inspect
 
 from aiorest_ws.exceptions import NotSupportedArgumentType, \
     InvalidPathArgument, InvalidHandler
 from aiorest_ws.views import MethodBasedView
 from aiorest_ws.utils.validators import to_str, get_object_type
+
+__all__ = (
+    'BaseValidator', 'EndpointNameValidator', 'HandlerValidator',
+    'MethodValidator', 'PathValidator', 'RouteArgumentsValidator',
+    'check_and_set_subclass',
+)
 
 
 class BaseValidator(object):

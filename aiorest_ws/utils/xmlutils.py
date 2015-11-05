@@ -2,9 +2,9 @@
 """
     XML classes and functions, used for serializing and de-serializing.
 """
-__all__ = ('SimpleXMLGenerator', )
-
 from xml.sax.saxutils import XMLGenerator
+
+__all__ = ('SimpleXMLGenerator', )
 
 
 class SimpleXMLGenerator(XMLGenerator):

@@ -2,8 +2,6 @@
 """
     Storage backends for save/get credentials.
 """
-__all__ = ('InMemoryTokenBackend', )
-
 from aiorest_ws.auth.token.utils import SQL_CREATE_TOKEN_TABLE, \
     SQL_TOKEN_GET, SQL_TOKEN_GET_BY_TOKEN_USERNAME, SQL_TOKEN_ADD, \
     TOKEN_MODEL_FIELDS
@@ -12,6 +10,8 @@ from aiorest_ws.db.backends.sqlite3.constants import IN_MEMORY
 from aiorest_ws.db.backends.sqlite3.managers import SQLiteManager
 from aiorest_ws.db.utils import convert_db_row_to_dict
 from aiorest_ws.storages.backends import BaseStorageBackend
+
+__all__ = ('InMemoryTokenBackend', )
 
 
 class InMemoryTokenBackend(BaseStorageBackend):

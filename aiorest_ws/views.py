@@ -3,11 +3,11 @@
     This module provide a function and class-based views and can be used
     with aiorest-ws routers.
 """
-__all__ = ('http_methods', 'View', 'MethodViewMeta', 'MethodBasedView', )
-
 from aiorest_ws.exceptions import IncorrectMethodNameType, \
     InvalidSerializer, NotSpecifiedHandler, NotSpecifiedMethodName
 from aiorest_ws.serializers import JSONSerializer
+
+__all__ = ('http_methods', 'View', 'MethodViewMeta', 'MethodBasedView', )
 
 http_methods = frozenset(['get', 'post', 'head', 'options', 'delete', 'put',
                           'trace', 'patch'])

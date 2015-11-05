@@ -2,12 +2,12 @@
 """
     Exceptions for user management.
 """
+from aiorest_ws.exceptions import BaseAPIException
+
 __all__ = (
     'RequiredModelFieldsNotDefined', 'SearchCriteriaRequired',
-    'NotEnoughArguments'
+    'NotEnoughArguments',
 )
-
-from aiorest_ws.exceptions import BaseAPIException
 
 
 class RequiredModelFieldsNotDefined(BaseAPIException):

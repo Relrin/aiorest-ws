@@ -39,9 +39,9 @@ DEFAULT_LOGGING_SETTINGS = {
             'datefmt': "%d/%b/%Y %H:%M:%S"
         },
         'verbose': {
-            'format' : "[%(asctime)s] [%(levelname)s] [%(name)s:%(lineno)s] "
-                       "%(message)s",
-            'datefmt' : "%d/%b/%Y %H:%M:%S"
+            'format': "[%(asctime)s] [%(levelname)s] [%(name)s:%(lineno)s] "
+                      "%(message)s",
+            'datefmt': "%d/%b/%Y %H:%M:%S"
         },
     },
     'handlers': {

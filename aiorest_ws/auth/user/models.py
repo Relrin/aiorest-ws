@@ -2,8 +2,6 @@
 """
     User model for authentication.
 """
-__all__ = ('UserSQLiteModel', )
-
 from sqlite3 import OperationalError
 
 from aiorest_ws.auth.user.abstractions import User
@@ -18,6 +16,8 @@ from aiorest_ws.conf import settings
 from aiorest_ws.db.backends.sqlite3.constants import IN_MEMORY
 from aiorest_ws.db.backends.sqlite3.managers import SQLiteManager
 from aiorest_ws.log import logger
+
+__all__ = ('UserSQLiteModel', )
 
 
 class UserSQLiteModel(User):

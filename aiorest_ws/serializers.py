@@ -2,8 +2,6 @@
 """
     Serializers for generated responses by the server.
 """
-__all__ = ('BaseSerializer', 'JSONSerializer', 'XMLSerializer', )
-
 import json
 
 from io import StringIO
@@ -11,6 +9,8 @@ from aiorest_ws.exceptions import SerializerError
 from aiorest_ws.utils.formatting import SHORT_SEPARATORS, LONG_SEPARATORS, \
     WRONG_UNICODE_SYMBOLS
 from aiorest_ws.utils.xmlutils import SimpleXMLGenerator
+
+__all__ = ('BaseSerializer', 'JSONSerializer', 'XMLSerializer', )
 
 
 class BaseSerializer(object):

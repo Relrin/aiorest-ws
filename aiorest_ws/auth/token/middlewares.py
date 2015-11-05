@@ -2,9 +2,6 @@
 """
     Middlewares for authentication issues.
 """
-
-__all__ = ('BaseTokenMiddleware', 'JSONWebTokenMiddleware', )
-
 from aiorest_ws.abstract import AbstractMiddleware
 from aiorest_ws.auth.user.models import UserSQLiteModel
 from aiorest_ws.auth.user.abstractions import User
@@ -12,6 +9,8 @@ from aiorest_ws.auth.token.backends import InMemoryTokenBackend
 from aiorest_ws.auth.token.exceptions import TokenNotProvidedException
 from aiorest_ws.auth.token.managers import JSONWebTokenManager
 from aiorest_ws.utils.modify import add_property
+
+__all__ = ('BaseTokenMiddleware', 'JSONWebTokenMiddleware', )
 
 
 class BaseTokenMiddleware(AbstractMiddleware):

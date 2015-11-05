@@ -2,9 +2,9 @@
 """
     Endpoint classes for aiorest-ws router.
 """
-__all__ = ('PlainEndpoint', 'DynamicEndpoint', )
-
 from aiorest_ws.abstract import AbstractEndpoint
+
+__all__ = ('PlainEndpoint', 'DynamicEndpoint', )
 
 
 class PlainEndpoint(AbstractEndpoint):
