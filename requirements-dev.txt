@@ -1,3 +1,4 @@
+alabaster>=0.7.5
 autobahn==0.10.4
 cov-core==1.15.0
 coverage==3.7.1
