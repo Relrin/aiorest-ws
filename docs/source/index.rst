@@ -27,7 +27,9 @@ Features
 Library installation
 --------------------
 
-Use PIP for install this library::
+Use PIP for install this library:
+
+.. code-block:: bash
 
    $ pip install aiorest-ws
 
@@ -149,14 +151,15 @@ Authors and License
 
 The aiorest-ws package is written by Valeryi Savich.
 
-It's **BSD** licensed and freely available.
-Feel free to improve this package and send a pull request to GitHub_.
+It's **BSD** licensed and freely available. For more details read `license <https://github.com/Relrin/aiorest-ws/blob/master/LICENSE>`_ file.
 
 Contents:
 ---------
 
 .. toctree::
    :maxdepth: 2
+
+   app
 
 Indices and tables
 ==================
