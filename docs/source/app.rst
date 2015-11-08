@@ -24,7 +24,7 @@ handler. It can be method-based:
 
     class HelloWorld(MethodBasedView):
         def get(self, request, *args, **kwargs):
-            return "Hello, username!"
+            return "Hello, world!"
 
 or function-based view:
 
@@ -70,7 +70,7 @@ Constructor arguments
 Application instance can get in the constructor the next arguments:
 
 - factory
-    Factory class, used for instantiating protocol classes. Must be inherited
+    Factory class, used for instantiating protocol objects. Must be inherited
     from the :class:`RequestHandlerFactory` class. Default to ``RequestHandlerFactory`` class
 
 - protocol
@@ -89,7 +89,7 @@ Application instance can get in the constructor the next arguments:
 Middlewares
 -----------
 
-:class:`Application` class can receive list of middlewares, which used for
+:class:`Application` can receive list of middlewares, which used for
 pre-processing requests in the order of their appearance.
 
 Example of using:
@@ -112,8 +112,8 @@ Run method
     method, which return configured factory class.
 
 ``Run`` method its a entry point for your all applications, because it start
-server on defined ip and port. Default realization of this method can get the
-next parameters:
+server on the specified ip and port. Default realization of this method can get
+the next parameters:
 
 - ip
     The hostname to listen on. Default to ``'127.0.0.1'``
@@ -169,7 +169,7 @@ your own self-signed certificate via OpenSSL:
 Running with traffic compression
 --------------------------------
 
-Aiorest-ws :class:`Application` class have support to compress all transmitted
+:class:`Application` instance have support to compress all transmitted
 traffic by the network. This feature was taken from Autobahn.ws implementation
 (which rely onto `this <https://tools.ietf.org/html/draft-ietf-hybi-permessage-compression-28>`_ document).
 
