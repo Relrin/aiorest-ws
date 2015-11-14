@@ -159,8 +159,10 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
+   api
    app
    routing
+   wrappers
 
 Indices and tables
 ==================
