@@ -3,6 +3,8 @@
 Routing
 =======
 
+.. currentmodule:: aiorest_ws.routers
+
 Register endpoints
 ------------------
 

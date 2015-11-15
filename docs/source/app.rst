@@ -3,7 +3,7 @@
 Application usage
 =================
 
-.. currentmodule:: aiorest-ws.app
+.. currentmodule:: aiorest_ws.app
 
 This module provide :class:`Application` class, which used as entry point
 for your REST applications with WebSockets.
