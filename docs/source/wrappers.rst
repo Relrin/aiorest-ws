@@ -3,6 +3,8 @@
 HTTP wrappers
 =============
 
+.. currentmodule:: aiorest_ws.wrappers
+
 On this documentation page you will find definition of classes, which used
 for wrapping inner data of aiorest-ws into HTTP-like request or response
 objects.
