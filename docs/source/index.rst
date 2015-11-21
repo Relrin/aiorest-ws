@@ -163,6 +163,7 @@ Contents:
    request
    routing
    wrappers
+   views
    api
 
 Indices and tables
