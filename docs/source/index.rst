@@ -159,6 +159,7 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
+   auth
    app
    request
    routing
