@@ -51,7 +51,7 @@ This factory also provide a access for the client handlers (:class:`RequestHandl
 instances) to the general router, which used for processing users requests.
 
 If necessary provide any access to databases, cache storages or whatever you want,
-strongly recommend to use properties. For example it can be somethink like that:
+strongly recommend to use properties. For example it can be something like that:
 
 .. code-block:: python
 
