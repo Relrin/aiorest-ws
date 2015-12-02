@@ -26,7 +26,6 @@ args = dict(
     author='Valeryi Savich',
     author_email='relrin78@gmail.com',
     description='REST framework with WebSockets support',
-    long_description='\n\n'.join((read('README.md'),)),
     packages=['aiorest_ws', ],
     include_package_data=True,
     zip_safe=False,
