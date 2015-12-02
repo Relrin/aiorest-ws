@@ -13,14 +13,14 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
+import alabaster
 import codecs
 import sys
 import os
-import shlex
-import alabaster
+import re
 
 _docs_path = os.path.dirname(__file__)
-_version_path = os.path.abspath(os.path.join(_docs_path,
+_version_path = os.path.abspath(os.path.join(_docs_path, '..',
                                              '..', 'aiorest_ws', '__init__.py'))
 with codecs.open(_version_path, 'r', 'latin1') as fp:
     try:
@@ -30,13 +30,15 @@ with codecs.open(_version_path, 'r', 'latin1') as fp:
                                   r"\.(?P<patch>\d+)"
                                   r"(?P<tag>.*)?'$",
                                   fp.read(), re.M).groupdict()
+    except IndexError:
+        raise RuntimeError('Unable to determine version.')
                                              
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #sys.path.insert(0, os.path.abspath('.'))
-sys.path.insert(0, os.path.abspath('..'))
-sys.path.insert(0, os.path.abspath('.'))
+sys.path.insert(0, os.path.abspath('../..'))
+sys.path.insert(0, os.path.abspath('../.'))
 
 # -- General configuration ------------------------------------------------
 
