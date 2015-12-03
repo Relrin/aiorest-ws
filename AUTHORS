@@ -7,6 +7,8 @@ Project Leader / Developer:
 
 Contributors of code for aiorest-ws are:
 
+- Dmitry Vechorko <vechorkodima@gmail.com>
+
 The serializer classes and exception style was taken from the Django
 REST Framework. The original code is BSD licensed. The following copyrights
 apply:
