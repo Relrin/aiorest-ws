@@ -14,6 +14,7 @@ class Request(object):
         self._method = kwargs.pop('method', None)
         self._url = kwargs.pop('url', None)
         self._args = kwargs.pop('args', {})
+        self._event_name = kwargs.pop('event_name', None)
 
         for key in kwargs.keys():
             add_property(self, key, kwargs[key])
@@ -33,9 +34,14 @@ class Request(object):
         """Get dictionary of arguments, defined by the user."""
         return self._args
 
+    @property
+    def event_name(self):
+        """Get event name, which used by the client for processing response."""
+        return self._event_name
+
     def to_representation(self):
-        """Serialize request object."""
-        return {'method': self.method, 'url': self.url}
+        """Serialize request object to dictionary object."""
+        return {'event_name': self.event_name}
 
     def get_argument(self, name):
         """Extracting argument from the request.
@@ -67,4 +73,4 @@ class Response(object):
 
     def append_request(self, request):
         """Add to the response object serialized request."""
-        self._content.update({'request': request.to_representation()})
+        self._content.update(request.to_representation())

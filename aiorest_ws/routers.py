@@ -126,7 +126,6 @@ class SimpleRouter(AbstractRouter):
                 serializer = handler.get_serializer(format, *args, **kwargs)
 
                 response.content = handler.dispatch(request, *args, **kwargs)
-                response.append_request(request)
             else:
                 raise NotSpecifiedHandler()
         except BaseAPIException as exc:
@@ -134,6 +133,7 @@ class SimpleRouter(AbstractRouter):
             response.wrap_exception(exc)
             serializer = JSONSerializer()
 
+        response.append_request(request)
         return serializer.serialize(response.content)
 
     def _register_url(self, route):
