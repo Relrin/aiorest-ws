@@ -60,33 +60,23 @@ class RequestTestCase(unittest.TestCase):
     def test_to_representation(self):
         data = {}
         request = Request(**data)
-        self.assertEqual(
-            request.to_representation(),
-            {'method': None, 'url': None}
-        )
+        self.assertEqual(request.to_representation(), {'event_name': None})
 
     def test_to_representation_2(self):
         data = {'url': '/api'}
         request = Request(**data)
-        self.assertEqual(
-            request.to_representation(),
-            {'method': None, 'url': '/api'}
-        )
+        self.assertEqual(request.to_representation(), {'event_name': None})
 
     def test_to_representation_3(self):
         data = {'method': 'GET'}
         request = Request(**data)
-        self.assertEqual(
-            request.to_representation(),
-            {'method': 'GET', 'url': None}
-        )
+        self.assertEqual(request.to_representation(), {'event_name': None})
 
     def test_to_representation_4(self):
-        data = {'url': '/api', 'method': 'GET'}
+        data = {'url': '/api', 'method': 'GET', 'event_name': 'test-event'}
         request = Request(**data)
         self.assertEqual(
-            request.to_representation(),
-            {'method': 'GET', 'url': '/api', }
+            request.to_representation(), {'event_name': data['event_name']}
         )
 
     def test_get_argument(self):
@@ -147,10 +137,15 @@ class ResponseTestCase(unittest.TestCase):
         self.assertEqual(response._content['detail'], exception.detail)
 
     def test_append_request(self):
+        data = {'url': '/api', 'method': 'GET', 'event_name': 'test-event'}
+        request = Request(**data)
+        response = Response()
+        response.append_request(request)
+        self.assertEqual(response.content['event_name'], request.event_name)
+
+    def test_append_request_with_undefined_event_name(self):
         data = {'url': '/api', 'method': 'GET'}
         request = Request(**data)
         response = Response()
         response.append_request(request)
-        self.assertEqual(
-            response.content['request'], request.to_representation()
-        )
+        self.assertEqual(response.content['event_name'], request.event_name)

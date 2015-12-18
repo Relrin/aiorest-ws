@@ -101,7 +101,7 @@ class RestWSRouterTestCase(unittest.TestCase):
         self.assertEqual(kwargs, {'params': {'format': 'json'}})
 
     @unittest.mock.patch('aiorest_ws.log.logger.info')
-    def test_process_request(self, m_logger):
+    def test_process_request(self, log_info):
         self.router.register('/api/get/', FakeGetView, 'GET')
 
         decoded_json = {'method': 'GET', 'url': '/api/get/'}
@@ -110,30 +110,46 @@ class RestWSRouterTestCase(unittest.TestCase):
         json_response = json.loads(response)
         self.assertIn('data', json_response.keys())
         self.assertEqual(json_response['data'], 'fake')
-        self.assertEqual(
-            json_response['request'],
-            {'method': 'GET', 'url': '/api/get/'}
-        )
+        self.assertIn('event_name', json_response)
+        self.assertIsNone(json_response['event_name'])
 
     @unittest.mock.patch('aiorest_ws.log.logger.info')
-    def test_process_request_2(self, m_logger):
+    def test_process_request_with_defined_args(self, log_info):
         self.router.register('/api/get/', FakeGetView, 'GET')
 
-        decoded_json = {'method': 'GET', 'url': '/api/get/',
-                        'args': {'format': 'xml'}}
+        decoded_json = {
+            'method': 'GET', 'url': '/api/get/',
+            'args': {'format': 'xml'}
+        }
         request = Request(**decoded_json)
         response = self.router.process_request(request).decode('utf-8')
         json_response = json.loads(response)
         self.assertIn('data', json_response.keys())
         self.assertEqual(json_response['data'], 'fake')
+        self.assertIn('event_name', json_response)
+        self.assertIsNone(json_response['event_name'])
+
+    @unittest.mock.patch('aiorest_ws.log.logger.info')
+    def test_process_request_with_defined_args_and_event_name(self, log_info):
+        self.router.register('/api/get/', FakeGetView, 'GET')
+
+        decoded_json = {
+            'method': 'GET', 'url': '/api/get/',
+            'args': {'format': 'xml'}, 'event_name': 'test'
+        }
+        request = Request(**decoded_json)
+        response = self.router.process_request(request).decode('utf-8')
+        json_response = json.loads(response)
+        self.assertIn('data', json_response.keys())
+        self.assertEqual(json_response['data'], 'fake')
+        self.assertIn('event_name', json_response)
         self.assertEqual(
-            json_response['request'],
-            {'method': 'GET', 'url': '/api/get/'}
+            json_response['event_name'], decoded_json['event_name']
         )
 
     @unittest.mock.patch('aiorest_ws.log.logger.info')
     @unittest.mock.patch('aiorest_ws.log.logger.exception')
-    def test_process_request_3(self, m_logger_info, m_logger_exc):
+    def test_process_request_by_invalid_url(self, log_info, log_exc):
         self.router.register('/api/get/', FakeGetView, 'GET')
 
         decoded_json = {'method': 'GET', 'url': '/api/invalid/'}
@@ -145,11 +161,12 @@ class RestWSRouterTestCase(unittest.TestCase):
             json_response['detail'],
             "For URL, typed in request, handler not specified."
         )
-        self.assertNotIn('request', json_response.keys())
+        self.assertIn('event_name', json_response)
+        self.assertIsNone(json_response['event_name'])
 
     @unittest.mock.patch('aiorest_ws.log.logger.info')
     @unittest.mock.patch('aiorest_ws.log.logger.exception')
-    def test_process_request_4(self, m_logger_info, m_logger_exc):
+    def test_process_request_without_url(self, log_info, log_exc):
         self.router.register('/api/get/', FakeGetView, 'GET')
 
         decoded_json = {'method': 'GET'}
@@ -161,10 +178,11 @@ class RestWSRouterTestCase(unittest.TestCase):
             json_response['detail'],
             "In query not specified `url` argument."
         )
-        self.assertNotIn('request', json_response.keys())
+        self.assertIn('event_name', json_response)
+        self.assertIsNone(json_response['event_name'])
 
     @unittest.mock.patch('aiorest_ws.log.logger.info')
-    def test_process_request_with_middleware(self, m_logger_info):
+    def test_process_request_with_middleware(self, log_info):
         self.router._middlewares = [FakeTokenMiddleware(), ]
         self.router.register('/api/get/', FakeGetView, 'GET')
 
@@ -174,14 +192,12 @@ class RestWSRouterTestCase(unittest.TestCase):
         json_response = json.loads(response)
         self.assertIn('data', json_response.keys())
         self.assertEqual(json_response['data'], 'fake')
-        self.assertEqual(
-            json_response['request'],
-            {'method': 'GET', 'url': '/api/get/'}
-        )
+        self.assertIn('event_name', json_response)
+        self.assertIsNone(json_response['event_name'])
 
     @unittest.mock.patch('aiorest_ws.log.logger.info')
     @unittest.mock.patch('aiorest_ws.log.logger.exception')
-    def test_process_request_with_middleware_2(self, m_log_info, m_log_exc):
+    def test_process_request_with_failed_middleware(self, log_info, log_exc):
         self.router._middlewares = [FakeTokenMiddlewareWithExc(), ]
         self.router.register('/api/get/', FakeGetView, 'GET')
 
@@ -193,7 +209,7 @@ class RestWSRouterTestCase(unittest.TestCase):
         self.assertNotIn('data', json_response.keys())
 
     @unittest.mock.patch('aiorest_ws.log.logger.info')
-    def test_process_request_wrapped_function(self, m_logger):
+    def test_process_request_wrapped_function(self, log_info):
         @endpoint('/api', 'GET')
         def fake_handler(request, *args, **kwargs):
             return "fake"
@@ -206,7 +222,8 @@ class RestWSRouterTestCase(unittest.TestCase):
         json_response = json.loads(response)
         self.assertIn('data', json_response.keys())
         self.assertEqual(json_response['data'], 'fake')
-        self.assertEqual(json_response['request'], decoded_json)
+        self.assertIn('event_name', json_response)
+        self.assertIsNone(json_response['event_name'])
 
     def test_register_url(self):
         endpoint = FakeEndpoint('/api/', None, 'GET', 'good')
