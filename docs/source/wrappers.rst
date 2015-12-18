@@ -31,12 +31,20 @@ Properties:
     and a part of him, parameters, converted later to the dictionary
     ``{'name': admin, 'password': admin}``.
 
+- event_name
+
+    Returns event name, which defined by the client in the request.
+
+    This string value will have appended to response and used by aiorest-ws clients
+    dispatchers, when necessary to find the most suitable registered function, which
+    intended for processing response.
+
 Available methods:
 
 - to_representation
 
     Returns part of request as a dictionary object. It used for serializing and
-    appending ``method``, ``url`` part to the response object.
+    appending ``event_name`` to the response object.
 
 - get_argument
 

@@ -28,14 +28,14 @@ scheme:
 
 4) Get response data from :class:`Response` instance and encode message.
 
-5) Send result data (in the same form, which has taken at the 1st step) to the client.
+5) Send result data (in the same form, which had taken at the 1st step) to the client.
 
 
 Also what necessary to know, when you're working with this protocol:
 
 1) Protocols can retrieve the message, why a connection was terminated.
 
-2) Create multiple connections to a server.
+2) You can create multiple connections to a server.
 
 RequestHandler factory
 ----------------------
