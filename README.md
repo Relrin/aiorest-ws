@@ -15,7 +15,10 @@ Features
 Requirements
 -----
 - Python >= 3.4.0
-- Autobahn.ws >= 0.12.0
+- Autobahn.ws >= 0.12.1
+
+Optional:
+- SQLAlchemy ORM >= 1.0
 
 License
 -----

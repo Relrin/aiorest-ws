@@ -7,16 +7,19 @@ import re
 from aiorest_ws.endpoints import PlainEndpoint, DynamicEndpoint
 from aiorest_ws.exceptions import EndpointValueError
 
-__all__ = ('URLParser', )
+__all__ = (
+    'ANY_VALUE', 'DYNAMIC_PARAMETER', 'VALID_DYNAMIC_PARAMETER', 'URLParser'
+)
+
+ANY_VALUE = r'[^{}/]+'
+DYNAMIC_PARAMETER = re.compile(r'({\s*[\w\d_]+\s*})')
+VALID_DYNAMIC_PARAMETER = re.compile(r'{(?P<var>[\w][\w\d_]*)}')
 
 
 class URLParser(object):
     """Parser over endpoints paths, which returns one of the most suitable
     instances of route classes.
     """
-    ANY_VALUE = r'[^{}/]+'
-    DYNAMIC_PARAMETER = re.compile(r'({\s*[\w\d_]+\s*})')
-    VALID_DYNAMIC_PARAMETER = re.compile(r'{(?P<var>[\w][\w\d_]*)}')
 
     def define_route(self, path, handler, methods, name=None):
         """Define a router as instance of BaseRoute subclass, which passed
@@ -35,11 +38,10 @@ class URLParser(object):
 
         # try to processing as a dynamic path
         pattern = ''
-        for part in self.DYNAMIC_PARAMETER.split(path):
-            match = self.VALID_DYNAMIC_PARAMETER.match(part)
+        for part in DYNAMIC_PARAMETER.split(path):
+            match = VALID_DYNAMIC_PARAMETER.match(part)
             if match:
-                pattern += '(?P<{}>{})'.format(match.group('var'),
-                                               self.ANY_VALUE)
+                pattern += '(?P<{}>{})'.format(match.group('var'), ANY_VALUE)
                 continue
 
             if any(symbol in part for symbol in ['{', '}']):

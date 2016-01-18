@@ -10,7 +10,7 @@ __all__ = ('to_str', 'get_object_type', )
 
 def to_str(obj):
     """Custom convert object to string representation."""
-    if type(obj) in (list, tuple):
+    if isinstance(obj, (list, tuple)):
         string = "/".join([item.__name__ for item in obj])
     else:
         string = obj.__name__

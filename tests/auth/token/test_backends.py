@@ -60,6 +60,7 @@ class InMemoryTokenBackendTestCase(unittest.TestCase):
     def test_get_not_existed_token(self):
         self._set_user_settings()
         backend = InMemoryTokenBackend()
+        user_model = UserSQLiteModel()  # NOQA
         db_token = backend.get('unknown_token')
         self.assertEqual(db_token, {})
 

@@ -5,28 +5,29 @@
 import json
 
 from io import StringIO
+from aiorest_ws.conf import settings
 from aiorest_ws.exceptions import SerializerError
 from aiorest_ws.utils.formatting import SHORT_SEPARATORS, LONG_SEPARATORS, \
     WRONG_UNICODE_SYMBOLS
 from aiorest_ws.utils.xmlutils import SimpleXMLGenerator
 
-__all__ = ('BaseSerializer', 'JSONSerializer', 'XMLSerializer', )
+__all__ = ('BaseRenderer', 'JSONRenderer', 'XMLRenderer',)
 
 
-class BaseSerializer(object):
+class BaseRenderer(object):
 
     format = None
     charset = 'utf-8'
 
-    def serialize(self, data):
-        """Serialize input data into another format.
+    def render(self, data):
+        """Render input data into another format.
 
         :param data: dictionary object.
         """
         pass
 
 
-class JSONSerializer(BaseSerializer):
+class JSONRenderer(BaseRenderer):
 
     format = 'json'
     # don't set a charset because JSON is a binary encoding, that can be
@@ -34,11 +35,11 @@ class JSONSerializer(BaseSerializer):
     # for more details see: http://www.ietf.org/rfc/rfc4627.txt
     # and Armin Ronacher's article http://goo.gl/MExCKv
     charset = None
-    compact = False
-    ensure_ascii = True
+    ensure_ascii = not settings.UNICODE_JSON
+    compact = settings.COMPACT_JSON
 
-    def serialize(self, data):
-        """Serialize input data into JSON.
+    def render(self, data):
+        """Render input data into JSON.
 
         :param data: dictionary or list object (response).
         """
@@ -62,13 +63,13 @@ class JSONSerializer(BaseSerializer):
         return render
 
 
-class XMLSerializer(BaseSerializer):
+class XMLRenderer(BaseRenderer):
 
     format = 'xml'
     xml_generator = SimpleXMLGenerator
 
-    def serialize(self, data):
-        """Serialize input data into XML.
+    def render(self, data):
+        """Render input data into XML.
 
         :param data: dictionary or list object (response).
         """
