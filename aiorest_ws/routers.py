@@ -15,7 +15,7 @@ from aiorest_ws.abstract import AbstractEndpoint, AbstractRouter
 from aiorest_ws.exceptions import BaseAPIException, EndpointValueError, \
     NotSpecifiedHandler, NotSpecifiedURL
 from aiorest_ws.log import logger
-from aiorest_ws.serializers import JSONSerializer
+from aiorest_ws.renderers import JSONRenderer
 from aiorest_ws.parsers import URLParser
 from aiorest_ws.validators import RouteArgumentsValidator
 from aiorest_ws.wrappers import Response
@@ -118,7 +118,7 @@ class SimpleRouter(AbstractRouter):
 
                 # search serializer for response
                 format = request.get_argument('format')
-                serializer = handler.get_serializer(format, *args, **kwargs)
+                serializer = handler.get_renderer(format, *args, **kwargs)
 
                 response.content = handler.dispatch(request, *args, **kwargs)
             else:
@@ -126,10 +126,10 @@ class SimpleRouter(AbstractRouter):
         except BaseAPIException as exc:
             logger.exception(exc)
             response.wrap_exception(exc)
-            serializer = JSONSerializer()
+            serializer = JSONRenderer()
 
         response.append_request(request)
-        return serializer.serialize(response.content)
+        return serializer.render(response.content)
 
     def _register_url(self, route):
         """Register new endpoint.
@@ -140,12 +140,12 @@ class SimpleRouter(AbstractRouter):
             raise TypeError(u"Custom route must be inherited from the "
                             u"AbstractEndpoint class.")
 
-        name = route.name
-        if name and name in self._routes.keys():
-            raise EndpointValueError(
-                'Duplicate {}, already handled by {}'
-                .format(name, self._routes[name]))
-        else:
+        if route.name:
+            if route.name in self._routes.keys():
+                raise EndpointValueError(
+                    'Duplicate {}, already handled by {}'
+                    .format(route.name, self._routes[route.name])
+                )
             self._routes[route.name] = route
         self._urls.append(route)
 
@@ -154,8 +154,8 @@ class SimpleRouter(AbstractRouter):
 
         :param router: instance of subclass, derived from AbstractRouter
         """
-        if not issubclass(type(router), (SimpleRouter, )):
+        if not issubclass(type(router), (AbstractRouter, )):
             raise TypeError(u"Passed router must be inherited from the "
-                            u"SimpleRouter class.")
+                            u"AbstractRouter class.")
         self._urls.extend(router._urls)
         self._routes.update(router._routes)

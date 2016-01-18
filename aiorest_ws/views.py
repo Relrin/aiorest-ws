@@ -4,8 +4,8 @@
     with aiorest-ws routers.
 """
 from aiorest_ws.exceptions import IncorrectMethodNameType, \
-    InvalidSerializer, NotSpecifiedHandler, NotSpecifiedMethodName
-from aiorest_ws.serializers import JSONSerializer
+    InvalidRenderer, NotSpecifiedHandler, NotSpecifiedMethodName
+from aiorest_ws.renderers import JSONRenderer
 
 __all__ = ('http_methods', 'View', 'MethodViewMeta', 'MethodBasedView', )
 
@@ -43,7 +43,7 @@ class MethodViewMeta(type):
 
 class MethodBasedView(View, metaclass=MethodViewMeta):
     """Method-based view for aiorest-ws framework."""
-    serializers = ()
+    renderers = ()
 
     def dispatch(self, request, *args, **kwargs):
         """Search the most suitable handler for request.
@@ -71,27 +71,27 @@ class MethodBasedView(View, metaclass=MethodViewMeta):
             raise NotSpecifiedHandler()
         return handler(request, *args, **kwargs)
 
-    def get_serializer(self, preferred_format, *args, **kwargs):
+    def get_renderer(self, preferred_format, *args, **kwargs):
         """Get serialize class, which using to converting response to
         some users format.
 
         :param preferred_format: string, which means serializing response to
                                  required format (e.c. json, xml).
         """
-        if self.serializers:
-            if type(self.serializers) not in (list, tuple):
-                raise InvalidSerializer()
+        if self.renderers:
+            if type(self.renderers) not in (list, tuple):
+                raise InvalidRenderer()
 
             # by default we are take first serializer from list/tuple
-            serializer = self.serializers[0]
+            renderer = self.renderers[0]
 
             if preferred_format:
                 # try to find suitable serializer
-                for serializer_class in self.serializers:
-                    if serializer_class.format == preferred_format:
-                        serializer = serializer_class
+                for renderer_class in self.renderers:
+                    if renderer_class.format == preferred_format:
+                        renderer = renderer_class
                         break
 
-            return serializer()
+            return renderer()
         else:
-            return JSONSerializer()
+            return JSONRenderer()

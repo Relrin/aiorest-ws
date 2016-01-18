@@ -10,6 +10,7 @@ from aiorest_ws.__init__ import __version__
 from aiorest_ws.request import RequestHandlerFactory, RequestHandlerProtocol
 from aiorest_ws.validators import check_and_set_subclass
 from aiorest_ws.utils.websocket import deflate_offer_accept as accept
+from aiorest_ws.urls.base import set_urlconf
 
 __all__ = ('Application', )
 
@@ -142,11 +143,21 @@ class Application(object):
         factory.router = router
         factory.router._middlewares = self.middlewares
 
+    def _init_urlconf(self, factory, url, **options):
+        """Initialize urlconf thread variable."""
+        data = {
+            'path': url,
+            'urls': factory.router._urls,
+            'routes': factory.router._routes
+        }
+        set_urlconf(data)
+
     def generate_factory(self, url, **options):
         """Create and initialize factory instance."""
         factory = self._init_factory(url, **options)
         self._enable_compressing(factory, **options)
         self._set_factory_router(factory, **options)
+        self._init_urlconf(factory, url, **options)
         return factory
 
     def generate_url(self, host, port, path=''):

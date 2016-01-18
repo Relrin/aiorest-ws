@@ -4,14 +4,23 @@
     Django REST framework.
 """
 from aiorest_ws.status import WS_PROTOCOL_ERROR, WS_DATA_CANNOT_ACCEPT
+from aiorest_ws.utils.encoding import force_text
 
 __all__ = (
-    'BaseAPIException', 'EndpointValueError', 'IncorrectArgument',
-    'IncorrectMethodNameType', 'InvalidHandler', 'InvalidPathArgument',
-    'InvalidSerializer', 'NotImplementedMethod', 'NotSpecifiedError',
-    'NotSpecifiedHandler', 'NotSpecifiedMethodName', 'NotSpecifiedURL',
-    'NotSupportedArgumentType', 'SerializerError',
+    'ImproperlyConfigured', 'BaseAPIException', 'EndpointValueError',
+    'IncorrectArgument', 'IncorrectMethodNameType', 'InvalidHandler',
+    'InvalidPathArgument', 'InvalidRenderer', 'NotImplementedMethod',
+    'NotSpecifiedError', 'NotSpecifiedHandler', 'NotSpecifiedMethodName',
+    'NotSpecifiedURL', 'NotSupportedArgumentType', 'SerializerError',
 )
+
+
+class ImproperlyConfigured(Exception):
+    """
+    Exception for the cases, when user has configured some class, setting or
+    any other required parameter improperly.
+    """
+    pass
 
 
 class BaseAPIException(Exception):
@@ -30,9 +39,9 @@ class BaseAPIException(Exception):
         :param detail: users detail information (string).
         """
         if detail is not None:
-            self.detail = str(detail)
+            self.detail = force_text(detail)
         else:
-            self.detail = self.default_detail
+            self.detail = force_text(self.default_detail)
 
     def __str__(self):
         return self.detail
@@ -60,8 +69,8 @@ class InvalidPathArgument(BaseAPIException):
     default_detail = u"Received path value not valid."
 
 
-class InvalidSerializer(BaseAPIException):
-    default_detail = "Attribute `serializers` should be defined as list or " \
+class InvalidRenderer(BaseAPIException):
+    default_detail = "Attribute `renderers` should be defined as list or " \
                      "tuple of inherited from BaseSerializer classes."
 
 
@@ -91,4 +100,4 @@ class NotSupportedArgumentType(BaseAPIException):
 
 
 class SerializerError(BaseAPIException):
-    default_detail = u"Error occurred inside serializer class."
+    default_detail = u"Error has occurred inside serializer class."
