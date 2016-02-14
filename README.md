@@ -32,7 +32,9 @@ Read [CONTRIBUTING](https://github.com/Relrin/aiorest-ws/blob/master/CONTRIBUTIN
 Roadmap (by priority) to releases:
 -----
 v1.1:
-- Compatible with Django and SQLAlchemy ORMs
+- Compatible with most common ORMs
+  - SQLAlchemy ORM [in progress]
+  - Django ORM
 - Filters support over querysets
 
 v1.2:
