@@ -1,4 +1,4 @@
-# aiorest-ws [![Build Status](https://travis-ci.org/Relrin/aiorest-ws.svg)](https://travis-ci.org/Relrin/aiorest-ws) [![Coverage Status](https://coveralls.io/repos/Relrin/aiorest-ws/badge.svg?branch=master&service=github)](https://coveralls.io/github/Relrin/aiorest-ws?branch=master)
+# ![aiorest-ws logo](https://raw.githubusercontent.com/Relrin/aiorest-ws/master/docs/source/static/logo.png)  [![Build Status](https://travis-ci.org/Relrin/aiorest-ws.svg)](https://travis-ci.org/Relrin/aiorest-ws) [![Coverage Status](https://coveralls.io/repos/Relrin/aiorest-ws/badge.svg?branch=master&service=github)](https://coveralls.io/github/Relrin/aiorest-ws?branch=master)
 REST framework with WebSockets support
 
 This library represents as a flexible toolkit for building Web APIs, which based on the Autobahn.ws and asyncio packages. Use the opportunities of WebSockets for communication between clients and servers, build APIs like in popular frameworks (Django REST, Flask, etc.) with enough simplicity, flexibility and transparency. Develop with a pleasure!
