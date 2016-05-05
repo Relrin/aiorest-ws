@@ -3,8 +3,8 @@ import unittest
 
 from fixtures.fakes import FakeGetView
 
-from aiorest_ws.exceptions import NotSpecifiedHandler, NotSpecifiedMethodName, \
-    IncorrectMethodNameType, InvalidSerializer
+from aiorest_ws.exceptions import NotSpecifiedHandler, \
+    NotSpecifiedMethodName, IncorrectMethodNameType, InvalidSerializer
 from aiorest_ws.serializers import JSONSerializer
 from aiorest_ws.views import View
 from aiorest_ws.wrappers import Request

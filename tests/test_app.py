@@ -167,14 +167,14 @@ class ApplicationTestCase(unittest.TestCase):
         self.assertTrue(callable(factory.perMessageCompressionAccept))
         self.assertEqual(factory.perMessageCompressionAccept, accept)
 
-    def test_set_factory_router(self):
+    def test_factory_router_not_defined(self):
         url = self.app.generate_url('127.0.0.1', 8080)
         options = {}
         factory = self.app._init_factory(url)
-        self.app._set_factory_router(factory, **options)
-        self.assertIsInstance(factory.router, SimpleRouter)
+        with self.assertRaises(AssertionError):
+            self.app._set_factory_router(factory, **options)
 
-    def test_set_factory_router_2(self):
+    def test_set_factory_router(self):
         class CustomRouter(SimpleRouter):
             pass
 
@@ -184,35 +184,28 @@ class ApplicationTestCase(unittest.TestCase):
         self.app._set_factory_router(factory, **options)
         self.assertIsInstance(factory.router, CustomRouter)
 
-    def test_allow_hixie76(self):
-        url = self.app.generate_url('127.0.0.1', 8080)
-        factory = self.app._init_factory(url)
-        self.assertFalse(factory.allowHixie76)
-        self.app._allow_hixie76(factory)
-        self.assertTrue(factory.allowHixie76)
-
     def test_generate_factory(self):
         url = self.app.generate_url('127.0.0.1', 8080)
-        factory = self.app.generate_factory(url, debug=True)
+        factory = self.app.generate_factory(
+            url, debug=True, router=SimpleRouter()
+        )
         self.assertTrue(factory.debug)
         self.assertIsInstance(factory.router, SimpleRouter)
-        self.assertTrue(factory.allowHixie76)
 
     def test_generate_factory_2(self):
         url = self.app.generate_url('127.0.0.1', 8080)
         factory = self.app.generate_factory(url, router=SimpleRouter())
         self.assertFalse(factory.debug)
         self.assertIsInstance(factory.router, SimpleRouter)
-        self.assertTrue(factory.allowHixie76)
 
     def test_generate_factory_3(self):
         url = self.app.generate_url('127.0.0.1', 8080)
-        factory = self.app.generate_factory(url, router=SimpleRouter(),
-                                            compress=True)
+        factory = self.app.generate_factory(
+            url, router=SimpleRouter(), compress=True
+        )
         self.assertFalse(factory.debug)
         self.assertIsInstance(factory.router, SimpleRouter)
         self.assertEqual(factory.perMessageCompressionAccept, accept)
-        self.assertTrue(factory.allowHixie76)
 
     def test_generate_url(self):
         host, ip = u'127.0.0.1', 8080

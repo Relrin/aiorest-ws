@@ -4,8 +4,8 @@ import unittest
 from aiorest_ws.exceptions import InvalidPathArgument, InvalidHandler, \
     NotSupportedArgumentType
 from aiorest_ws.validators import BaseValidator, EndpointNameValidator, \
-    HandlerValidator, MethodValidator, PathValidator, RouteArgumentsValidator, \
-    check_and_set_subclass
+    RouteArgumentsValidator, HandlerValidator, MethodValidator, \
+    PathValidator, check_and_set_subclass
 from aiorest_ws.request import RequestHandlerFactory
 from aiorest_ws.views import MethodBasedView
 
