@@ -41,7 +41,8 @@ class AbstractRouter(metaclass=ABCMeta):
     _middlewares = []
 
     def __init__(self, *args, **kwargs):
-        pass
+        self._urls = []
+        self._routes = {}
 
     @property
     def middlewares(self):

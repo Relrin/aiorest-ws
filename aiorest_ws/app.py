@@ -136,26 +136,17 @@ class Application(object):
 
     def _set_factory_router(self, factory, **options):
         """Set users router for factory, if defined."""
-        router = options.get('router')
+        router = options.get('router', None)
+        assert router, "Argument `router` must be defined for Application."
 
-        if router:
-            factory.router = router
-            factory.router._middlewares = self.middlewares
-
-    def _allow_hixie76(self, factory):
-        """Allow using hixie-76 if supported.
-
-        For more details check the link below:
-        https://tools.ietf.org/html/draft-hixie-thewebsocketprotocol-76
-        """
-        factory.setProtocolOptions(allowHixie76=True)
+        factory.router = router
+        factory.router._middlewares = self.middlewares
 
     def generate_factory(self, url, **options):
         """Create and initialize factory instance."""
         factory = self._init_factory(url, **options)
         self._enable_compressing(factory, **options)
         self._set_factory_router(factory, **options)
-        self._allow_hixie76(factory)
         return factory
 
     def generate_url(self, host, port, path=''):
@@ -177,8 +168,9 @@ class Application(object):
         ssl_context = self._get_ssl_context()
 
         loop = asyncio.get_event_loop()
-        server_coroutine = loop.create_server(factory, host, port,
-                                              ssl=ssl_context)
+        server_coroutine = loop.create_server(
+            factory, host, port, ssl=ssl_context
+        )
         server = loop.run_until_complete(server_coroutine)
 
         print(strftime("%d %b, %Y - %X", gmtime()))

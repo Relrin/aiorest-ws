@@ -28,11 +28,6 @@ class SimpleRouter(AbstractRouter):
     args_validator = RouteArgumentsValidator()
     url_parser = URLParser()
 
-    def __init__(self, *args, **kwargs):
-        super(SimpleRouter, self).__init__()
-        self._urls = []
-        self._routes = {}
-
     def _correct_path(self, path):
         """Convert path to valid value.
 
