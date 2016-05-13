@@ -15,7 +15,7 @@ Features
 Requirements
 -----
 - Python >= 3.4.0
-- Autobahn.ws >= 0.10.0
+- Autobahn.ws >= 0.12.0
 
 License
 -----
@@ -120,9 +120,11 @@ from aiorest_ws.app import Application
 from aiorest_ws.routers import SimpleRouter
 from aiorest_ws.views import MethodBasedView
 
+
 class HelloWorld(MethodBasedView):
     def get(self, request, *args, **kwargs):
         return "Hello, world!"
+
 
 router = SimpleRouter()
 router.register('/hello', HelloWorld, 'GET')
