@@ -8,14 +8,13 @@
 # -----------------------------------------------
 # Default datetime input and output formats
 ISO_8601 = 'iso-8601'
-
 DATE_FORMAT = ISO_8601
-DATE_INPUT_FORMATS = (ISO_8601,)
+DATE_INPUT_FORMATS = (ISO_8601, )
 
 DATETIME_FORMAT = ISO_8601
-DATETIME_INPUT_FORMATS = (ISO_8601,)
+DATETIME_INPUT_FORMATS = (ISO_8601, )
 
-TIME_FORMAT = ISO_8601,
+TIME_FORMAT = ISO_8601
 TIME_INPUT_FORMATS = (ISO_8601,)
 
 # Local time zone for this installation. All choices can be found here:

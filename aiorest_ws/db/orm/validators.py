@@ -28,8 +28,8 @@ class BaseValidator(object):
         has fault.
         :param code: error code
         """
-        self.message = kwargs.get('message', None)
-        self.code = kwargs.get('code', None)
+        self.message = kwargs.get('message', self.message)
+        self.code = kwargs.get('code', self.code)
 
     def __call__(self, value):
         raise NotImplementedError('`__call__(self, value)` method must '
@@ -49,7 +49,7 @@ class MaxValueValidator(BaseValidator):
     def __init__(self, max_value, *args, **kwargs):
         super(MaxValueValidator, self).__init__(*args, **kwargs)
         self.max_value = max_value
-        if type(self.max_value) is None:
+        if self.max_value is None:
             raise ValueError('Attribute `max_value` can not be NoneType.')
 
     def __call__(self, value):
@@ -64,7 +64,7 @@ class MinValueValidator(BaseValidator):
     def __init__(self, min_value, *args, **kwargs):
         super(MinValueValidator, self).__init__(*args, **kwargs)
         self.min_value = min_value
-        if type(self.min_value) is None:
+        if self.min_value is None:
             raise ValueError('Attribute `min_value` can not be NoneType.')
 
     def __call__(self, value):
@@ -84,7 +84,7 @@ class MaxLengthValidator(BaseValidator):
                              'numbers.')
 
     def __call__(self, value):
-        if self.max_length and value > self.max_length:
+        if self.max_length and len(value) > self.max_length:
             message = self.message.format(max_length=self.max_length)
             raise ValidationError(message)
 
@@ -100,7 +100,7 @@ class MinLengthValidator(BaseValidator):
                              'numbers.')
 
     def __call__(self, value):
-        if self.min_length and value > self.min_length:
+        if self.min_length and len(value) < self.min_length:
             message = self.message.format(min_length=self.min_length)
             raise ValidationError(message)
 
@@ -114,7 +114,7 @@ class EnumValidator(BaseValidator):
 
     @property
     def keys(self):
-        return [member.name for member in self.enum.__members__]
+        return [member for member in self.enum.__members__]
 
     def is_enum_key(self, value):
         return value in self.keys

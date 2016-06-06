@@ -22,7 +22,7 @@ def test_utc_class():
 
 try:
     # If pytz module has installed
-    import pytz
+    import pytz  # NOQA
 
     def test_get_default_timezone():
         timezone = get_default_timezone()

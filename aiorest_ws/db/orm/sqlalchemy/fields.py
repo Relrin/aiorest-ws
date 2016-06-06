@@ -8,15 +8,16 @@ serializing/deserializing object of ORM.
 """
 from aiorest_ws.conf import settings
 from aiorest_ws.db.orm import fields
-from sqlalchemy import processors
+from aiorest_ws.utils.fields import method_overridden
+
+from sqlalchemy import TypeDecorator
 
 __all__ = (
     'IntegerField', 'BigIntegerField', 'SmallIntegerField', 'BooleanField',
-    'NullBooleanField', 'CharField', 'TextField', 'EnumField', 'FloatField',
-    'DecimalField', 'TimeField', 'DateField', 'DateTimeField', 'IntervalField',
-    'JSONField', 'ModelField', 'PickleField', 'LargeBinaryField',
-    'ReadOnlyField', 'ListField', 'DictField', 'HStoreField',
-    'SerializerMethodField'
+    'NullBooleanField', 'CharField', 'EnumField', 'FloatField', 'DecimalField',
+    'TimeField', 'DateField', 'DateTimeField', 'IntervalField', 'JSONField',
+    'ModelField', 'PickleField', 'LargeBinaryField', 'ReadOnlyField',
+    'ListField', 'DictField', 'HStoreField', 'SerializerMethodField'
 )
 
 
@@ -37,10 +38,6 @@ class BooleanField(fields.BooleanField):
 
 
 class CharField(fields.CharField):
-    pass
-
-
-class TextField(fields.TextField):
     pass
 
 
@@ -107,25 +104,33 @@ class ModelField(fields.ModelField):
 
     @property
     def dialect(self):
-        return settings.ENGINE.dialect
+        return settings.SQLALCHEMY_ENGINE.dialect
+
+    def type_has_custom_behaviour(self, func_name):
+        return hasattr(self.field_type, func_name) and \
+            method_overridden(func_name, TypeDecorator, self.field_type)
 
     def to_internal_value(self, data):
-        # Custom implementation of converting data
-        if hasattr(self.field_type, 'process_literal_param'):
-            self.field_type.process_literal_param(data, self.dialect)
-        return self.field_type.literal_processor(self.dialect)(data)
+        # Custom implementation of converting data for database
+        if self.type_has_custom_behaviour('process_bind_param'):
+            return self.field_type.process_bind_param(data, self.dialect)
+
+        processor_func = self.field_type.bind_processor(self.dialect)
+        if processor_func:
+            return processor_func(data)
+        return data
 
     def to_representation(self, obj):
-        # Custom implementation of representation of data
-        if hasattr(self.field_type, 'process_result_value'):
-            self.field_type.process_result_value(obj, self.dialect)
+        # Custom implementation of representation of data for a user
+        if self.type_has_custom_behaviour('process_result_value'):
+            return self.field_type.process_result_value(obj, self.dialect)
 
-        default_processor = self.field_type.result_processor(
+        processor_func = self.field_type.result_processor(
             self.dialect, self.field_type
         )
-        if default_processor:
-            return default_processor(obj)
-        return processors.to_str(obj)
+        if processor_func:
+            return processor_func(obj)
+        return obj
 
 
 class ReadOnlyField(fields.ReadOnlyField):
