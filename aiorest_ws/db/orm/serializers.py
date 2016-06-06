@@ -139,8 +139,7 @@ class BaseSerializer(AbstractSerializer):
 
     @property
     def data(self):
-        if hasattr(self, 'initial_data') and \
-                not hasattr(self, '_validated_data'):
+        if hasattr(self, 'initial_data') and not hasattr(self, '_validated_data'):  # NOQA
             msg = (
                 'When a serializer is passed a `data` keyword argument you '
                 'must call `.is_valid()` before attempting to access the '
@@ -151,11 +150,9 @@ class BaseSerializer(AbstractSerializer):
             raise AssertionError(msg)
 
         if not hasattr(self, '_data'):
-            if self.instance is not None and \
-                    not getattr(self, '_errors', None):
+            if self.instance is not None and not getattr(self, '_errors', None):  # NOQA
                 self._data = self.to_representation(self.instance)
-            elif hasattr(self, '_validated_data') and \
-                    not getattr(self, '_errors', None):
+            elif hasattr(self, '_validated_data') and not getattr(self, '_errors', None):  # NOQA
                 self._data = self.to_representation(self.validated_data)
             else:
                 self._data = self.get_initial()
@@ -350,7 +347,7 @@ class Serializer(BaseSerializer, metaclass=SerializerMetaclass):
                 datatype=type(data).__name__
             )
             raise ValidationError({
-                settings.NON_FIELD_ERRORS_KEY: [message]
+                settings.REST_CONFIG['NON_FIELD_ERRORS_KEY']: [message]
             })
 
         ret = OrderedDict()
@@ -421,9 +418,6 @@ class Serializer(BaseSerializer, metaclass=SerializerMetaclass):
         if isinstance(field, Serializer):
             return NestedBoundField(field, value, error)
         return BoundField(field, value, error)
-
-    # Include a backlink to the serializer class on return objects.
-    # Allows renderers such as HTMLFormRenderer to get the full field info.
 
     @property
     def data(self):
@@ -560,13 +554,13 @@ class ListSerializer(BaseSerializer):
                 input_type=type(data).__name__
             )
             raise ValidationError({
-                settings.NON_FIELD_ERRORS_KEY: [message]
+                settings.REST_CONFIG['NON_FIELD_ERRORS_KEY']: [message]
             })
 
         if not self.allow_empty and len(data) == 0:
             message = self.error_messages['empty']
             raise ValidationError({
-                settings.NON_FIELD_ERRORS_KEY: [message]
+                settings.REST_CONFIG['NON_FIELD_ERRORS_KEY']: [message]
             })
 
         ret = []
@@ -648,9 +642,6 @@ class ListSerializer(BaseSerializer):
     def __repr__(self):
         return list_repr(self, indent=1)
 
-    # Include a backlink to the serializer class on return objects.
-    # Allows renderers such as HTMLFormRenderer to get the full field info.
-
     @property
     def data(self):
         ret = super(ListSerializer, self).data
@@ -677,7 +668,7 @@ class ModelSerializer(Serializer):
     you need you should either declare the extra/differing fields explicitly on
     the serializer class, or simply use a `Serializer` class.
     """
-    serializer_field_mapping = {}  # override according to your ORM
+    serializer_field_mapping = {}  # override according with your ORM
     serializer_related_field = None  # override to your PrimaryKeyRelatedField
     serializer_related_to_field = None  # override to your SlugRelatedField
     serializer_url_field = None  # override to your HyperlinkedIdentityField
@@ -687,13 +678,17 @@ class ModelSerializer(Serializer):
     # You can modify this using the API setting.
     url_field_name = None
 
-    @property
-    def _model_meta(self):
+    def is_abstract_model(self, model):
         """
-        Utility property, which must return a module, which using for
-        extracting a metadata from obtained model.
+        Check the passed model is abstract.
         """
-        raise NotImplementedError('`_model_meta` must be implemented.')
+        raise NotImplementedError('`is_abstract_model()` must be implemented.')
+
+    def get_field_info(self, model):
+        """
+        Get metadata about field in the passed model.
+        """
+        raise NotImplementedError('`get_field_info()` must be implemented.')
 
     # Default `create` and `update` behavior...
     def create(self, validated_data):
@@ -727,7 +722,7 @@ class ModelSerializer(Serializer):
             )
         )
 
-        if self._model_meta.is_abstract_model(self.Meta.model):
+        if self.is_abstract_model(self.Meta.model):
             raise ValueError(
                 'Cannot use ModelSerializer with Abstract Models.'
             )
@@ -741,7 +736,7 @@ class ModelSerializer(Serializer):
             assert depth <= 10, "'depth' may not be greater than 10."
 
         # Retrieve metadata about fields & relationships on the model class.
-        info = self._model_meta.get_field_info(model)
+        info = self.get_field_info(model)
         field_names = self.get_field_names(declared_fields, info)
 
         # Determine any extra field arguments and hidden fields that
@@ -776,7 +771,6 @@ class ModelSerializer(Serializer):
 
         # Add in any hidden fields.
         fields.update(hidden_fields)
-
         return fields
 
     def get_field_names(self, declared_fields, info):

@@ -23,7 +23,7 @@ from aiorest_ws.utils.fields import to_choices_dict, flatten_choices_dict
 
 __all__ = (
     'IntegerField', 'BigIntegerField', 'SmallIntegerField', 'BooleanField',
-    'NullBooleanField', 'CharField', 'TextField', 'ChoiceField', 'FloatField',
+    'NullBooleanField', 'CharField', 'ChoiceField', 'FloatField',
     'LargeBinaryField', 'DecimalField', 'TimeField', 'DateField',
     'PickleField', 'DateTimeField', 'TimeDeltaField', 'ListField', 'DictField',
     'JSONField', 'HStoreField', 'ModelField', 'HiddenField',
@@ -208,27 +208,6 @@ class CharField(AbstractField):
         return str(value)
 
 
-class TextField(AbstractField):
-    default_error_messages = {
-        'blank': u"This field doesn't accept blank values."
-    }
-
-    def __init__(self, **kwargs):
-        self.blank = kwargs.pop('blank', True)
-        super(TextField, self).__init__(**kwargs)
-
-    def to_internal_value(self, value):
-        if not self.blank:
-            self.raise_error('blank')
-        if isinstance(value, str) or value is None:
-            return value
-        else:
-            return value
-
-    def to_representation(self, value):
-        return str(value)
-
-
 class ChoiceField(AbstractField):
     default_error_messages = {
         'invalid_choice': '"{input}" is not a valid choice.'
@@ -265,7 +244,7 @@ class ChoiceField(AbstractField):
 
 class FloatField(AbstractField):
     default_error_messages = {
-        'invalid': u"Passed value must be an float.",
+        'invalid': u"Passed value must be a float.",
         'max_value': u"Ensure this value is less than or equal "
                      u"to {max_value}.",
         'min_value': u"Ensure this value is greater than or equal "
@@ -307,8 +286,13 @@ class FloatField(AbstractField):
 
 
 class PickleField(AbstractField):
+    default_error_messages = {
+        'invalid': u"Passed value must be a bytes.",
+    }
 
     def to_internal_value(self, data):
+        if not isinstance(data, bytes):
+            self.raise_error('invalid')
         return data
 
     def to_representation(self, value):
@@ -321,7 +305,7 @@ class LargeBinaryField(AbstractField):
     }
 
     def __init__(self, length=None, *args, **kwargs):
-        self.length = None
+        self.length = length
         super(LargeBinaryField, self).__init__(*args, **kwargs)
 
     def to_internal_value(self, data):
@@ -538,7 +522,8 @@ class DecimalField(AbstractField):
         context.prec = self.max_digits
         return value.quantize(
             decimal.Decimal('.1') ** self.decimal_places,
-            context=context)
+            context=context
+        )
 
 
 class DateField(AbstractField):
@@ -707,7 +692,7 @@ class TimeDeltaField(AbstractField):
         self.display = kwargs.pop("display", "long")
         self.separator = kwargs.pop("separator", ", ")
 
-        assert self.display not in self.ACCEPTABLE_DISPLAY_TYPES, (
+        assert self.display in self.ACCEPTABLE_DISPLAY_TYPES, (
             "Attribute `display` can take one of the following values: "
             "'sql, 'iso8601', 'minimal', 'short' or 'long'."
         )
@@ -717,7 +702,7 @@ class TimeDeltaField(AbstractField):
     def to_internal_value(self, data):
         try:
             data = dateparse.parse_timedelta(data)
-        except TypeError:
+        except (AttributeError, TypeError):
             self.raise_error('timedelta', type=type(data))
         return data
 
@@ -769,7 +754,7 @@ class CreateOnlyDefault(object):
     def __call__(self):
         if self.is_update:
             raise SkipField()
-        if callable(self.default):
+        elif callable(self.default):
             return self.default()
         return self.default
 
@@ -931,7 +916,6 @@ class JSONField(AbstractField):
     def to_representation(self, value):
         if self.binary:
             value = json.dumps(value)
-            # On python 3.x json.dumps() returns unicode strings.
             if isinstance(value, str):
                 value = bytes(value.encode('utf-8'))
         return value
@@ -971,7 +955,7 @@ class SerializerMethodField(AbstractField):
     "get_{field_name}", and should take a single argument, which is the
     object being serialized.
     For example:
-    class ExampleSerializer(self):
+    class ExampleSerializer(ModelSerializer):
         extra_info = SerializerMethodField()
         def get_extra_info(self, obj):
             return ...  # Calculate some data to return.

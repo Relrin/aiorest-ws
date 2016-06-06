@@ -106,16 +106,16 @@ class ModelSerializer(BaseModelSerializer):
         types.PickleType: PickleField,
         types.SmallInteger: SmallIntegerField,
         types.String: CharField,
-        types.Text: TextField,
+        types.Text: CharField,
         types.Time: TimeField,
         types.Unicode: CharField,
-        types.UnicodeText: TextField,
+        types.UnicodeText: CharField,
         # SQL standard and multiple vendor types
         types.BIGINT: BigIntegerField,
         types.BLOB: LargeBinaryField,
         types.BOOLEAN: BooleanField,
         types.CHAR: CharField,
-        types.CLOB: TextField,
+        types.CLOB: CharField,
         types.DATE: DateField,
         types.DATETIME: DateTimeField,
         types.DECIMAL: DecimalField,
@@ -127,7 +127,7 @@ class ModelSerializer(BaseModelSerializer):
         types.NUMERIC: DecimalField,
         types.REAL: FloatField,
         types.SMALLINT: SmallIntegerField,
-        types.TEXT: TextField,
+        types.TEXT: CharField,
         types.TIMESTAMP: DateTimeField,
         types.VARBINARY: LargeBinaryField,
         types.VARCHAR: CharField,
@@ -143,14 +143,17 @@ class ModelSerializer(BaseModelSerializer):
     serializer_choice_field = EnumField
     default_list_serializer = ListSerializer
 
-    @property
-    def _model_meta(self):
+    def is_abstract_model(self, model):
         """
-        Returns from the `aiorest_ws.orm.sqlalchemy` package utility
-        `model_meta` module, which using for extracting a metadata from
-        obtained model.
+        Check the passed model is abstract.
         """
-        return model_meta
+        raise model_meta.is_abstract_model(model)
+
+    def get_field_info(self, model):
+        """
+        Get metadata about field in the passed model.
+        """
+        return model_meta.get_field_info(model)
 
     # Default `create` and `update` behavior...
     def create(self, validated_data):

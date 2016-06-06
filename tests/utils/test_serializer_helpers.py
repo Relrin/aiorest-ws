@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import inspect
 import unittest
 
 from aiorest_ws.utils.serializer_helpers import ReturnList, ReturnDict, \
@@ -247,7 +246,7 @@ class TestBindingDict(unittest.TestCase):
 
     def test_iter(self):
         self.instance['pk'] = FakeField(int, {}, {}, prefix='none')
-        self.assertTrue(inspect.isgenerator(iter(self.instance)))
+        self.assertTrue([field for field in self.instance], ['pk', ])
 
     def test_len(self):
         self.instance['pk'] = FakeField(int, {}, {}, prefix='none')
