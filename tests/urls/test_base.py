@@ -5,8 +5,8 @@ from aiorest_ws.urls.base import get_urlconf, set_urlconf, _urlconfs
 def test_set_urlconf():
     data = {"dict": object()}
     set_urlconf(data)
-    assert hasattr(_urlconfs, "data") is True
-    assert _urlconfs.data == data
+    assert "data" in _urlconfs.keys()
+    assert _urlconfs['data'] == data
 
 
 def test_get_urlconf():

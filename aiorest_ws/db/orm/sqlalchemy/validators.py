@@ -36,9 +36,9 @@ class UniqueORMValidator(BaseUniqueFieldValidator, ORMSessionMixin):
     Validator that corresponds to `unique=True` on a model field.
     Should be applied to an individual field on the serializer.
     """
-    def __init__(self, queryset, field_name, message=None):
-        super(UniqueORMValidator, self).__init__(queryset, message)
-        self.model = self.queryset
+    def __init__(self, model, field_name, message=None):
+        super(UniqueORMValidator, self).__init__(model, message)
+        self.model = model
         self.field_name = field_name
         self.instance = None
 

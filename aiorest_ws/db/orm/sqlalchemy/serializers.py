@@ -143,14 +143,17 @@ class ModelSerializer(BaseModelSerializer):
     serializer_choice_field = EnumField
     default_list_serializer = ListSerializer
 
-    @property
-    def _model_meta(self):
+    def is_abstract_model(self, model):
         """
-        Returns from the `aiorest_ws.orm.sqlalchemy` package utility
-        `model_meta` module, which using for extracting a metadata from
-        obtained model.
+        Check the passed model is abstract.
         """
-        return model_meta
+        raise model_meta.is_abstract_model(model)
+
+    def get_field_info(self, model):
+        """
+        Get metadata about field in the passed model.
+        """
+        return model_meta.get_field_info(model)
 
     # Default `create` and `update` behavior...
     def create(self, validated_data):

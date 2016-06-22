@@ -19,7 +19,7 @@ class ORMSessionMixin(object):
             Query(User).filter(id==5).first()
         """
         # Avoid there "connection leaks", when developer described
-        # queries like session.Query(User).filter(id==5).first()
+        # queries like session.query(User).filter(id==5).first()
         if self.queryset.session:
             self.queryset.session.close()
 

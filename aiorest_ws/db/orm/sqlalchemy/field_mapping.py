@@ -13,7 +13,7 @@ from aiorest_ws.utils.text import capfirst
 
 __all__ = (
     'STRING_TYPES', 'get_detail_view_name', 'get_field_kwargs',
-    'get_relation_kwargs'
+    'get_relation_kwargs', 'get_nested_relation_kwargs'
 )
 
 STRING_TYPES = (
@@ -70,7 +70,7 @@ def get_field_kwargs(field_name, model_field, model_class):
     # Ensure that max_length is passed explicitly as a keyword arg, rather
     # than as a validator.
     max_length = getattr(model_field.type, 'length', None)
-    if max_length is not None and isinstance(model_field, STRING_TYPES):
+    if max_length is not None and isinstance(model_field.type, STRING_TYPES):
         kwargs['max_length'] = max_length
 
     if getattr(model_field, 'unique', False):

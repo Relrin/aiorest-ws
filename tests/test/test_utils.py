@@ -115,6 +115,6 @@ class TestOverrideSettings(unittest.TestCase):
         test_instance.tearDown()
         self.assertIsNotNone(test_instance._overridden_settings)
         self.assertEqual(
-            {'db': 'PostgreSQL', 'key': 'value'},
-            test_instance._overridden_settings
+            test_instance._overridden_settings,
+            {'db': 'PostgreSQL', 'key': 'value'}
         )

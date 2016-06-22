@@ -17,7 +17,6 @@ as on the picture):
        ├─ HyperlinkedRelatedField
        │  └─ HyperlinkedIdentityField
        └─ SlugRelatedField  # Inherit from it, if your ORM provide slug field
-
 """
 import collections
 from urllib.parse import urlparse
@@ -27,8 +26,7 @@ from aiorest_ws.db.orm.abstract import AbstractField, empty
 from aiorest_ws.exceptions import ImproperlyConfigured
 from aiorest_ws.urls.exceptions import NoReverseMatch, NoMatch
 from aiorest_ws.urls.utils import reverse, resolve
-from aiorest_ws.utils.fields import get_attribute, is_simple_callable, \
-    method_overridden
+from aiorest_ws.utils.fields import method_overridden
 
 __all__ = (
     'MANY_RELATION_KWARGS', 'Hyperlink', 'PKOnlyObject', 'RelatedField',
@@ -56,7 +54,7 @@ class Hyperlink(str):
         return ret
 
     def __getnewargs__(self):
-        return(str(self), self.name,)
+        return str(self), self.name
 
     is_hyperlink = True
 
@@ -132,22 +130,7 @@ class RelatedField(AbstractField):
         return False
 
     def get_attribute(self, instance):
-        if self.use_pk_only_optimization() and self.source_attrs:
-            # Optimized case, return a mock object only containing the
-            # pk attribute.
-            try:
-                instance = get_attribute(instance, self.source_attrs[:-1])
-                value = instance.serializable_value(self.source_attrs[-1])
-                if is_simple_callable(value):
-                    # Handle edge case where the relationship `source` argument
-                    # points to a `get_relationship()` method on the model
-                    value = value().pk
-                return PKOnlyObject(pk=value)
-            except AttributeError:
-                pass
-
-        # Standard case, return the object instance.
-        return get_attribute(instance, self.source_attrs)
+        raise NotImplementedError('`get_attribute()` must be implemented.')
 
     @property
     def choices(self):
@@ -300,7 +283,7 @@ class HyperlinkedRelatedField(object):
         """
         Return the object corresponding to a matched URL.
         Takes the matched URL conf arguments, and should return an
-        object instance, or raise an `ObjectDoesNotExist` exception.
+        object instance, or raise exception for a not existing object.
         """
         raise NotImplementedError('`get_object()` must be implemented.')
 
@@ -342,7 +325,7 @@ class HyperlinkedRelatedField(object):
             url = urlparse(data[url_field_name]).path
         except KeyError:
             self.raise_error('no_primary_key', url_field=url_field_name)
-        except AttributeError:
+        except (AttributeError, TypeError):
             self.raise_error('incorrect_type', data_type=type(data).__name__)
 
         if not url.startswith('/'):
