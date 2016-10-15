@@ -145,8 +145,9 @@ def is_abstract_model(model):
     """
     Checks model whether it abstract or not.
     """
-    return hasattr(model, '__table__') and hasattr(model, '__abstract__') \
-        and model.__abstract__
+    is_instantiated_table = hasattr(model, '__table__')
+    has_specified_abstract_attribute = getattr(model, '__abstract__', False)
+    return not is_instantiated_table and has_specified_abstract_attribute
 
 
 def get_relations_data(model, validated_data):
