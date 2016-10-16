@@ -147,7 +147,7 @@ class ModelSerializer(BaseModelSerializer):
         """
         Check the passed model is abstract.
         """
-        raise model_meta.is_abstract_model(model)
+        return model_meta.is_abstract_model(model)
 
     def get_field_info(self, model):
         """

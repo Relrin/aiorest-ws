@@ -63,8 +63,8 @@ class TestGetFieldKwargs(unittest.TestCase):
         Base.metadata.create_all(
             ENGINE, tables=[cls.TestGetFieldKwargsModel.__table__, ]
         )
-        cls.session = SESSION()
-        cls.session.add_all([
+        session = SESSION()
+        session.add_all([
             cls.TestGetFieldKwargsModel(
                 username='Adam',
                 address='UK, London',
@@ -84,7 +84,7 @@ class TestGetFieldKwargs(unittest.TestCase):
                 gender='female'
             ),
         ])
-        cls.session.commit()
+        session.commit()
 
     @classmethod
     def tearDownClass(cls):

@@ -512,7 +512,7 @@ class TestIsAbstractModelFunction(unittest.TestCase):
 class TestGetRelationsDataFunction(unittest.TestCase):
 
     class TestGetRelationsDataUserModel(Base):
-        __tablename__ = 'users'
+        __tablename__ = 'test_get_relations_data_users_model'
         id = Column(Integer, primary_key=True)
         name = Column(String(50), unique=True)
         fullname = Column(String(50), default='Unknown')
@@ -522,10 +522,12 @@ class TestGetRelationsDataFunction(unittest.TestCase):
         )
 
     class TestGetRelationsDataAddressModel(Base):
-        __tablename__ = 'addresses'
+        __tablename__ = 'test_get_relations_data_addresses_model'
         id = Column(Integer, primary_key=True)
         email_address = Column(String, nullable=False)
-        user_id = Column(Integer, ForeignKey('users.id'))
+        user_id = Column(
+            Integer, ForeignKey('test_get_relations_data_users_model.id')
+        )
         user = relationship(
             "TestGetRelationsDataUserModel", back_populates="addresses"
         )

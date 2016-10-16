@@ -8,9 +8,9 @@ from aiorest_ws.db.orm import relations
 from aiorest_ws.db.orm.sqlalchemy.mixins import ORMSessionMixin, \
     SQLAlchemyMixin
 from aiorest_ws.db.orm.sqlalchemy.exceptions import ObjectDoesNotExist
+from aiorest_ws.db.orm.relations import PKOnlyObject
 from aiorest_ws.exceptions import ImproperlyConfigured
 from aiorest_ws.utils.fields import get_attribute
-
 
 __all__ = (
     'ManyRelatedField', 'RelatedField', 'StringRelatedField',
@@ -34,8 +34,7 @@ class ManyRelatedField(relations.ManyRelatedField):
         if object_state.transient or object_state.pending:
             return []
 
-        relationship = get_attribute(instance, self.source_attrs)
-        return relationship
+        return get_attribute(instance, self.source_attrs)
 
     def __deepcopy__(self, memo):
         # Avoid to deepcopy instance attributes. Because some SQLAlchemy
@@ -53,23 +52,19 @@ class RelatedField(ORMSessionMixin, relations.RelatedField):
         # to some errors in runtime (e.g. maximum recursion limit)
         return copy(self)
 
-    # def get_attribute(self, instance):
-        # TODO: Fix there for a SQLAlchemy, because this is for Django
-        # if self.use_pk_only_optimization() and self.source_attrs:
-        #     # Optimized case, return a mock object only containing the
-        #     # pk attribute.
-        #     try:
-        #         instance = get_attribute(instance, self.source_attrs[:-1])
-        #         value = instance.serializable_value(self.source_attrs[-1])
-        #         if is_simple_callable(value):
-        #             # Handle edge case where the relationship `source` argument  # NOQA
-        #             # points to a `get_relationship()` method on the model
-        #             value = value().pk
-        #         return PKOnlyObject(pk=value)
-        #     except AttributeError:
-        #         pass
+    def get_attribute(self, instance):
+        if self.use_pk_only_optimization() and self.source_attrs:
+            # Optimized case, return a mock object only containing the
+            # pk attribute.
+            try:
+                instance = get_attribute(instance, self.source_attrs[:-1])
+                value = getattr(instance, self.source_attrs[-1])
+                return PKOnlyObject(pk=value)
+            except AttributeError:
+                pass
+
         # Standard case, return the object instance.
-        # return get_attribute(instance, self.source_attrs)
+        return get_attribute(instance, self.source_attrs)
 
 
 class StringRelatedField(relations.StringRelatedField, RelatedField):
