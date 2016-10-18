@@ -111,6 +111,7 @@ class TestUniqueORMValidator(unittest.TestCase):
         )
         self.assertIsNone(validator('John'))
 
+    @override_settings(SQLALCHEMY_SESSION=SESSION)
     def test_validation_raises_validation_error(self):
         validator = UniqueORMValidator(
             self.TableWithUniqueName, 'name'
