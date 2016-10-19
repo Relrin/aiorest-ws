@@ -287,7 +287,7 @@ class TestBaseSerializer(unittest.TestCase):
         self.assertTrue(instance.is_valid(raise_exception=True))
 
 
-class TestSerialzier(unittest.TestCase):
+class TestSerializer(unittest.TestCase):
 
     def test_fields_property(self):
 
@@ -654,7 +654,7 @@ class TestRaiseErrorsOnNestedWritesFunction(unittest.TestCase):
             )
 
 
-class TestListSerialzier(unittest.TestCase):
+class TestListSerializer(unittest.TestCase):
 
     def test_init_raises_assertion_error_for_missed_child_argument(self):
 
@@ -767,6 +767,7 @@ class TestListSerialzier(unittest.TestCase):
             instance.to_internal_value({'model': {'pk': 1}, })
 
     def test_to_internal_value_raises_validation_error_for_empty_data(self):
+
         class FakeSerializer(Serializer):
             default_list_serializer = ListSerializer
             pk = fields.IntegerField()

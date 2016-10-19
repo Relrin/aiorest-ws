@@ -64,7 +64,7 @@ def get_field_kwargs(field_name, model_field, model_class):
     if isinstance(model_field.type, types.Enum):
         # If this model field contains choices, then return early.
         # Further keyword arguments are not valid.
-        kwargs['choices'] = list(enumerate(model_field.type.enums))
+        kwargs['choices'] = model_field.type.enums
         return kwargs
 
     # Ensure that max_length is passed explicitly as a keyword arg, rather
