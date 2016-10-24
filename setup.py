@@ -2,7 +2,7 @@
 import os
 import re
 import ast
-from setuptools import setup, find_packages
+from setuptools import setup
 
 _version_re = re.compile(r'__version__\s+=\s+(.*)')
 
@@ -10,13 +10,25 @@ with open('aiorest_ws/__init__.py', 'rb') as f:
     version = str(ast.literal_eval(_version_re.search(
         f.read().decode('utf-8')).group(1)))
 
-requirements = ['autobahn>=0.12.0', ]
+requirements = ['autobahn>=0.12.1', ]
 test_requirements = requirements + ['pytest', 'pytest-asyncio',
                                     'pytest-cov', 'pytest-xdist']
 
 
 def read(f):
     return open(os.path.join(os.path.dirname(__file__), f)).read().strip()
+
+
+def get_packages(package):
+    """
+    Return root package and all sub-packages.
+    """
+    return [
+        dirpath
+        for dirpath, dirnames, filenames in os.walk(package)
+        if os.path.exists(os.path.join(dirpath, '__init__.py'))
+    ]
+
 
 args = dict(
     name='aiorest-ws',
@@ -26,7 +38,7 @@ args = dict(
     author='Valeryi Savich',
     author_email='relrin78@gmail.com',
     description='REST framework with WebSockets support',
-    packages=find_packages(),
+    packages=get_packages('aiorest_ws'),
     include_package_data=True,
     zip_safe=False,
     platforms='any',

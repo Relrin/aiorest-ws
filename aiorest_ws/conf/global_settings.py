@@ -8,9 +8,30 @@
 # -----------------------------------------------
 # Default datetime input and output formats
 ISO_8601 = 'iso-8601'
+DATE_FORMAT = ISO_8601
+DATE_INPUT_FORMATS = (ISO_8601, )
+
+DATETIME_FORMAT = ISO_8601
+DATETIME_INPUT_FORMATS = (ISO_8601, )
+
+TIME_FORMAT = ISO_8601
+TIME_INPUT_FORMATS = (ISO_8601,)
+
+# Local time zone for this installation. All choices can be found here:
+# https://en.wikipedia.org/wiki/List_of_tz_zones_by_name (although not all
+# systems may support all possibilities). When USE_TZ is True, this is
+# interpreted as the default user time zone.
+TIME_ZONE = 'America/Chicago'
+
+# If you set this to True, Django will use timezone-aware datetimes.
+USE_TZ = False
 
 # Encoding charset for string, files, etc.
 DEFAULT_ENCODING = 'utf-8'
+
+UNICODE_JSON = True
+COMPACT_JSON = True
+COERCE_DECIMAL_TO_STRING = True
 
 # -----------------------------------------------
 #  Database
@@ -18,6 +39,22 @@ DEFAULT_ENCODING = 'utf-8'
 # This dictionary very useful, cause we can customize it and set required
 # drivers, paths, credentials, for every user database
 DATABASES = {}
+USE_ORM_ENGINE = False
+
+# SQLAlchemy ORM variables
+SQLALCHEMY_ENGINE = None
+SQLALCHEMY_SESSION = None
+
+# -----------------------------------------------
+#  REST configuration
+# -----------------------------------------------
+REST_CONFIG = {
+    # Exception handling
+    'NON_FIELD_ERRORS_KEY': 'non_field_errors',
+
+    # Hyperlink settings
+    'URL_FIELD_NAME': 'url',
+}
 
 # -----------------------------------------------
 #  Middleware

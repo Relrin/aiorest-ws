@@ -13,10 +13,11 @@ __all__ = (
 class AbstractEndpoint(metaclass=ABCMeta):
     """Base class for endpoints."""
 
-    path = None     # URL, used for get access to API
-    handler = None  # class/function for processing request
-    methods = []    # list of supported methods (GET, POST, etc.)
-    name = None     # short name for route
+    path = None      # URL, used for get access to API
+    handler = None   # class/function for processing request
+    methods = []     # list of supported methods (GET, POST, etc.)
+    name = None      # short name for route
+    _pattern = None  # pattern, which using for checking path on compatible
 
     def __init__(self, path, handler, methods, name):
         self.path = path

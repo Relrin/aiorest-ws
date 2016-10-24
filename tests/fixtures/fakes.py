@@ -9,26 +9,31 @@ class InvalidEndpoint(object):
 
 
 class FakeEndpoint(AbstractEndpoint):
+
     def match(self, path):
         pass
 
 
 class FakeView(MethodBasedView):
+
     def get(self, request, *args, **kwargs):
         pass
 
 
 class FakeGetView(MethodBasedView):
+
     def get(self, request, *args, **kwargs):
         return "fake"
 
 
 class FakeTokenMiddleware(object):
+
     def process_request(self, request, handler):
         setattr(request, 'token', None)
         return request
 
 
 class FakeTokenMiddlewareWithExc(object):
+
     def process_request(self, request, handler):
         raise BaseAPIException('No token provided')

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import pytest
 
 from aiorest_ws.command_line import CommandLine
