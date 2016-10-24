@@ -171,7 +171,7 @@ class TestGetFieldKwargs(unittest.TestCase):
             field_kwargs['model_field'],
             self.TestGetFieldKwargsModel.gender
         )
-        self.assertEqual(field_kwargs['choices'], ('male', 'female'))
+        self.assertEqual(set(field_kwargs['choices']), {'male', 'female'})
 
 
 class TestGetRelationKwargs(unittest.TestCase):
