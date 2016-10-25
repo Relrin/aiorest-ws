@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Helper function for returning the field information that is associated
 with a model class. This includes returning all the forward and reverse
