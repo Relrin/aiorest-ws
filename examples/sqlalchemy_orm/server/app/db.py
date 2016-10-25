@@ -11,7 +11,7 @@ class User(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(50), unique=True)
     fullname = Column(String(50), default='Unknown')
-    password = Column(String(12))
+    password = Column(String(512))
     addresses = relationship("Address", back_populates="user")
 
     @validates('name')
