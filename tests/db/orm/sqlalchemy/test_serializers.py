@@ -5,7 +5,8 @@ from aiorest_ws.exceptions import ImproperlyConfigured
 from aiorest_ws.db.orm.validators import BaseValidator
 from aiorest_ws.db.orm.abstract import empty
 from aiorest_ws.db.orm.exceptions import ValidationError
-from aiorest_ws.db.orm.sqlalchemy.relations import ManyRelatedField
+from aiorest_ws.db.orm.sqlalchemy.relations import ManyRelatedField, \
+    HyperlinkedIdentityField
 from aiorest_ws.db.orm.serializers import Serializer
 from aiorest_ws.db.orm.sqlalchemy.serializers import ListSerializer, \
     ModelSerializer, HyperlinkedModelSerializer, get_validation_error_detail
@@ -596,6 +597,28 @@ class TestModelSerializer(unittest.TestCase):
         self.assertIsInstance(
             instance.fields['user_info'],
             fields.ReadOnlyField
+        )
+
+    def test_build_url_field(self):
+
+        class UserSerializer(HyperlinkedModelSerializer):
+            class Meta:
+                model = self.TestModelSerializerUserModel
+                fields = ('url', 'name', 'addresses')
+                extra_kwargs = {'url': {'view_name': 'users'}}
+
+        data = {
+            'name': 'admin',
+            'addresses': [],
+            'gender': 'male'
+        }
+        instance = UserSerializer(data=data)
+
+        url_serializer = instance.fields['url']
+        self.assertIsInstance(url_serializer, HyperlinkedIdentityField)
+        self.assertEqual(
+            url_serializer.__class__.__name__,
+            "HyperlinkedIdentityField"
         )
 
     def test_build_unknown_field(self):

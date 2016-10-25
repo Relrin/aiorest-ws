@@ -13,7 +13,7 @@ from aiorest_ws.utils.text import capfirst
 
 __all__ = (
     'STRING_TYPES', 'get_detail_view_name', 'get_field_kwargs',
-    'get_relation_kwargs', 'get_nested_relation_kwargs'
+    'get_relation_kwargs', 'get_nested_relation_kwargs', 'get_url_kwargs'
 )
 
 STRING_TYPES = (
@@ -134,3 +134,9 @@ def get_nested_relation_kwargs(relation_info):
     if relation_info.to_many:
         kwargs['many'] = True
     return kwargs
+
+
+def get_url_kwargs(model_field):
+    return {
+        'view_name': get_detail_view_name(model_field)
+    }
