@@ -2,7 +2,8 @@
 import unittest
 
 from aiorest_ws.db.orm.sqlalchemy.field_mapping import get_detail_view_name, \
-    get_field_kwargs, get_relation_kwargs, get_nested_relation_kwargs
+    get_field_kwargs, get_relation_kwargs, get_nested_relation_kwargs, \
+    get_url_kwargs
 from aiorest_ws.utils.structures import RelationInfo
 
 from tests.fixtures.sqlalchemy import ENGINE, SESSION
@@ -276,4 +277,17 @@ class TestGetNestedRelationKwargs(unittest.TestCase):
         self.assertEqual(
             get_nested_relation_kwargs(relation_info),
             {'read_only': True, 'many': True}
+        )
+
+
+class TestGetUrlKwargsName(unittest.TestCase):
+
+    def test_get_url_kwargs_name(self):
+
+        class TestUserModel(object):
+            __tablename__ = 'user'
+
+        self.assertEqual(
+            get_url_kwargs(TestUserModel),
+            {'view_name': 'user-detail'}
         )

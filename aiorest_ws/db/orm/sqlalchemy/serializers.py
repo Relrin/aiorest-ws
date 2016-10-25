@@ -14,7 +14,7 @@ from aiorest_ws.db.orm.serializers import \
     raise_errors_on_nested_writes
 from aiorest_ws.db.orm.sqlalchemy import model_meta
 from aiorest_ws.db.orm.sqlalchemy.field_mapping import get_field_kwargs, \
-    get_relation_kwargs, get_nested_relation_kwargs
+    get_relation_kwargs, get_nested_relation_kwargs, get_url_kwargs
 from aiorest_ws.db.orm.exceptions import ValidationError
 from aiorest_ws.utils.field_mapping import ClassLookupDict
 
@@ -375,6 +375,9 @@ class ModelSerializer(BaseModelSerializer):
         elif hasattr(model_class, field_name):
             return self.build_property_field(field_name, model_class)
 
+        elif field_name == self.url_field_name:
+            return self.build_url_field(field_name, model_class)
+
         return self.build_unknown_field(field_name, model_class)
 
     def build_standard_field(self, *args, **kwargs):
@@ -476,6 +479,15 @@ class ModelSerializer(BaseModelSerializer):
         """
         field_class = ReadOnlyField
         field_kwargs = {}
+
+        return field_class, field_kwargs
+
+    def build_url_field(self, field_name, model_class):
+        """
+        Create a field representing the object's own URL.
+        """
+        field_class = self.serializer_url_field
+        field_kwargs = get_url_kwargs(model_class)
 
         return field_class, field_kwargs
 
