@@ -65,7 +65,7 @@ class CreateUserView(MethodBasedView):
 class AddressView(MethodBasedView):
 
     def get(self, request, id, *args, **kwargs):
-        session = settings.SQLALCHEMY_SESSION_MAKER()
+        session = settings.SQLALCHEMY_SESSION()
         instance = session.query(User).filter(User.id == id).first()
         return AddressSerializer(instance).data
 
