@@ -38,7 +38,6 @@ v1.1:
 - Compatible with most common ORMs
   - [x] SQLAlchemy ORM 
   - [ ] Django ORM [in progress]
-- Filters support over querysets
 
 v1.2:
 - Improve scalability of aiorest-ws (balancer instance or HAProxy?)
