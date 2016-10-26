@@ -36,8 +36,8 @@ Roadmap (by priority) to releases:
 -----
 v1.1:
 - Compatible with most common ORMs
-  - SQLAlchemy ORM [in progress]
-  - Django ORM
+  - [x] SQLAlchemy ORM 
+  - [ ] Django ORM [in progress]
 - Filters support over querysets
 
 v1.2:
