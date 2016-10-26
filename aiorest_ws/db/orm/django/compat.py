@@ -13,7 +13,8 @@ from django.db import models
 
 
 __all__ = [
-    '_resolve_model', 'get_related_model', 'get_remote_field'
+    '_resolve_model', 'get_related_model', 'get_remote_field',
+    'value_from_object'
 ]
 
 
@@ -62,3 +63,9 @@ def get_remote_field(field, **kwargs):
     if django.VERSION < (1, 9):
         return field.rel
     return field.remote_field
+
+
+def value_from_object(field, obj):
+    if django.VERSION < (1, 9):
+        return field._get_val_from_obj(obj)
+    return field.value_from_object(obj)
