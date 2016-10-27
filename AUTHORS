@@ -9,7 +9,7 @@ Contributors of code for aiorest-ws are:
 
 - Dmitry Vechorko <vechorkodima@gmail.com>
 
-The serializer, field classes and exception style was taken from the Django
+The serializers, field classes and exception style was taken from the Django
 REST Framework. The original code is BSD licensed. The following copyrights
 apply:
 
@@ -27,15 +27,16 @@ The original code is Apache 2.0 licensed. The following copyrights apply:
 - (c) 2015 Andrew Svetlov <andrew.svetlov@gmail.com>
 
 The View, MethodViewMeta, MethodBasedView classes are partly modified,
-and the base realization was taken from the Flask project (flask.views module).
+and the base implementation was taken from the Flask project (views module).
 The original code is BSD licensed with the following copyrights from
 that module:
 
 - (c) 2015 Armin Ronacher <armin.ronacher@active-4.com>
 
 The idea for the "global" settings with further overriding, some util modules
-for processing requests was taken from the Django Framework. The original code
-is BSD licensed with the following copyrights from that module:
+for processing requests and accessing to fields was taken from the Django 
+Framework. The original code is BSD licensed with the following copyrights 
+from that module:
 
 - (c) 2015 Django Software Foundation
 
