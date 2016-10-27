@@ -48,6 +48,8 @@ class Hyperlink(str):
     We use this for hyperlinked URLs that may render as a named link
     in some contexts, or render as a plain URL in others.
     """
+    is_hyperlink = True
+
     def __new__(self, url, name):
         ret = str.__new__(self, url)
         ret.name = name
@@ -55,8 +57,6 @@ class Hyperlink(str):
 
     def __getnewargs__(self):
         return str(self), self.name
-
-    is_hyperlink = True
 
 
 class PKOnlyObject(object):
