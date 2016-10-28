@@ -13,6 +13,7 @@ from django.db import models
 
 
 __all__ = [
+    'DecimalValidator', 'postgres_fields', 'JSONField',
     '_resolve_model', 'get_related_model', 'get_remote_field',
     'value_from_object'
 ]
@@ -23,6 +24,19 @@ try:
     from django.core.validators import DecimalValidator
 except ImportError:
     DecimalValidator = None
+
+
+try:
+    from django.contrib.postgres import fields as postgres_fields
+except ImportError:
+    postgres_fields = None
+
+
+# JSONField is only supported from 1.9 onwards
+try:
+    from django.contrib.postgres.fields import JSONField
+except ImportError:
+    JSONField = None
 
 
 def _resolve_model(obj):

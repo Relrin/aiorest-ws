@@ -3,62 +3,23 @@
 Helper functions for mapping model fields to a dictionary of default
 keyword arguments that should be used for their equivalent serializer fields.
 """
-import inspect
-
 from django.core import validators
 from django.db import models
 from django.utils.text import capfirst
 
 from aiorest_ws.db.orm.django.compat import DecimalValidator
 from aiorest_ws.db.orm.django.validators import UniqueValidator
-
+from aiorest_ws.utils.field_mapping import needs_label
 
 __all__ = [
-    'NUMERIC_FIELD_TYPES', 'ClassLookupDict', 'needs_label',
-    'get_detail_view_name', 'get_field_kwargs', 'get_relation_kwargs',
-    'get_nested_relation_kwargs', 'get_url_kwargs'
+    'NUMERIC_FIELD_TYPES', 'get_detail_view_name', 'get_field_kwargs',
+    'get_relation_kwargs', 'get_nested_relation_kwargs', 'get_url_kwargs'
 ]
 
 
 NUMERIC_FIELD_TYPES = (
     models.IntegerField, models.FloatField, models.DecimalField
 )
-
-
-class ClassLookupDict(object):
-    """
-    Takes a dictionary with classes as keys.
-    Lookups against this object will traverses the object's inheritance
-    hierarchy in method resolution order, and returns the first matching value
-    from the dictionary or raises a KeyError if nothing matches.
-    """
-    def __init__(self, mapping):
-        self.mapping = mapping
-
-    def __getitem__(self, key):
-        if hasattr(key, '_proxy_class'):
-            # Deal with proxy classes. Ie. BoundField behaves as if it
-            # is a Field instance when using ClassLookupDict.
-            base_class = key._proxy_class
-        else:
-            base_class = key.__class__
-
-        for cls in inspect.getmro(base_class):
-            if cls in self.mapping:
-                return self.mapping[cls]
-        raise KeyError('Class %s not found in lookup.' % base_class.__name__)
-
-    def __setitem__(self, key, value):
-        self.mapping[key] = value
-
-
-def needs_label(model_field, field_name):
-    """
-    Returns `True` if the label based on the model's verbose name
-    is not equal to the default label it would have based on it's field name.
-    """
-    default_label = field_name.replace('_', ' ').capitalize()
-    return capfirst(model_field.verbose_name) != default_label
 
 
 def get_detail_view_name(model):
@@ -83,7 +44,7 @@ def get_field_kwargs(field_name, model_field):
     # Gets removed for everything else.
     kwargs['model_field'] = model_field
 
-    if model_field.verbose_name and needs_label(model_field, field_name):
+    if model_field.verbose_name and needs_label(model_field.verbose_name, field_name):  # NOQA
         kwargs['label'] = capfirst(model_field.verbose_name)
 
     if model_field.help_text:

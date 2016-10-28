@@ -12,6 +12,7 @@ import uuid
 
 from aiorest_ws.conf import settings
 from aiorest_ws.db.orm import fields
+from aiorest_ws.db.orm.abstract import SkipField
 from aiorest_ws.db.orm.django.compat import get_remote_field, \
     value_from_object
 from aiorest_ws.db.orm.fields import empty
@@ -29,7 +30,13 @@ from django.utils.encoding import is_protected_type
 from django.utils.ipv6 import clean_ipv6_address
 
 __all__ = (
-
+    'IntegerField', 'BooleanField', 'CharField', 'ChoiceField',
+    'MultipleChoiceField', 'FloatField', 'NullBooleanField', 'DecimalField',
+    'TimeField', 'DateField', 'DateTimeField', 'DurationField', 'ListField',
+    'DictField', 'HStoreField', 'JSONField', 'ModelField', 'ReadOnlyField',
+    'SerializerMethodField', 'EmailField', 'RegexField', 'SlugField',
+    'URLField', 'UUIDField', 'IPAddressField', 'FilePathField', 'FileField',
+    'ImageField', 'CreateOnlyDefault'
 )
 
 
@@ -181,6 +188,32 @@ class ReadOnlyField(fields.ReadOnlyField):
 
 class SerializerMethodField(fields.SerializerMethodField):
     pass
+
+
+class CreateOnlyDefault(object):
+    """
+    This class may be used to provide default values that are only used
+    for create operations, but that do not return any value for update
+    operations.
+    """
+    def __init__(self, default):
+        self.default = default
+
+    def set_context(self, serializer_field):
+        self.is_update = serializer_field.parent.instance is not None
+        has_set_context = hasattr(self.default, 'set_context')
+        if callable(self.default) and has_set_context and not self.is_update:
+            self.default.set_context(serializer_field)
+
+    def __call__(self):
+        if self.is_update:
+            raise SkipField()
+        if callable(self.default):
+            return self.default()
+        return self.default
+
+    def __repr__(self):
+        return '%s(%s)' % (self.__class__.__name__, repr(self.default))
 
 
 class EmailField(CharField):

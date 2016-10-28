@@ -1841,10 +1841,12 @@ class TestModelSerialiazer(unittest.TestCase):
             def _get_unique_field(self, model, unique_field_name):
                 return getattr(model, unique_field_name)
 
-            def _get_unique_constraint_names(self, model, model_fields):
+            def _get_unique_constraint_names(self, model, model_fields,
+                                             field_names):
                 return {'pk', }
 
-            def _get_unique_together_constraints(self, model):
+            def _get_unique_together_constraints(self, model, model_fields,
+                                                 field_names):
                 return set()
 
             def _get_default_field_value(self, unique_constraint_field):
@@ -1897,10 +1899,12 @@ class TestModelSerialiazer(unittest.TestCase):
             def _get_unique_field(self, model, unique_field_name):
                 return getattr(model, unique_field_name)
 
-            def _get_unique_constraint_names(self, model, model_fields):
+            def _get_unique_constraint_names(self, model, model_fields,
+                                             field_names):
                 return {'pk', }
 
-            def _get_unique_together_constraints(self, model):
+            def _get_unique_together_constraints(self, model, model_fields,
+                                                 field_names):
                 return {'key', 'value'}
 
             def _get_default_field_value(self, unique_constraint_field):
@@ -1957,10 +1961,12 @@ class TestModelSerialiazer(unittest.TestCase):
             def _get_unique_field(self, model, unique_field_name):
                 return getattr(model, unique_field_name)
 
-            def _get_unique_constraint_names(self, model, model_fields):
+            def _get_unique_constraint_names(self, model, model_fields,
+                                             field_names):
                 return {'pk', 'user'}
 
-            def _get_unique_together_constraints(self, model):
+            def _get_unique_together_constraints(self, model, model_fields,
+                                                 field_names):
                 return set()
 
             def _get_default_field_value(self, unique_constraint_field):
@@ -2051,7 +2057,7 @@ class TestModelSerialiazer(unittest.TestCase):
 
         with self.assertRaises(NotImplementedError):
             instance._get_unique_constraint_names(
-                FakeModel, {'pk': fields.IntegerField()}
+                FakeModel, {'pk': fields.IntegerField()}, ['pk', ]
             )
 
     def test_get_unique_together_constraint_raises_not_implemented_error(self):
@@ -2062,7 +2068,9 @@ class TestModelSerialiazer(unittest.TestCase):
         instance = ModelSerializer()
 
         with self.assertRaises(NotImplementedError):
-            instance._get_unique_together_constraints(FakeModel)
+            instance._get_unique_together_constraints(
+                FakeModel, {'pk': fields.IntegerField()}, ['pk', ]
+            )
 
     def test_get_unique_field_raises_not_implemented_error(self):
 
