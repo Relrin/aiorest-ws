@@ -229,6 +229,11 @@ class ModelSerializer(BaseModelSerializer):
         if is_empty_value:
             return data
 
+        for field in self.fields.values():
+            for validator in field.validators:
+                if hasattr(validator, 'set_context'):
+                    validator.set_context(field)
+
         value = self.to_internal_value(data)
         try:
             self.run_validators(value)

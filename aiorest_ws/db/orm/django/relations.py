@@ -5,6 +5,7 @@ Module, which provide classes and function for related and nested field.
 from collections import OrderedDict
 
 from aiorest_ws.db.orm import relations
+from aiorest_ws.exceptions import ImproperlyConfigured
 from aiorest_ws.utils.fields import get_attribute, is_simple_callable
 
 from django.core.exceptions import ObjectDoesNotExist
@@ -138,10 +139,24 @@ class HyperlinkedRelatedField(relations.HyperlinkedRelatedField,
         Takes the matched URL conf arguments, and should return an
         object instance, or raise an `ObjectDoesNotExist` exception.
         """
-        # TODO: Check on getting this values correctly
-        lookup_value = view_kwargs[self.lookup_url_kwarg]
-        lookup_kwargs = {self.lookup_field: lookup_value}
-        return self.get_queryset().get(**lookup_kwargs)
+        try:
+            lookup_value = view_kwargs[self.lookup_url_kwarg]
+            lookup_kwargs = {self.lookup_field: lookup_value}
+            return self.get_queryset().get(**lookup_kwargs)
+        except ObjectDoesNotExist:
+            self.raise_error('does_not_exist')
+        except KeyError:
+            raise ImproperlyConfigured(
+                "Missing primary key in the endpoint path. For fixing it just "
+                "specify for a requested endpoint URL with included "
+                "`{field_name}` parameter in the path or override"
+                "`lookup_url_kwarg` in the constructor for the concrete field."
+                .format(field_name=self.lookup_url_kwarg)
+            )
+        except (TypeError, ValueError):
+            self.raise_error(
+                'incorrect_type', data_type=type(view_kwargs).__name__
+            )
 
     def is_saved_in_database(self, obj):
         if not obj or not obj.pk:
@@ -149,8 +164,8 @@ class HyperlinkedRelatedField(relations.HyperlinkedRelatedField,
         return True
 
     def get_lookup_value(self, obj):
-        # TODO: extract pk fields and return pk values as tuple
-        pass
+        pk = getattr(obj, self.lookup_field)
+        return pk if isinstance(pk, (tuple, list)) else (pk, )
 
 
 class HyperlinkedIdentityField(relations.HyperlinkedIdentityField,
