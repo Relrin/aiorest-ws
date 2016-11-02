@@ -459,6 +459,7 @@ class TestModelSerializer(unittest.TestCase):
 
         self.assertIsNone(instance.run_validation(None))
 
+    @override_settings(SQLALCHEMY_SESSION=SESSION)
     def test_run_validation_raises_error_for_assert(self):
 
         class UserSerializer(ModelSerializer):
@@ -482,6 +483,7 @@ class TestModelSerializer(unittest.TestCase):
 
         self.assertRaises(ValidationError, instance.run_validation, data)
 
+    @override_settings(SQLALCHEMY_SESSION=SESSION)
     def test_run_validation_raises_error_for_validation_error(self):
 
         class AdminNameValidator(BaseValidator):

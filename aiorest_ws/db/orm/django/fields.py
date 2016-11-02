@@ -12,7 +12,6 @@ import uuid
 
 from aiorest_ws.conf import settings
 from aiorest_ws.db.orm import fields
-from aiorest_ws.db.orm.abstract import SkipField
 from aiorest_ws.db.orm.django.compat import get_remote_field, \
     value_from_object
 from aiorest_ws.db.orm.fields import empty
@@ -156,11 +155,10 @@ class ModelField(fields.ModelField):
     }
 
     def __init__(self, model_field, **kwargs):
-        self.model_field = model_field
         # The `max_length` option is supported by Django's base `Field` class,
         # so we'd better support it here.
         max_length = kwargs.pop('max_length', None)
-        super(ModelField, self).__init__(**kwargs)
+        super(ModelField, self).__init__(model_field, **kwargs)
         if max_length is not None:
             message = self.error_messages['max_length'].format(
                 max_length=max_length
@@ -190,30 +188,8 @@ class SerializerMethodField(fields.SerializerMethodField):
     pass
 
 
-class CreateOnlyDefault(object):
-    """
-    This class may be used to provide default values that are only used
-    for create operations, but that do not return any value for update
-    operations.
-    """
-    def __init__(self, default):
-        self.default = default
-
-    def set_context(self, serializer_field):
-        self.is_update = serializer_field.parent.instance is not None
-        has_set_context = hasattr(self.default, 'set_context')
-        if callable(self.default) and has_set_context and not self.is_update:
-            self.default.set_context(serializer_field)
-
-    def __call__(self):
-        if self.is_update:
-            raise SkipField()
-        if callable(self.default):
-            return self.default()
-        return self.default
-
-    def __repr__(self):
-        return '%s(%s)' % (self.__class__.__name__, repr(self.default))
+class CreateOnlyDefault(fields.CreateOnlyDefault):
+    pass
 
 
 class EmailField(CharField):
@@ -285,13 +261,13 @@ class UUIDField(fields.AbstractField):
     def to_internal_value(self, data):
         if not isinstance(data, uuid.UUID):
             try:
-                if isinstance(data, six.integer_types):
+                if isinstance(data, int):
                     return uuid.UUID(int=data)
-                elif isinstance(data, six.string_types):
+                elif isinstance(data, str):
                     return uuid.UUID(hex=data)
                 else:
                     self.raise_error('invalid', value=data)
-            except (ValueError):
+            except ValueError:
                 self.raise_error('invalid', value=data)
         return data
 
@@ -397,9 +373,6 @@ class FileField(fields.AbstractField):
                 # If the file has not been saved it may not have a URL.
                 return None
             url = value.url
-            request = self.context.get('request', None)
-            if request is not None:
-                return request.build_absolute_uri(url)
             return url
         return value.name
 

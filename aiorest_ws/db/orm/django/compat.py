@@ -20,7 +20,6 @@ __all__ = [
 
 
 try:
-    # DecimalValidator is unavailable in Django < 1.9
     from django.core.validators import DecimalValidator
 except ImportError:
     DecimalValidator = None
@@ -32,7 +31,6 @@ except ImportError:
     postgres_fields = None
 
 
-# JSONField is only supported from 1.9 onwards
 try:
     from django.contrib.postgres.fields import JSONField
 except ImportError:
@@ -70,16 +68,10 @@ def get_related_model(field):
 # field.rel is deprecated from 1.9 onwards
 def get_remote_field(field, **kwargs):
     if 'default' in kwargs:
-        if django.VERSION < (1, 9):
-            return getattr(field, 'rel', kwargs['default'])
         return getattr(field, 'remote_field', kwargs['default'])
 
-    if django.VERSION < (1, 9):
-        return field.rel
     return field.remote_field
 
 
 def value_from_object(field, obj):
-    if django.VERSION < (1, 9):
-        return field._get_val_from_obj(obj)
     return field.value_from_object(obj)

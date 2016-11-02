@@ -1,20 +1,23 @@
 # -*- coding: utf-8 -*-
 import datetime
-import pickle
-import unittest
+import os
+import re
+import uuid
 from decimal import Decimal
 
 from aiorest_ws.conf import settings
-from aiorest_ws.db.orm.abstract import empty
-from aiorest_ws.db.orm.sqlalchemy import fields
+from aiorest_ws.db.orm.abstract import empty, SkipField
+from aiorest_ws.db.orm.django import fields
 from aiorest_ws.db.orm.exceptions import ValidationError
 from aiorest_ws.utils.date import timezone
 
-from sqlalchemy import create_engine, Column, types
-from sqlalchemy.orm import sessionmaker
+from django.db import models
+from django.core.exceptions import ValidationError as DjangoValidationError
+
+from tests.db.orm.django.base import DjangoUnitTest
 
 
-class TestIntegerField(unittest.TestCase):
+class TestIntegerField(DjangoUnitTest):
 
     def test_init_without_borders(self):
         instance = fields.IntegerField()
@@ -58,65 +61,7 @@ class TestIntegerField(unittest.TestCase):
         self.assertEqual(instance.to_representation('1'), 1)
 
 
-class TestBigIntegerField(unittest.TestCase):
-
-    def test_init_default(self):
-        instance = fields.BigIntegerField()
-        self.assertEqual(instance.min_value, -instance.MAX_BIG_INTEGER - 1)
-        self.assertEqual(instance.max_value, instance.MAX_BIG_INTEGER)
-
-    def test_to_internal_value(self):
-        instance = fields.BigIntegerField()
-        self.assertEqual(instance.to_internal_value(1), 1)
-
-    def test_to_internal_value_raises_max_string_length_exception(self):
-        instance = fields.BigIntegerField()
-
-        with self.assertRaises(ValidationError):
-            data = 'value' * 250
-            instance.to_internal_value(data)
-
-    def test_to_internal_value_raises_validate_exception(self):
-        instance = fields.BigIntegerField()
-
-        with self.assertRaises(ValidationError):
-            instance.to_internal_value('object')
-
-    def test_to_to_representation(self):
-        instance = fields.BigIntegerField()
-        self.assertEqual(instance.to_representation('1'), 1)
-
-
-class TestSmallIntegerField(unittest.TestCase):
-
-    def test_init_default(self):
-        instance = fields.SmallIntegerField()
-        self.assertEqual(instance.min_value, -instance.MAX_SMALL_INTEGER - 1)
-        self.assertEqual(instance.max_value, instance.MAX_SMALL_INTEGER)
-
-    def test_to_internal_value(self):
-        instance = fields.SmallIntegerField()
-        self.assertEqual(instance.to_internal_value(1), 1)
-
-    def test_to_internal_value_raises_max_string_length_exception(self):
-        instance = fields.SmallIntegerField()
-
-        with self.assertRaises(ValidationError):
-            data = 'value' * 250
-            instance.to_internal_value(data)
-
-    def test_to_internal_value_raises_validate_exception(self):
-        instance = fields.SmallIntegerField()
-
-        with self.assertRaises(ValidationError):
-            instance.to_internal_value('object')
-
-    def test_to_to_representation(self):
-        instance = fields.SmallIntegerField()
-        self.assertEqual(instance.to_representation('1'), 1)
-
-
-class TestBooleanField(unittest.TestCase):
+class TestBooleanField(DjangoUnitTest):
 
     def test_init_raises_assertion_error(self):
         with self.assertRaises(AssertionError):
@@ -169,7 +114,7 @@ class TestBooleanField(unittest.TestCase):
         self.assertFalse(instance.to_representation(""))
 
 
-class TestNullBooleanField(unittest.TestCase):
+class TestNullBooleanField(DjangoUnitTest):
 
     def test_to_internal_value_returns_true_value(self):
         instance = fields.NullBooleanField()
@@ -224,7 +169,7 @@ class TestNullBooleanField(unittest.TestCase):
         self.assertFalse(instance.to_representation(""))
 
 
-class TestCharField(unittest.TestCase):
+class TestCharField(DjangoUnitTest):
 
     def test_init_default(self):
         instance = fields.CharField()
@@ -278,7 +223,7 @@ class TestCharField(unittest.TestCase):
         self.assertEqual(instance.to_representation('test'), 'test')
 
 
-class TestChoiceField(unittest.TestCase):
+class TestChoiceField(DjangoUnitTest):
 
     choices = (
         (1, 'one'),
@@ -287,37 +232,88 @@ class TestChoiceField(unittest.TestCase):
     )
 
     def test_to_internal_value(self):
-        instance = fields.EnumField(choices=self.choices)
+        instance = fields.ChoiceField(choices=self.choices)
         self.assertEqual(instance.to_internal_value(1), 1)
 
     def test_to_internal_value_for_empty_string(self):
-        instance = fields.EnumField(self.choices, allow_blank=True)
+        instance = fields.ChoiceField(self.choices, allow_blank=True)
         self.assertEqual(instance.to_internal_value(''), '')
 
     def test_to_internal_value_raise_validation_error(self):
-        instance = fields.EnumField(self.choices)
+        instance = fields.ChoiceField(self.choices)
 
         with self.assertRaises(ValidationError):
             instance.to_internal_value(4)
 
     def test_to_representation(self):
-        instance = fields.EnumField(self.choices)
+        instance = fields.ChoiceField(self.choices)
         self.assertEqual(instance.to_representation(2), 2)
 
     def test_to_representation_empty_string(self):
-        instance = fields.EnumField(self.choices)
+        instance = fields.ChoiceField(self.choices)
         self.assertEqual(instance.to_representation(''), '')
 
     def test_to_representation_none_value(self):
-        instance = fields.EnumField(self.choices)
+        instance = fields.ChoiceField(self.choices)
         self.assertEqual(instance.to_representation(None), None)
 
     def test_to_representation_not_found_key(self):
-        instance = fields.EnumField(self.choices)
+        instance = fields.ChoiceField(self.choices)
         self.assertEqual(instance.to_representation(4), 4)
 
 
-class TestFloatField(unittest.TestCase):
+class TestMultipleChoiceField(DjangoUnitTest):
+
+    choices = (
+        (1, 'one'),
+        (2, 'two'),
+        (3, 'three')
+    )
+
+    def test_get_value_returns_empty(self):
+
+        class FakeSerializer():
+            parent = None
+            partial = True
+
+        instance = fields.MultipleChoiceField(self.choices)
+        instance.bind('choice', self)
+        instance.parent = FakeSerializer()
+        self.assertEqual(instance.get_value({}), empty)
+
+    def test_get_value_returns_value_from_dictionary(self):
+        instance = fields.MultipleChoiceField(self.choices)
+        instance.bind('choice', self)
+        self.assertEqual(instance.get_value({'choice': 1}), 1)
+
+    def test_to_internal_value(self):
+        instance = fields.MultipleChoiceField(self.choices)
+        instance.bind('choice', self)
+        self.assertEqual(instance.to_internal_value((1, )), {1})
+
+    def test_to_internal_value_raises_not_a_list_error(self):
+        instance = fields.MultipleChoiceField(self.choices)
+        instance.bind('choice', self)
+        self.assertRaises(
+            ValidationError,
+            instance.to_internal_value, ''
+        )
+
+    def test_to_internal_value_raises_empty_error(self):
+        instance = fields.MultipleChoiceField(self.choices, allow_empty=False)
+        instance.bind('choice', self)
+        self.assertRaises(
+            ValidationError,
+            instance.to_internal_value, ()
+        )
+
+    def test_to_representation_returns_dictionary(self):
+        instance = fields.MultipleChoiceField(self.choices)
+        instance.bind('choice', self)
+        self.assertEqual(instance.to_representation((1, )), {1})
+
+
+class TestFloatField(DjangoUnitTest):
 
     def test_init_default(self):
         instance = fields.FloatField()
@@ -361,143 +357,7 @@ class TestFloatField(unittest.TestCase):
         self.assertEqual(instance.to_representation(5), 5.0)
 
 
-class TestPickleField(unittest.TestCase):
-
-    def test_to_internal_value(self):
-        instance = fields.PickleField()
-        dump_dict = pickle.dumps({'key': 'value'})
-        self.assertEqual(instance.to_internal_value(dump_dict), dump_dict)
-
-    def test_to_internal_value_raises_validation_error(self):
-        instance = fields.PickleField()
-
-        with self.assertRaises(ValidationError):
-            instance.to_internal_value(None)
-
-    def test_to_representation(self):
-        instance = fields.PickleField()
-        dump_dict = pickle.dumps({'key': 'value'})
-        self.assertEqual(
-            instance.to_representation(dump_dict), dump_dict
-        )
-
-
-class TestLargeBinaryField(unittest.TestCase):
-
-    def test_to_internal_value(self):
-        instance = fields.LargeBinaryField()
-        self.assertEqual(instance.to_internal_value('value'), b'value')
-
-    def test_to_internal_value_raises_validation_error(self):
-        instance = fields.LargeBinaryField(length=10)
-
-        with self.assertRaises(ValidationError):
-            dump_dict = pickle.dumps({'key': 'value'})
-            instance.to_internal_value(dump_dict)
-
-    def test_to_representation(self):
-        instance = fields.LargeBinaryField()
-        self.assertEqual(instance.to_representation('value'), b'value')
-
-
-class TestTimeField(unittest.TestCase):
-
-    def test_run_validation_raise_validation_error(self):
-        instance = fields.TimeField()
-
-        with self.assertRaises(ValidationError):
-            instance.run_validation('value')
-
-    def test_to_internal_value_string(self):
-        instance = fields.TimeField()
-        self.assertEqual(
-            instance.to_internal_value('03:00'),
-            datetime.time(3, 0)
-        )
-
-    def test_to_internal_value_time(self):
-        instance = fields.TimeField()
-        self.assertEqual(
-            instance.to_internal_value(datetime.time(3, 0)),
-            datetime.time(3, 0)
-        )
-
-    def test_to_internal_value_for_non_iso8601(self):
-        instance = fields.TimeField(input_formats=('%H:%M', ))
-        self.assertEqual(
-            instance.to_internal_value('10:00'),
-            datetime.time(10, 0)
-        )
-
-    def test_to_internal_value_raises_validation_error_with_empty_format(self):
-        instance = fields.TimeField(input_formats=())
-
-        with self.assertRaises(ValidationError):
-            instance.to_internal_value('99:99')
-
-    def test_to_internal_value_raises_validation_error_for_a_wrong_type(self):
-        instance = fields.TimeField()
-
-        with self.assertRaises(ValidationError):
-            instance.to_internal_value(None)
-
-    def test_to_internal_value_raises_error_for_wrong_value_and_format(self):
-        instance = fields.TimeField(input_formats=('%H:%M',))
-
-        with self.assertRaises(ValidationError):
-            instance.to_internal_value('99:99')
-
-    def test_to_internal_value_raises_error_for_none_value_and_format(self):
-        instance = fields.TimeField(input_formats=('%H:%M',))
-
-        with self.assertRaises(ValidationError):
-            instance.to_internal_value(None)
-
-    def test_to_internal_value_raises_validation_error_for_wrong_value(self):
-        instance = fields.TimeField()
-
-        with self.assertRaises(ValidationError):
-            instance.to_internal_value('99:99')
-
-    def test_to_representation(self):
-        instance = fields.TimeField(format='%H:%M:%S')
-        timestamp = datetime.time(3, 0)
-        self.assertEqual(
-            instance.to_representation(timestamp), '03:00:00'
-        )
-
-    def test_to_representation_returns_none_for_empty_string(self):
-        instance = fields.TimeField()
-        self.assertIsNone(instance.to_representation(''))
-
-    def test_to_representation_returns_none(self):
-        instance = fields.TimeField()
-        self.assertIsNone(instance.to_representation(None))
-
-    def test_to_representation_return_value(self):
-        instance = fields.TimeField(format=None)
-        timestamp = datetime.time(13, 0)
-        self.assertEqual(instance.to_representation(timestamp), timestamp)
-
-    def test_to_representation_parse_string_into_iso8601_string(self):
-        instance = fields.TimeField()
-        self.assertEqual(
-            instance.to_representation('10:00:00'), '10:00:00'
-        )
-
-    def test_to_representation_parse_time_into_iso8601_string(self):
-        instance = fields.TimeField()
-        self.assertEqual(
-            instance.to_representation(datetime.time(10, 0)), '10:00:00'
-        )
-
-    def test_to_representation_raise_assertion_error(self):
-        instance = fields.TimeField(format=settings.ISO_8601)
-        with self.assertRaises(AssertionError):
-            instance.to_representation(datetime.datetime(2000, 1, 1, 10, 00))
-
-
-class TestDecimalField(unittest.TestCase):
+class TestDecimalField(DjangoUnitTest):
 
     def test_init_default(self):
         instance = fields.DecimalField(max_digits=5, decimal_places=2)
@@ -616,7 +476,104 @@ class TestDecimalField(unittest.TestCase):
         self.assertEqual(instance.quantize(value), value)
 
 
-class TestDateFields(unittest.TestCase):
+class TestTimeField(DjangoUnitTest):
+
+    def test_run_validation_raise_validation_error(self):
+        instance = fields.TimeField()
+
+        with self.assertRaises(ValidationError):
+            instance.run_validation('value')
+
+    def test_to_internal_value_string(self):
+        instance = fields.TimeField()
+        self.assertEqual(
+            instance.to_internal_value('03:00'),
+            datetime.time(3, 0)
+        )
+
+    def test_to_internal_value_time(self):
+        instance = fields.TimeField()
+        self.assertEqual(
+            instance.to_internal_value(datetime.time(3, 0)),
+            datetime.time(3, 0)
+        )
+
+    def test_to_internal_value_for_non_iso8601(self):
+        instance = fields.TimeField(input_formats=('%H:%M', ))
+        self.assertEqual(
+            instance.to_internal_value('10:00'),
+            datetime.time(10, 0)
+        )
+
+    def test_to_internal_value_raises_validation_error_with_empty_format(self):
+        instance = fields.TimeField(input_formats=())
+
+        with self.assertRaises(ValidationError):
+            instance.to_internal_value('99:99')
+
+    def test_to_internal_value_raises_validation_error_for_a_wrong_type(self):
+        instance = fields.TimeField()
+
+        with self.assertRaises(ValidationError):
+            instance.to_internal_value(None)
+
+    def test_to_internal_value_raises_error_for_wrong_value_and_format(self):
+        instance = fields.TimeField(input_formats=('%H:%M',))
+
+        with self.assertRaises(ValidationError):
+            instance.to_internal_value('99:99')
+
+    def test_to_internal_value_raises_error_for_none_value_and_format(self):
+        instance = fields.TimeField(input_formats=('%H:%M',))
+
+        with self.assertRaises(ValidationError):
+            instance.to_internal_value(None)
+
+    def test_to_internal_value_raises_validation_error_for_wrong_value(self):
+        instance = fields.TimeField()
+
+        with self.assertRaises(ValidationError):
+            instance.to_internal_value('99:99')
+
+    def test_to_representation(self):
+        instance = fields.TimeField(format='%H:%M:%S')
+        timestamp = datetime.time(3, 0)
+        self.assertEqual(
+            instance.to_representation(timestamp), '03:00:00'
+        )
+
+    def test_to_representation_returns_none_for_empty_string(self):
+        instance = fields.TimeField()
+        self.assertIsNone(instance.to_representation(''))
+
+    def test_to_representation_returns_none(self):
+        instance = fields.TimeField()
+        self.assertIsNone(instance.to_representation(None))
+
+    def test_to_representation_return_value(self):
+        instance = fields.TimeField(format=None)
+        timestamp = datetime.time(13, 0)
+        self.assertEqual(instance.to_representation(timestamp), timestamp)
+
+    def test_to_representation_parse_string_into_iso8601_string(self):
+        instance = fields.TimeField()
+        self.assertEqual(
+            instance.to_representation('10:00:00'), '10:00:00'
+        )
+
+    def test_to_representation_parse_time_into_iso8601_string(self):
+        instance = fields.TimeField()
+        self.assertEqual(
+            instance.to_representation(datetime.time(10, 0)), '10:00:00'
+        )
+
+    def test_to_representation_raise_assertion_error(self):
+        instance = fields.TimeField(format=settings.ISO_8601)
+        with self.assertRaises(AssertionError):
+            instance.to_representation(datetime.datetime(2000, 1, 1, 10, 00))
+
+
+class TestDateFields(DjangoUnitTest):
 
     def test_run_validation_raises_validation_error_for_wrong_value(self):
         instance = fields.DateField()
@@ -724,7 +681,7 @@ class TestDateFields(unittest.TestCase):
         )
 
 
-class TestDateTimeField(unittest.TestCase):
+class TestDateTimeField(DjangoUnitTest):
 
     def test_run_validation_raises_validation_error_for_a_wrong_type(self):
         instance = fields.DateTimeField()
@@ -841,7 +798,95 @@ class TestDateTimeField(unittest.TestCase):
         )
 
 
-class TestListField(unittest.TestCase):
+class TestDurationField(DjangoUnitTest):
+
+    def test_to_internal_value(self):
+        instance = fields.DurationField()
+        timedelta = datetime.timedelta(days=3)
+        self.assertEqual(instance.to_internal_value(timedelta), timedelta)
+
+    def test_to_internal_value_from_string(self):
+        instance = fields.DurationField()
+        value = '3 10:00:00.123456'
+        timedelta = datetime.timedelta(days=3, hours=10, microseconds=123456)
+        self.assertEqual(instance.to_internal_value(value), timedelta)
+
+    def test_to_internal_value_raises_invalid_error(self):
+        instance = fields.DurationField()
+        value = 'invalid_value'
+        self.assertRaises(
+            ValidationError,
+            instance.to_internal_value, value
+        )
+
+    def test_to_representation(self):
+        instance = fields.DurationField()
+        data = datetime.timedelta(days=3, hours=10, microseconds=123456)
+        output = '3 10:00:00.123456'
+        self.assertEqual(instance.to_representation(data), output)
+
+
+class CustomStringField(models.CharField):
+    pass
+
+
+class TestModelField(DjangoUnitTest):
+
+    class User(models.Model):
+        name = CustomStringField(max_length=30)
+
+        class Meta:
+            app_label = 'test_django_model_field'
+
+        def __str__(self):
+            return '<User(%s)>' % (self.name)
+
+    class Car(models.Model):
+        name = models.CharField(max_length=30)
+        max_speed = models.FloatField(null=True, blank=True)
+        manufacturer = models.ForeignKey(
+            "test_django_model_field.User", related_name='cars'
+        )
+
+        class Meta:
+            app_label = 'test_django_model_field'
+
+        def __str__(self):
+            return '<Car(%s, %s)>' % (self.name, self.manufacturer)
+
+    models = (User, Car)
+    apps = ('test_django_model_field', )
+
+    def test_to_internal_value(self):
+        model_field = self.User._meta.get_field('name')
+        instance = fields.ModelField(model_field, max_length=30)
+        self.assertEqual(instance.to_internal_value('data'), 'data')
+
+    def test_to_internal_value_with_related_field(self):
+        model_field = self.Car._meta.get_field('manufacturer')
+        instance = fields.ModelField(model_field)
+        self.assertEqual(instance.to_internal_value(None), None)
+
+    def test_to_representation(self):
+
+        class FakeObject():
+            name = 'i535'
+
+        model_field = self.Car._meta.get_field('name')
+        instance = fields.ModelField(model_field)
+        self.assertEqual(instance.to_representation(FakeObject), 'i535')
+
+    def test_to_representation_with_protected_field(self):
+
+        class FakeObject():
+            max_speed = 100
+
+        model_field = self.Car._meta.get_field('max_speed')
+        instance = fields.ModelField(model_field)
+        self.assertEqual(instance.to_representation(FakeObject), 100.0)
+
+
+class TestListField(DjangoUnitTest):
 
     def test_init_raises_assertion_error_for_defined_child_as_a_class(self):
 
@@ -935,7 +980,7 @@ class TestListField(unittest.TestCase):
         )
 
 
-class TestDictField(unittest.TestCase):
+class TestDictField(DjangoUnitTest):
 
     def test_init_raises_assertion_error_for_defined_child_as_a_class(self):
 
@@ -1004,7 +1049,7 @@ class TestDictField(unittest.TestCase):
         )
 
 
-class TestHStoreField(unittest.TestCase):
+class TestHStoreField(DjangoUnitTest):
 
     def test_init_raises_assertion_error_for_defined_child_as_a_class(self):
         with self.assertRaises(AssertionError):
@@ -1071,7 +1116,7 @@ class TestHStoreField(unittest.TestCase):
         )
 
 
-class TestJSONField(unittest.TestCase):
+class TestJSONField(DjangoUnitTest):
 
     # simple JSON
 
@@ -1124,75 +1169,14 @@ class TestJSONField(unittest.TestCase):
         )
 
 
-class TestModelField(unittest.TestCase):
-
-    class CustomType(types.TypeDecorator):
-        impl = types.Unicode
-
-        def process_bind_param(self, value, dialect):
-            return "PREFIX:" + value
-
-        def process_result_value(self, value, dialect):
-            return value[7:]
-
-    @classmethod
-    def setUpClass(cls):
-        cls.engine = create_engine('sqlite://')
-        settings.SQLALCHEMY_ENGINE = cls.engine
-        settings.SQLALCHEMY_SESSION = sessionmaker(bind=cls.engine)
-
-    @classmethod
-    def tearDownClass(cls):
-        settings.SQLALCHEMY_ENGINE = None
-        settings.SQLALCHEMY_SESSION = None
-
-    def test_get_attribute(self):
-        instance = fields.ModelField(Column(types.Integer))
-        self.assertEqual(instance.get_attribute(10), 10)
-
-    def test_dialect_property(self):
-        instance = fields.ModelField(Column(types.Integer))
-        self.assertEqual(instance.dialect, self.engine.dialect)
-
-    def test_to_internal_value_for_default_field(self):
-        instance = fields.ModelField(Column(types.Integer))
-        self.assertEqual(instance.to_internal_value(10), 10)
-
-    def test_to_internal_value_for_default_field_with_processor(self):
-        instance = fields.ModelField(Column(types.Float))
-        self.assertEqual(instance.to_internal_value('10'), 10.0)
-
-    def test_to_internal_value_for_custom_field(self):
-        instance = fields.ModelField(Column(self.CustomType()))
-        self.assertEqual(
-            instance.to_internal_value("value"),
-            "PREFIX:value"
-        )
-
-    def test_to_representation_for_default_field(self):
-        instance = fields.ModelField(Column(types.Integer))
-        self.assertEqual(instance.to_representation(10), 10)
-
-    def test_to_representation_for_default_field_with_processor(self):
-        instance = fields.ModelField(Column(types.PickleType))
-        self.assertEqual(instance.to_representation(pickle.dumps(10)), 10)
-
-    def test_to_representation_for_custom_field(self):
-        instance = fields.ModelField(Column(self.CustomType()))
-        self.assertEqual(
-            instance.to_representation("PREFIX:value"),
-            "value"
-        )
-
-
-class TestReadOnlyField(unittest.TestCase):
+class TestReadOnlyField(DjangoUnitTest):
 
     def test_to_representation(self):
         instance = fields.ReadOnlyField()
         self.assertEqual(instance.to_representation('value'), 'value')
 
 
-class TestSerializerMethodField(unittest.TestCase):
+class TestSerializerMethodField(DjangoUnitTest):
 
     class FakeModelSerializer(object):
 
@@ -1226,4 +1210,349 @@ class TestSerializerMethodField(unittest.TestCase):
         self.assertEqual(
             instance.to_representation(object()),
             {"key": "value"}
+        )
+
+
+class TestCreateOnlyField(DjangoUnitTest):
+
+    class FakeDefault(object):
+
+        @staticmethod
+        def set_context(field):
+            field.test_attr = 'value'
+
+    def test_can_set_context_returns_false(self):
+        instance = fields.CreateOnlyDefault('default')
+        instance.is_update = False
+        self.assertFalse(instance._can_set_context())
+
+    def test_can_set_context_returns_true_for_instance_class(self):
+        instance = fields.CreateOnlyDefault(self.FakeDefault)
+        instance.is_update = False
+        self.assertTrue(instance._can_set_context())
+
+    def test_can_set_context_returns_false_for_instance_class(self):
+        instance = fields.CreateOnlyDefault(self.FakeDefault)
+        instance.is_update = True
+        self.assertFalse(instance._can_set_context())
+
+    def test_can_set_context_returns_false_for_not_instance_class(self):
+        instance = fields.CreateOnlyDefault('default')
+        instance.is_update = True
+        self.assertFalse(instance._can_set_context())
+
+    def test_set_context_function_add_context_for_default(self):
+        instance = fields.CreateOnlyDefault(self.FakeDefault)
+        fake_parent = type('FakeParent', (), {'instance': None})
+        serializer_field = fields.IntegerField()
+        serializer_field.bind('pk', fake_parent)
+        instance.set_context(serializer_field)
+        self.assertFalse(instance.is_update)
+        self.assertTrue(hasattr(serializer_field, 'test_attr'))
+        self.assertEqual(serializer_field.test_attr, 'value')
+
+    def test_set_context_function_not_add_context_for_default(self):
+        instance = fields.CreateOnlyDefault(self.FakeDefault)
+        fake_parent = type('FakeParent', (), {'instance': object()})
+        serializer_field = fields.IntegerField()
+        serializer_field.bind('pk', fake_parent)
+        instance.set_context(serializer_field)
+        self.assertTrue(instance.is_update)
+        self.assertFalse(hasattr(serializer_field, 'test_attr'))
+
+    def test_call_returns_default(self):
+        instance = fields.CreateOnlyDefault('value')
+        instance.is_update = False
+        self.assertEqual(instance(), instance.default)
+
+    def test_call_returns_default_from_callable(self):
+        instance = fields.CreateOnlyDefault(self.FakeDefault)
+        instance.is_update = False
+        self.assertIsInstance(instance(), self.FakeDefault)
+
+    def test_call_raise_skip_field_exception(self):
+        instance = fields.CreateOnlyDefault(self.FakeDefault)
+        instance.is_update = True
+
+        with self.assertRaises(SkipField):
+            instance()
+
+    def test_repr(self):
+        instance = fields.CreateOnlyDefault('value')
+        self.assertEqual(instance.__repr__(), 'CreateOnlyDefault(value)')
+
+
+class TestEmailField(DjangoUnitTest):
+
+    def test_run_validation(self):
+        instance = fields.EmailField()
+        email = 'admin@email.com'
+        self.assertEqual(instance.run_validation(email), email)
+
+    def test_run_validation_raises_invalid_email_error(self):
+        instance = fields.EmailField()
+        email = 'invalid_email'
+        self.assertRaises(
+            DjangoValidationError,
+            instance.run_validation, email
+        )
+
+
+class TestRegexField(DjangoUnitTest):
+
+    regex = re.compile(r'[0-9]+')
+
+    def test_run_validation(self):
+        instance = fields.RegexField(self.regex)
+        value = '123456789'
+        self.assertEqual(instance.run_validation(value), value)
+
+    def test_run_validation_raises_invalid_value_error(self):
+        instance = fields.RegexField(self.regex)
+        value = 'invalid_value'
+        self.assertRaises(
+            DjangoValidationError,
+            instance.run_validation, value
+        )
+
+
+class TestSlugField(DjangoUnitTest):
+
+    def test_run_validation(self):
+        instance = fields.SlugField()
+        value = 'valid-slug'
+        self.assertEqual(instance.run_validation(value), value)
+
+    def test_run_validation_raises_invalid_value_error(self):
+        instance = fields.SlugField()
+        value = 'invalid-slug-with-$'
+        self.assertRaises(
+            DjangoValidationError,
+            instance.run_validation, value
+        )
+
+
+class TestURLField(DjangoUnitTest):
+
+    def test_run_validation(self):
+        instance = fields.URLField()
+        url = 'http://my-test-website.com'
+        self.assertEqual(instance.run_validation(url), url)
+
+    def test_run_validation_raises_invalid_value_error(self):
+        instance = fields.URLField()
+        url = 'not_http://definitelynotwebsite.com'
+        self.assertRaises(
+            DjangoValidationError,
+            instance.run_validation, url
+        )
+
+
+class TestUUIDField(DjangoUnitTest):
+
+    def test_init_with_invalid_uuid_format(self):
+        self.assertRaises(
+            ValueError,
+            fields.UUIDField, format='unknown_format'
+        )
+
+    def test_run_validation(self):
+        instance = fields.UUIDField()
+        value = uuid.UUID('56c48c7e-a2b3-11e6-8bbf-0c4de9c846b0')
+        self.assertEqual(instance.run_validation(value), value)
+
+    def test_run_validation_raises_invalid_value_error(self):
+        instance = fields.UUIDField()
+        value = 'invalid-uuid4'
+        self.assertRaises(
+            ValidationError,
+            instance.run_validation, value
+        )
+
+    def test_to_internal_value(self):
+        instance = fields.UUIDField()
+        value = uuid.UUID('56c48c7e-a2b3-11e6-8bbf-0c4de9c846b0')
+        self.assertEqual(instance.to_internal_value(value), value)
+
+    def test_to_internal_value_with_integer_data(self):
+        instance = fields.UUIDField()
+        value = 115334147392221633161905320179804948144
+        self.assertEqual(
+            instance.to_internal_value(value),
+            uuid.UUID('56c48c7e-a2b3-11e6-8bbf-0c4de9c846b0')
+        )
+
+    def test_to_internal_value_with_string_data(self):
+        instance = fields.UUIDField()
+        value = '56c48c7e-a2b3-11e6-8bbf-0c4de9c846b0'
+        self.assertEqual(
+            instance.to_internal_value(value),
+            uuid.UUID('56c48c7e-a2b3-11e6-8bbf-0c4de9c846b0')
+        )
+
+    def test_to_internal_value_raises_value_error_for_a_wrong_input(self):
+        instance = fields.UUIDField()
+        value = '56c48c7e-a2b3-11e6-wrong'
+        self.assertRaises(ValidationError, instance.to_internal_value, value)
+
+    def test_to_internal_value_raises_value_error_for_invalid_type(self):
+        instance = fields.UUIDField()
+        value = ('not_uuid', )
+        self.assertRaises(ValidationError, instance.to_internal_value, value)
+
+    def test_to_representation(self):
+        instance = fields.UUIDField()
+        value = uuid.UUID('56c48c7e-a2b3-11e6-8bbf-0c4de9c846b0')
+        self.assertEqual(instance.to_representation(value), str(value))
+
+    def test_to_representation_with_custom_format(self):
+        instance = fields.UUIDField(format='int')
+        value = uuid.UUID('56c48c7e-a2b3-11e6-8bbf-0c4de9c846b0')
+        self.assertEqual(instance.to_representation(value), int(value))
+
+
+class TestIPAddressField(DjangoUnitTest):
+
+    def test_run_validation(self):
+        instance = fields.IPAddressField()
+        ip = '127.0.0.1'
+        self.assertEqual(instance.run_validation(ip), ip)
+
+    def test_run_validation_raises_invalid_value_error(self):
+        instance = fields.IPAddressField()
+        ip = (127, 0, 0, 1)
+        self.assertRaises(ValidationError, instance.run_validation, ip)
+
+    def test_to_internal_value(self):
+        instance = fields.IPAddressField()
+        ip = '2931:dba:85a3:42:127a:1a2f:552:7011'
+        self.assertEqual(instance.to_internal_value(ip), ip)
+
+    def test_to_internal_value_raises_invalid_value_error(self):
+        instance = fields.IPAddressField()
+        ip = 1270001
+        self.assertRaises(ValidationError, instance.to_internal_value, ip)
+
+    def test_to_internal_value_raises_invalid_value_error_for_ipv6(self):
+        instance = fields.IPAddressField()
+        ip = '1234:1234:1234:1234:1234:1234:1234:12345'
+        self.assertRaises(ValidationError, instance.to_internal_value, ip)
+
+
+class TestFilePathField(DjangoUnitTest):
+
+    path = os.path.abspath(os.path.dirname(__file__))
+
+    def test_run_validation(self):
+        instance = fields.FilePathField(self.path)
+        self.assertEqual(instance.run_validation(__file__), __file__)
+
+    def test_run_validation_raise_invalid_error(self):
+        instance = fields.FilePathField(self.path)
+        self.assertRaises(ValidationError, instance.run_validation, 'path')
+
+
+class MockFile:
+
+    def __init__(self, name='', size=0, url=''):
+        self.name = name
+        self.size = size
+        self.url = url
+
+    def __eq__(self, other):
+        return (
+            isinstance(other, MockFile) and
+            self.name == other.name and
+            self.size == other.size and
+            self.url == other.url
+        )
+
+
+class TestFileField(DjangoUnitTest):
+
+    def test_use_url(self):
+        instance = fields.FileField(max_length=10, use_url=True)
+        self.assertTrue(instance.use_url)
+
+    def test_to_internal_value(self):
+        instance = fields.FileField(max_length=10)
+        test_file = MockFile(name='file.txt', size=10)
+        self.assertEqual(instance.to_internal_value(test_file), test_file)
+
+    def test_to_internal_value_raises_error_for_invalid_attribute(self):
+        instance = fields.FileField(max_length=10)
+        test_file = 'not_file'
+        self.assertRaises(
+            ValidationError,
+            instance.to_internal_value, test_file
+        )
+
+    def test_to_internal_value_raises_error_for_file_without_name(self):
+        instance = fields.FileField(max_length=10)
+        test_file = MockFile(name='', size=10)
+        self.assertRaises(
+            ValidationError,
+            instance.to_internal_value, test_file
+        )
+
+    def test_to_internal_value_raises_error_for_empty_file(self):
+        instance = fields.FileField(max_length=10)
+        test_file = MockFile(name='file.txt', size=0)
+        self.assertRaises(
+            ValidationError,
+            instance.to_internal_value, test_file
+        )
+
+    def test_to_internal_value_raises_error_for_limit_file_size(self):
+        instance = fields.FileField(max_length=10)
+        test_file = MockFile(name='_' * 15, size=10)
+        self.assertRaises(
+            ValidationError,
+            instance.to_internal_value, test_file
+        )
+
+    def test_to_representation(self):
+        instance = fields.FileField(max_length=10)
+        test_file = MockFile(name='file.txt', url='/file.txt')
+        self.assertEqual(instance.to_representation(test_file), '/file.txt')
+
+    def test_to_representation_without_using_url(self):
+        instance = fields.FileField(max_length=10, use_url=False)
+        test_file = MockFile(name='file.txt', url='/file.txt')
+        self.assertEqual(instance.to_representation(test_file), 'file.txt')
+
+    def test_to_representation_for_not_saved_file(self):
+        instance = fields.FileField(max_length=10)
+        test_file = MockFile(name='file.txt')
+        self.assertIsNone(instance.to_representation(test_file))
+
+    def test_to_representation_for_empty_string(self):
+        instance = fields.FileField(max_length=10)
+        test_file = ''
+        self.assertIsNone(instance.to_representation(test_file))
+
+
+class TestImageField(DjangoUnitTest):
+
+    def test_to_internal_value_with_passed_validation(self):
+
+        class PassImageValidation(object):
+            def to_python(self, value):
+                return value
+
+        instance = fields.ImageField(_DjangoImageField=PassImageValidation)
+        test_file = MockFile(name='file.txt', size=10)
+        self.assertEqual(instance.to_internal_value(test_file), test_file)
+
+    def test_to_internal_value_with_failed_validation(self):
+
+        class FailImageValidation(object):
+            def to_python(self, value):
+                raise ValidationError(self.error_messages['invalid_image'])
+
+        instance = fields.ImageField(_DjangoImageField=FailImageValidation)
+        test_file = MockFile(name='file.txt', size=10)
+        self.assertRaises(
+            ValidationError,
+            instance.to_internal_value, test_file
         )

@@ -167,5 +167,5 @@ def parse_duration(value):
         sign = -1 if kw.pop('sign', '+') == '-' else 1
         if kw.get('microseconds'):
             kw['microseconds'] = kw['microseconds'].ljust(6, '0')
-        kw = {k: float(v) for k, v in iter(kw) if v is not None}
+        kw = {k: float(v) for k, v in kw.items() if v is not None}
         return sign * datetime.timedelta(**kw)
