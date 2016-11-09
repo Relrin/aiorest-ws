@@ -23,7 +23,7 @@ class TestDjangoCompatModule(DjangoUnitTest):
             app_label = 'test_django_compat_module'
 
         def __str__(self):
-            return '<User(%s)>' % self.name
+            return '<Manufacturer(%s)>' % self.name
 
     class Car(models.Model):
         name = models.CharField(max_length=30)
