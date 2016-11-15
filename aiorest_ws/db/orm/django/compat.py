@@ -9,15 +9,13 @@ from django.apps import apps
 from django.core.exceptions import ImproperlyConfigured
 from django.db import models
 
-from django.core.validators import DecimalValidator
 from django.contrib.postgres import fields as postgres_fields
 from django.contrib.postgres.fields import JSONField
 
 
 __all__ = [
-    'DecimalValidator', 'postgres_fields', 'JSONField',
-    '_resolve_model', 'get_related_model', 'get_remote_field',
-    'value_from_object'
+    'postgres_fields', 'JSONField', '_resolve_model',
+    'get_related_model', 'get_remote_field', 'value_from_object'
 ]
 
 

@@ -3,11 +3,13 @@
 Helper functions for mapping model fields to a dictionary of default
 keyword arguments that should be used for their equivalent serializer fields.
 """
-from django.core import validators
+from django.core.validators import DecimalValidator, MinLengthValidator, \
+    MaxLengthValidator, MinValueValidator, MaxValueValidator, URLValidator, \
+    validate_email, validate_slug, validate_ipv46_address
 from django.db import models
 from django.utils.text import capfirst
 
-from aiorest_ws.db.orm.django.compat import DecimalValidator
+
 from aiorest_ws.db.orm.django.validators import UniqueValidator
 from aiorest_ws.utils.field_mapping import needs_label
 
@@ -97,8 +99,7 @@ def get_field_kwargs(field_name, model_field):
         return kwargs
 
     # Our decimal validation is handled in the field code, not validator code.
-    # (In Django 1.9+ this differs from previous style)
-    if isinstance(model_field, models.DecimalField) and DecimalValidator:
+    if isinstance(model_field, models.DecimalField):
         validator_kwarg = [
             validator for validator in validator_kwarg
             if not isinstance(validator, DecimalValidator)
@@ -112,46 +113,46 @@ def get_field_kwargs(field_name, model_field):
         kwargs['max_length'] = max_length
         validator_kwarg = [
             validator for validator in validator_kwarg
-            if not isinstance(validator, validators.MaxLengthValidator)
+            if not isinstance(validator, MaxLengthValidator)
         ]
 
     # Ensure that min_length is passed explicitly as a keyword arg,
     # rather than as a validator.
     min_length = next((
         validator.limit_value for validator in validator_kwarg
-        if isinstance(validator, validators.MinLengthValidator)
+        if isinstance(validator, MinLengthValidator)
     ), None)
     if min_length is not None and isinstance(model_field, models.CharField):
         kwargs['min_length'] = min_length
         validator_kwarg = [
             validator for validator in validator_kwarg
-            if not isinstance(validator, validators.MinLengthValidator)
+            if not isinstance(validator, MinLengthValidator)
         ]
 
     # Ensure that max_value is passed explicitly as a keyword arg,
     # rather than as a validator.
     max_value = next((
         validator.limit_value for validator in validator_kwarg
-        if isinstance(validator, validators.MaxValueValidator)
+        if isinstance(validator, MaxValueValidator)
     ), None)
     if max_value is not None and isinstance(model_field, NUMERIC_FIELD_TYPES):
         kwargs['max_value'] = max_value
         validator_kwarg = [
             validator for validator in validator_kwarg
-            if not isinstance(validator, validators.MaxValueValidator)
+            if not isinstance(validator, MaxValueValidator)
         ]
 
     # Ensure that max_value is passed explicitly as a keyword arg,
     # rather than as a validator.
     min_value = next((
         validator.limit_value for validator in validator_kwarg
-        if isinstance(validator, validators.MinValueValidator)
+        if isinstance(validator, MinValueValidator)
     ), None)
     if min_value is not None and isinstance(model_field, NUMERIC_FIELD_TYPES):
         kwargs['min_value'] = min_value
         validator_kwarg = [
             validator for validator in validator_kwarg
-            if not isinstance(validator, validators.MinValueValidator)
+            if not isinstance(validator, MinValueValidator)
         ]
 
     # URLField does not need to include the URLValidator argument,
@@ -159,7 +160,7 @@ def get_field_kwargs(field_name, model_field):
     if isinstance(model_field, models.URLField):
         validator_kwarg = [
             validator for validator in validator_kwarg
-            if not isinstance(validator, validators.URLValidator)
+            if not isinstance(validator, URLValidator)
         ]
 
     # EmailField does not need to include the validate_email argument,
@@ -167,21 +168,21 @@ def get_field_kwargs(field_name, model_field):
     if isinstance(model_field, models.EmailField):
         validator_kwarg = [
             validator for validator in validator_kwarg
-            if validator is not validators.validate_email
+            if validator is not validate_email
         ]
 
     # SlugField do not need to include the 'validate_slug' argument
     if isinstance(model_field, models.SlugField):
         validator_kwarg = [
             validator for validator in validator_kwarg
-            if validator is not validators.validate_slug
+            if validator is not validate_slug
         ]
 
     # for IPAddressField exclude the 'validate_ipv46_address' argument
     if isinstance(model_field, models.GenericIPAddressField):
         validator_kwarg = [
             validator for validator in validator_kwarg
-            if validator is not validators.validate_ipv46_address
+            if validator is not validate_ipv46_address
         ]
 
     if getattr(model_field, 'unique', False):
@@ -230,9 +231,8 @@ def get_relation_kwargs(field_name, relation_info):
     if model_field:
         if model_field.verbose_name and needs_label(model_field, field_name):
             kwargs['label'] = capfirst(model_field.verbose_name)
-        help_text = model_field.help_text
-        if help_text:
-            kwargs['help_text'] = help_text
+        if model_field.help_text:
+            kwargs['help_text'] = model_field.help_text
         if not model_field.editable:
             kwargs['read_only'] = True
             kwargs.pop('queryset', None)
@@ -264,7 +264,7 @@ def get_nested_relation_kwargs(relation_info):
     return kwargs
 
 
-def get_url_kwargs(model_field):
+def get_url_kwargs(model_class):
     return {
-        'view_name': get_detail_view_name(model_field)
+        'view_name': get_detail_view_name(model_class)
     }
