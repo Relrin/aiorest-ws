@@ -39,7 +39,7 @@ class ManyRelatedField(relations.ManyRelatedField):
 
         relationship = get_attribute(instance, self.source_attrs)
         if hasattr(relationship, 'all'):
-            relationship.all()
+            return relationship.all()
         return relationship
 
 
