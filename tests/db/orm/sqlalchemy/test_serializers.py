@@ -251,7 +251,7 @@ class TestModelSerializer(unittest.TestCase):
         session.close()
 
     @override_settings(SQLALCHEMY_SESSION=SESSION)
-    def test_create_raise_type_error(self):
+    def test_create_raises_type_error(self):
 
         class UserSerializer(ModelSerializer):
             addresses = serializers.PrimaryKeyRelatedField(
@@ -440,7 +440,7 @@ class TestModelSerializer(unittest.TestCase):
             'addresses': [],
             'gender': 'male'
         }
-        instance = UserSerializer(data, allow_null=True)
+        instance = UserSerializer(data=data, allow_null=True)
 
         self.assertEqual(instance.run_validation(data), data)
 
@@ -479,7 +479,7 @@ class TestModelSerializer(unittest.TestCase):
             'addresses': [],
             'gender': 'male'
         }
-        instance = UserSerializer(data, allow_null=True)
+        instance = UserSerializer(data=data, allow_null=True)
 
         self.assertRaises(ValidationError, instance.run_validation, data)
 
@@ -506,7 +506,7 @@ class TestModelSerializer(unittest.TestCase):
             'addresses': [],
             'gender': 'male'
         }
-        instance = UserSerializer(data, allow_null=True)
+        instance = UserSerializer(data=data, allow_null=True)
 
         self.assertRaises(ValidationError, instance.run_validation, data)
 

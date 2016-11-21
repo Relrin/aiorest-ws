@@ -832,7 +832,7 @@ class CustomStringField(models.CharField):
 
 class TestModelField(DjangoUnitTest):
 
-    class User(models.Model):
+    class Owner(models.Model):
         name = CustomStringField(max_length=30)
 
         class Meta:
@@ -845,7 +845,7 @@ class TestModelField(DjangoUnitTest):
         name = models.CharField(max_length=30)
         max_speed = models.FloatField(null=True, blank=True)
         manufacturer = models.ForeignKey(
-            "test_django_model_field.User", related_name='cars'
+            "test_django_model_field.Owner", related_name='cars'
         )
 
         class Meta:
@@ -854,11 +854,11 @@ class TestModelField(DjangoUnitTest):
         def __str__(self):
             return '<Car(%s, %s)>' % (self.name, self.manufacturer)
 
-    models = (User, Car)
+    models = (Owner, Car)
     apps = ('test_django_model_field', )
 
     def test_to_internal_value(self):
-        model_field = self.User._meta.get_field('name')
+        model_field = self.Owner._meta.get_field('name')
         instance = fields.ModelField(model_field, max_length=30)
         self.assertEqual(instance.to_internal_value('data'), 'data')
 

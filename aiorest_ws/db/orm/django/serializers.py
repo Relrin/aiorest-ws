@@ -202,7 +202,9 @@ class ModelSerializer(BaseModelSerializer):
         # Save many-to-many relationships after the instance is created.
         if many_to_many:
             for field_name, value in many_to_many.items():
-                setattr(instance, field_name, value)
+                field = getattr(instance, field_name)
+                field.add(*value)
+            instance.save()
 
         return instance
 
