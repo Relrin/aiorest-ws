@@ -962,12 +962,14 @@ class ModelSerializer(Serializer):
         # arguments to deal with `unique_for` dates that are required to
         # be in the input data in order to validate it.
         unique_constraint_names = self._get_unique_constraint_names(
-            model, model_fields
+            model, model_fields, field_names
         )
 
         # Include each of "unique multiple columns" field names,
         # so long as all the field names are included on the serializer.
-        unique_constraint_names |= self._get_unique_together_constraints(model)
+        unique_constraint_names |= self._get_unique_together_constraints(
+            model, model_fields, field_names
+        )
 
         # Now we have all the field names that have uniqueness constraints
         # applied, we can add the extra 'required=...' or 'default=...'
@@ -1041,7 +1043,7 @@ class ModelSerializer(Serializer):
 
         return model_fields
 
-    def _get_unique_constraint_names(self, model, model_fields):
+    def _get_unique_constraint_names(self, model, model_fields, field_names):
         """
         Return a set of field names, for each column unique constraint.
         Used internally by `get_uniqueness_extra_kwargs`.
@@ -1049,7 +1051,7 @@ class ModelSerializer(Serializer):
         raise NotImplementedError('`_get_unique_constraint_names()` '
                                   'must be implemented.')
 
-    def _get_unique_together_constraints(self, model):
+    def _get_unique_together_constraints(self, model, model_fields, field_names):  # NOQA
         """
         Return a set of field names for a multiple unique constraints.
         Used internally by `get_uniqueness_extra_kwargs`.

@@ -221,7 +221,7 @@ class ChoiceField(AbstractField):
         # Allows us to deal with eg. integer choices while supporting either
         # integer or string input, but still get the correct datatype out.
         self.choice_strings_to_values = {
-            key: key for key in self.choices.keys()
+            str(key): key for key in self.choices.keys()
         }
 
         self.allow_blank = kwargs.pop('allow_blank', False)
@@ -232,14 +232,14 @@ class ChoiceField(AbstractField):
             return ''
 
         try:
-            return self.choice_strings_to_values[data]
+            return self.choice_strings_to_values[str(data)]
         except KeyError:
             self.raise_error('invalid_choice', input=data)
 
     def to_representation(self, value):
         if value in ('', None):
             return value
-        return self.choice_strings_to_values.get(value, value)
+        return self.choice_strings_to_values.get(str(value), value)
 
 
 class FloatField(AbstractField):
@@ -836,7 +836,10 @@ class ListField(AbstractField):
         """
         List of object instances -> List of dicts of primitive datatypes.
         """
-        return [self.child.to_representation(item) for item in data]
+        return [
+            self.child.to_representation(item) if item is not None else None
+            for item in data
+        ]
 
 
 class DictField(AbstractField):
@@ -880,7 +883,7 @@ class DictField(AbstractField):
         List of object instances -> List of dicts of primitive datatypes.
         """
         return {
-            str(key): self.child.to_representation(val)
+            str(key): self.child.to_representation(val) if val is not None else None  # NOQA
             for key, val in value.items()
         }
 
@@ -927,11 +930,6 @@ class ModelField(AbstractField):
     This is used by `ModelSerializer` when dealing with custom model fields,
     that do not have a serializer field to be mapped to.
     """
-    default_error_messages = {
-        'max_length': "Ensure this field has no more than {max_length} "
-                      "characters."
-    }
-
     def __init__(self, model_field, **kwargs):
         self.model_field = model_field
         super(ModelField, self).__init__(**kwargs)
@@ -981,6 +979,7 @@ class SerializerMethodField(AbstractField):
         # The method name should default to `get_{field_name}`.
         if self.method_name is None:
             self.method_name = default_method_name
+
         super(SerializerMethodField, self).bind(field_name, parent)
 
     def to_representation(self, value):

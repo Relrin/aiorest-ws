@@ -32,6 +32,7 @@ DEFAULT_ENCODING = 'utf-8'
 UNICODE_JSON = True
 COMPACT_JSON = True
 COERCE_DECIMAL_TO_STRING = True
+UPLOADED_FILES_USE_URL = True
 
 # -----------------------------------------------
 #  Database

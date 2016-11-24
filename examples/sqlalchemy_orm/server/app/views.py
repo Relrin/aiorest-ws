@@ -19,7 +19,7 @@ class UserListView(MethodBasedView):
         if not data:
             raise ValidationError('You must provide arguments for create.')
 
-        created_obj_data = data.get('list' , [])
+        created_obj_data = data.get('list', [])
         if not data:
             raise ValidationError('You must provide a list of objects.')
 
