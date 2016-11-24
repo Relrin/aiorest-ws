@@ -1,43 +1,36 @@
 # -*- coding: utf-8 -*-
-import unittest
-
 from aiorest_ws.db.orm.sqlalchemy.mixins import ORMSessionMixin, \
     SQLAlchemyMixin
 from aiorest_ws.test.utils import override_settings
 
-from tests.fixtures.sqlalchemy import ENGINE, SESSION
-
 from sqlalchemy import Column, Integer, String
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm.session import Session
 from sqlalchemy.orm.query import Query
 
+from tests.db.orm.sqlalchemy.base import Base, SQLAlchemyUnitTest
+from tests.fixtures.sqlalchemy import SESSION
 
-Base = declarative_base()
 
-
-class TestORMSessionMixin(unittest.TestCase):
+class TestORMSessionMixin(SQLAlchemyUnitTest):
     settings = {'SQLALCHEMY_SESSION': SESSION}
 
     class TableForORMSessionMixin(Base):
         __tablename__ = 'test_orm_session_mixin'
         id = Column(Integer, primary_key=True)
 
+    tables = [TableForORMSessionMixin.__table__, ]
+
     @classmethod
     def setUpClass(cls):
-        super(TestORMSessionMixin, cls).setUpClass()
         cls._cls_overridden_context = override_settings(**cls.settings)
         cls._cls_overridden_context.enable()
-        Base.metadata.create_all(
-            ENGINE, tables=[cls.TableForORMSessionMixin.__table__, ]
-        )
+        super(TestORMSessionMixin, cls).setUpClass()
         cls.session = SESSION()
 
     @classmethod
     def tearDownClass(cls):
-        super(TestORMSessionMixin, cls).tearDownClass()
         cls._cls_overridden_context.disable()
-        Base.metadata.remove(cls.TableForORMSessionMixin.__table__)
+        super(TestORMSessionMixin, cls).tearDownClass()
 
     def test_get_session(self):
         mixin = ORMSessionMixin()
@@ -58,7 +51,7 @@ class TestORMSessionMixin(unittest.TestCase):
         self.assertEqual(mixin.queryset, queryset)
 
 
-class TestSQLAlchemyMixin(unittest.TestCase):
+class TestSQLAlchemyMixin(SQLAlchemyUnitTest):
     settings = {'SQLALCHEMY_SESSION': SESSION}
 
     class TableForSQLAlchemyMixin(Base):
@@ -66,23 +59,21 @@ class TestSQLAlchemyMixin(unittest.TestCase):
         id = Column(Integer, primary_key=True)
         login = Column(String, nullable=False)
 
+    tables = [TableForSQLAlchemyMixin.__table__, ]
+
     @classmethod
     def setUpClass(cls):
-        super(TestSQLAlchemyMixin, cls).setUpClass()
         cls._cls_overridden_context = override_settings(**cls.settings)
         cls._cls_overridden_context.enable()
-        Base.metadata.create_all(
-            ENGINE, tables=[cls.TableForSQLAlchemyMixin.__table__, ]
-        )
+        super(TestSQLAlchemyMixin, cls).setUpClass()
         cls.session = SESSION()
         cls.session.add_all([cls.TableForSQLAlchemyMixin(login='user'), ])
         cls.session.commit()
 
     @classmethod
     def tearDownClass(cls):
-        super(TestSQLAlchemyMixin, cls).tearDownClass()
         cls._cls_overridden_context.disable()
-        Base.metadata.remove(cls.TableForSQLAlchemyMixin.__table__)
+        super(TestSQLAlchemyMixin, cls).tearDownClass()
 
     def test_get_filter_args(self):
         mixin = SQLAlchemyMixin()

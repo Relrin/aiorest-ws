@@ -6,13 +6,11 @@ from aiorest_ws.db.orm.sqlalchemy.field_mapping import get_detail_view_name, \
     get_url_kwargs
 from aiorest_ws.utils.structures import RelationInfo
 
-from tests.fixtures.sqlalchemy import ENGINE, SESSION
+from tests.db.orm.sqlalchemy.base import Base, SQLAlchemyUnitTest
+from tests.fixtures.sqlalchemy import SESSION
 
 from sqlalchemy import Column, Integer, String, Enum, ForeignKey
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import validates
-
-Base = declarative_base()
 
 
 # Only for the TestGetRelationKwargs test cases
@@ -43,7 +41,7 @@ class TestGetDetailViewName(unittest.TestCase):
         )
 
 
-class TestGetFieldKwargs(unittest.TestCase):
+class TestGetFieldKwargs(SQLAlchemyUnitTest):
 
     class TestGetFieldKwargsModel(Base):
         __tablename__ = 'test_get_field_kwargs'
@@ -58,12 +56,11 @@ class TestGetFieldKwargs(unittest.TestCase):
             assert '@' in address, '@ must be in email address'
             return address
 
+    tables = [TestGetFieldKwargsModel.__table__, ]
+
     @classmethod
     def setUpClass(cls):
         super(TestGetFieldKwargs, cls).setUpClass()
-        Base.metadata.create_all(
-            ENGINE, tables=[cls.TestGetFieldKwargsModel.__table__, ]
-        )
         session = SESSION()
         session.add_all([
             cls.TestGetFieldKwargsModel(
@@ -86,11 +83,6 @@ class TestGetFieldKwargs(unittest.TestCase):
             ),
         ])
         session.commit()
-
-    @classmethod
-    def tearDownClass(cls):
-        super(TestGetFieldKwargs, cls).tearDownClass()
-        Base.metadata.remove(cls.TestGetFieldKwargsModel.__table__)
 
     def test_get_field_kwargs_for_primary_key_field(self):
         field_kwargs = get_field_kwargs(
