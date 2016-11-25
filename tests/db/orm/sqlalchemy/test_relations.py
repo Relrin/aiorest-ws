@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-import unittest
-
 from aiorest_ws.exceptions import ImproperlyConfigured
 from aiorest_ws.db.orm.relations import RelatedField as BaseRelatedField, \
     PKOnlyObject
@@ -12,18 +10,15 @@ from aiorest_ws.parsers import URLParser
 from aiorest_ws.test.utils import override_settings
 from aiorest_ws.urls.base import set_urlconf
 
-from tests.fixtures.fakes import FakeView
-from tests.fixtures.sqlalchemy import SESSION, ENGINE
-
 from sqlalchemy import Column, Integer, String, ForeignKey
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
+from tests.fixtures.fakes import FakeView
+from tests.fixtures.sqlalchemy import SESSION
+from tests.db.orm.sqlalchemy.base import Base, SQLAlchemyUnitTest
 
-Base = declarative_base()
 
-
-class TestManyRelatedField(unittest.TestCase):
+class TestManyRelatedField(SQLAlchemyUnitTest):
 
     class FakeRelatedField(BaseRelatedField):
 
@@ -56,17 +51,6 @@ class TestManyRelatedField(unittest.TestCase):
         TestManyRelatedFieldUserModel.__table__,
         TestManyRelatedFieldAddressModel.__table__
     ]
-
-    @classmethod
-    def setUpClass(cls):
-        super(TestManyRelatedField, cls).setUpClass()
-        Base.metadata.create_all(ENGINE, tables=cls.tables)
-
-    @classmethod
-    def tearDownClass(cls):
-        super(TestManyRelatedField, cls).tearDownClass()
-        for table in cls.tables:
-            Base.metadata.remove(table)
 
     def test_get_attribute_returns_relation(self):
         child_instance = self.FakeRelatedField(read_only=True)
@@ -121,7 +105,7 @@ class TestManyRelatedField(unittest.TestCase):
         )
 
 
-class TestRelatedField(unittest.TestCase):
+class TestRelatedField(SQLAlchemyUnitTest):
 
     class RelatedWithOptimization(RelatedField):
 
@@ -155,8 +139,6 @@ class TestRelatedField(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         super(TestRelatedField, cls).setUpClass()
-        Base.metadata.create_all(ENGINE, tables=cls.tables)
-
         session = SESSION()
         user = cls.TestRelatedFieldUserModel(name='admin')
         address = cls.TestRelatedFieldAddressModel(
@@ -167,12 +149,6 @@ class TestRelatedField(unittest.TestCase):
         session.add(address)
         session.commit()
         session.close()
-
-    @classmethod
-    def tearDownClass(cls):
-        super(TestRelatedField, cls).tearDownClass()
-        for table in cls.tables:
-            Base.metadata.remove(table)
 
     def test_get_attribute_returns_attribute(self):
         instance = RelatedField(read_only=True)
@@ -221,7 +197,7 @@ class TestRelatedField(unittest.TestCase):
         self.assertNotEqual(instance, instance_copy)
 
 
-class TestPrimaryKeyRelatedField(unittest.TestCase):
+class TestPrimaryKeyRelatedField(SQLAlchemyUnitTest):
 
     class TestPrimaryKeyRelatedFieldUserModel(Base):
         __tablename__ = 'test_pk_related_field_users_model'
@@ -250,8 +226,6 @@ class TestPrimaryKeyRelatedField(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         super(TestPrimaryKeyRelatedField, cls).setUpClass()
-        Base.metadata.create_all(ENGINE, tables=cls.tables)
-
         session = SESSION()
         user = cls.TestPrimaryKeyRelatedFieldUserModel(name='admin')
         address = cls.TestPrimaryKeyRelatedFieldAddressModel(
@@ -262,12 +236,6 @@ class TestPrimaryKeyRelatedField(unittest.TestCase):
         session.add(address)
         session.commit()
         session.close()
-
-    @classmethod
-    def tearDownClass(cls):
-        super(TestPrimaryKeyRelatedField, cls).tearDownClass()
-        for table in cls.tables:
-            Base.metadata.remove(table)
 
     @override_settings(SQLALCHEMY_SESSION=SESSION)
     def test_to_internal_value_returns_object(self):
@@ -356,7 +324,7 @@ class TestPrimaryKeyRelatedField(unittest.TestCase):
         session.close()
 
 
-class TestHyperlinkedRelatedField(unittest.TestCase):
+class TestHyperlinkedRelatedField(SQLAlchemyUnitTest):
 
     class TestHyperlinkedRelatedFieldUserModel(Base):
         __tablename__ = 'test_hyperlink_related_field_users_model'
@@ -391,8 +359,6 @@ class TestHyperlinkedRelatedField(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         super(TestHyperlinkedRelatedField, cls).setUpClass()
-        Base.metadata.create_all(ENGINE, tables=cls.tables)
-
         session = SESSION()
         user = cls.TestHyperlinkedRelatedFieldUserModel(name='admin')
         address = cls.TestHyperlinkedRelatedFieldAddressModel(
@@ -417,12 +383,6 @@ class TestHyperlinkedRelatedField(unittest.TestCase):
             ]
         }
         set_urlconf(cls.data)
-
-    @classmethod
-    def tearDownClass(cls):
-        super(TestHyperlinkedRelatedField, cls).tearDownClass()
-        for table in cls.tables:
-            Base.metadata.remove(table)
 
     def test_use_pk_only_optimization_returns_true(self):
         instance = HyperlinkedRelatedField(view_name='user-detail')

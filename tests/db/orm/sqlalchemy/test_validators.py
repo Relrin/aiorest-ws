@@ -7,13 +7,10 @@ from aiorest_ws.db.orm.sqlalchemy.validators import ORMFieldValidator, \
 from aiorest_ws.db.orm.exceptions import ValidationError
 from aiorest_ws.test.utils import override_settings
 
-from tests.fixtures.sqlalchemy import ENGINE, SESSION
-
 from sqlalchemy import Column, Integer, String
-from sqlalchemy.ext.declarative import declarative_base
 
-
-Base = declarative_base()
+from tests.fixtures.sqlalchemy import SESSION
+from tests.db.orm.sqlalchemy.base import Base, SQLAlchemyUnitTest
 
 
 class TestORMFieldValidator(unittest.TestCase):
@@ -42,32 +39,25 @@ class TestORMFieldValidator(unittest.TestCase):
             validator('wrong email address')
 
 
-class TestUniqueORMValidator(unittest.TestCase):
+class TestUniqueORMValidator(SQLAlchemyUnitTest):
 
     class TableWithUniqueName(Base):
         __tablename__ = 'test_unique_field'
         id = Column(Integer, primary_key=True)
         name = Column(String(50), unique=True)
 
+    tables = [TableWithUniqueName.__table__, ]
+
     @classmethod
     def setUpClass(cls):
         super(TestUniqueORMValidator, cls).setUpClass()
-        Base.metadata.create_all(
-            ENGINE, tables=[cls.TableWithUniqueName.__table__, ]
-        )
         cls.session = SESSION()
-
         cls.session.add_all([
             cls.TableWithUniqueName(name='Adam'),
             cls.TableWithUniqueName(name='Bob'),
             cls.TableWithUniqueName(name='Eve'),
         ])
         cls.session.commit()
-
-    @classmethod
-    def tearDownClass(cls):
-        super(TestUniqueORMValidator, cls).tearDownClass()
-        Base.metadata.remove(cls.TableWithUniqueName.__table__)
 
     def test_filter_queryset(self):
         validator = UniqueORMValidator(

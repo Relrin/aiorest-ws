@@ -1,24 +1,18 @@
 # -*- coding: utf-8 -*-
-import unittest
-
 from aiorest_ws.db.orm.sqlalchemy.model_meta import _get_pk, _get_fields, \
     _get_relations, _get_to_field, _get_forward_relationships, \
     _get_reverse_relationships, _merge_fields_and_pk, _merge_relationships, \
     get_field_info, is_abstract_model, get_relations_data, model_pk
 
-from tests.fixtures.sqlalchemy import ENGINE
-
 from sqlalchemy import Column, Integer, String, Enum, ForeignKey, Table, \
     DateTime
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm.interfaces import ONETOMANY
 
+from tests.db.orm.sqlalchemy.base import Base, SQLAlchemyUnitTest
 
-Base = declarative_base()
 
-
-class TestGetPkFunction(unittest.TestCase):
+class TestGetPkFunction(SQLAlchemyUnitTest):
 
     class TestGetPkWithSinglePkModel(Base):
         __tablename__ = 'test_get_pk_with_single_pk_model'
@@ -33,17 +27,6 @@ class TestGetPkFunction(unittest.TestCase):
         TestGetPkWithSinglePkModel.__table__,
         TestGetPkWithCompositePkModel.__table__
     ]
-
-    @classmethod
-    def setUpClass(cls):
-        super(TestGetPkFunction, cls).setUpClass()
-        Base.metadata.create_all(ENGINE, tables=cls.tables)
-
-    @classmethod
-    def tearDownClass(cls):
-        super(TestGetPkFunction, cls).tearDownClass()
-        for table in cls.tables:
-            Base.metadata.remove(table)
 
     def test_get_single_pk_from_model(self):
         mapper = self.TestGetPkWithSinglePkModel.__mapper__
@@ -62,7 +45,7 @@ class TestGetPkFunction(unittest.TestCase):
         )
 
 
-class TestGetFieldsFunction(unittest.TestCase):
+class TestGetFieldsFunction(SQLAlchemyUnitTest):
 
     class TestGetFieldsFunctionModel(Base):
         __tablename__ = 'test_get_fields_function_model'
@@ -76,17 +59,6 @@ class TestGetFieldsFunction(unittest.TestCase):
         TestGetFieldsFunctionModel.__table__,
     ]
 
-    @classmethod
-    def setUpClass(cls):
-        super(TestGetFieldsFunction, cls).setUpClass()
-        Base.metadata.create_all(ENGINE, tables=cls.tables)
-
-    @classmethod
-    def tearDownClass(cls):
-        super(TestGetFieldsFunction, cls).tearDownClass()
-        for table in cls.tables:
-            Base.metadata.remove(table)
-
     def test_get_fields_from_model(self):
         mapper = self.TestGetFieldsFunctionModel.__mapper__
 
@@ -96,7 +68,7 @@ class TestGetFieldsFunction(unittest.TestCase):
         )
 
 
-class TestGetRelationsFunction(unittest.TestCase):
+class TestGetRelationsFunction(SQLAlchemyUnitTest):
 
     class TestGetRelationsParentModel(Base):
         __tablename__ = 'test_get_relations_parent_model'
@@ -116,17 +88,6 @@ class TestGetRelationsFunction(unittest.TestCase):
         TestGetRelationsChildModel.__table__
     ]
 
-    @classmethod
-    def setUpClass(cls):
-        super(TestGetRelationsFunction, cls).setUpClass()
-        Base.metadata.create_all(ENGINE, tables=cls.tables)
-
-    @classmethod
-    def tearDownClass(cls):
-        super(TestGetRelationsFunction, cls).tearDownClass()
-        for table in cls.tables:
-            Base.metadata.remove(table)
-
     def test_get_relations(self):
         mapper = self.TestGetRelationsParentModel.__mapper__
 
@@ -136,7 +97,7 @@ class TestGetRelationsFunction(unittest.TestCase):
         )
 
 
-class TestGetToFieldFunction(unittest.TestCase):
+class TestGetToFieldFunction(SQLAlchemyUnitTest):
 
     class TestGetToFieldParentModel(Base):
         __tablename__ = 'test_get_to_field_parent_model'
@@ -160,17 +121,6 @@ class TestGetToFieldFunction(unittest.TestCase):
         TestGetToFieldChildModel.__table__
     ]
 
-    @classmethod
-    def setUpClass(cls):
-        super(TestGetToFieldFunction, cls).setUpClass()
-        Base.metadata.create_all(ENGINE, tables=cls.tables)
-
-    @classmethod
-    def tearDownClass(cls):
-        super(TestGetToFieldFunction, cls).tearDownClass()
-        for table in cls.tables:
-            Base.metadata.remove(table)
-
     def test_get_to_field(self):
         mapper = self.TestGetToFieldParentModel.__mapper__
         relation_field = mapper.relationships.items()[0][1]
@@ -184,7 +134,7 @@ class TestGetToFieldFunction(unittest.TestCase):
         self.assertIsNone(_get_to_field(non_relation_field))
 
 
-class TestGetForwardRelationsFunction(unittest.TestCase):
+class TestGetForwardRelationsFunction(SQLAlchemyUnitTest):
 
     class TestGetForwardRelationsParentModel(Base):
         __tablename__ = 'test_forward_rel_parent_model'
@@ -208,17 +158,6 @@ class TestGetForwardRelationsFunction(unittest.TestCase):
         TestGetForwardRelationsChildModel.__table__
     ]
 
-    @classmethod
-    def setUpClass(cls):
-        super(TestGetForwardRelationsFunction, cls).setUpClass()
-        Base.metadata.create_all(ENGINE, tables=cls.tables)
-
-    @classmethod
-    def tearDownClass(cls):
-        super(TestGetForwardRelationsFunction, cls).tearDownClass()
-        for table in cls.tables:
-            Base.metadata.remove(table)
-
     def test_get_forward_relations(self):
         mapper = self.TestGetForwardRelationsParentModel.__mapper__
 
@@ -241,7 +180,7 @@ test_get_reverse_relations_association_table = Table(
 )
 
 
-class TestGetReverseRelationsFunction(unittest.TestCase):
+class TestGetReverseRelationsFunction(SQLAlchemyUnitTest):
 
     class TestGetReverseRelationsFkParentModel(Base):
         __tablename__ = 'test_get_reverse_relations_fk_parent_model'
@@ -287,17 +226,6 @@ class TestGetReverseRelationsFunction(unittest.TestCase):
         TestGetReverseRelationsChildModel.__table__
     ]
 
-    @classmethod
-    def setUpClass(cls):
-        super(TestGetReverseRelationsFunction, cls).setUpClass()
-        Base.metadata.create_all(ENGINE, tables=cls.tables)
-
-    @classmethod
-    def tearDownClass(cls):
-        super(TestGetReverseRelationsFunction, cls).tearDownClass()
-        for table in cls.tables:
-            Base.metadata.remove(table)
-
     def test_get_reverse_relations_for_many_to_one(self):
         mapper = self.TestGetReverseRelationsFkParentModel.__mapper__
 
@@ -315,7 +243,7 @@ class TestGetReverseRelationsFunction(unittest.TestCase):
         )
 
 
-class TestMergeFieldAndPkFunction(unittest.TestCase):
+class TestMergeFieldAndPkFunction(SQLAlchemyUnitTest):
 
     class TestMergeFieldAndPkModel(Base):
         __tablename__ = 'test_merge_fields_and_pk_model'
@@ -324,17 +252,7 @@ class TestMergeFieldAndPkFunction(unittest.TestCase):
         address = Column(String(50), nullable=True)
         email = Column(String(50), unique=True)
 
-    @classmethod
-    def setUpClass(cls):
-        super(TestMergeFieldAndPkFunction, cls).setUpClass()
-        Base.metadata.create_all(
-            ENGINE, tables=[cls.TestMergeFieldAndPkModel.__table__, ]
-        )
-
-    @classmethod
-    def tearDownClass(cls):
-        super(TestMergeFieldAndPkFunction, cls).tearDownClass()
-        Base.metadata.remove(cls.TestMergeFieldAndPkModel.__table__)
+    tables = [TestMergeFieldAndPkModel.__table__, ]
 
     def test_merge_field_and_pk(self):
         mapper = self.TestMergeFieldAndPkModel.__mapper__
@@ -361,7 +279,7 @@ test_merge_function_m2m_file_server_model = Table(
 )
 
 
-class TestMergeRelationsFunction(unittest.TestCase):
+class TestMergeRelationsFunction(SQLAlchemyUnitTest):
 
     class TestMergeRelationsCatalogModel(Base):
         __tablename__ = 'test_merge_relations_catalog_model'
@@ -410,17 +328,6 @@ class TestMergeRelationsFunction(unittest.TestCase):
         TestMergeRelationsLinkModel.__table__
     ]
 
-    @classmethod
-    def setUpClass(cls):
-        super(TestMergeRelationsFunction, cls).setUpClass()
-        Base.metadata.create_all(ENGINE, tables=cls.tables)
-
-    @classmethod
-    def tearDownClass(cls):
-        super(TestMergeRelationsFunction, cls).tearDownClass()
-        for table in cls.tables:
-            Base.metadata.remove(table)
-
     def test_merge_relations(self):
         mapper = self.TestMergeRelationsFileModel.__mapper__
         forward_relations = _get_forward_relationships(mapper)
@@ -433,7 +340,7 @@ class TestMergeRelationsFunction(unittest.TestCase):
         )
 
 
-class TestFieldInfoFunction(unittest.TestCase):
+class TestFieldInfoFunction(SQLAlchemyUnitTest):
 
     class TestFieldInfoParentModel(Base):
         __tablename__ = 'test_field_info_parent_model'
@@ -457,17 +364,6 @@ class TestFieldInfoFunction(unittest.TestCase):
         TestFieldInfoChildModel.__table__,
     ]
 
-    @classmethod
-    def setUpClass(cls):
-        super(TestFieldInfoFunction, cls).setUpClass()
-        Base.metadata.create_all(ENGINE, tables=cls.tables)
-
-    @classmethod
-    def tearDownClass(cls):
-        super(TestFieldInfoFunction, cls).tearDownClass()
-        for table in cls.tables:
-            Base.metadata.remove(table)
-
     def test_field_info(self):
         self.assertEqual(
             set(get_field_info(self.TestFieldInfoParentModel)._fields),
@@ -476,7 +372,7 @@ class TestFieldInfoFunction(unittest.TestCase):
         )
 
 
-class TestIsAbstractModelFunction(unittest.TestCase):
+class TestIsAbstractModelFunction(SQLAlchemyUnitTest):
 
     class TestIsAbstractModel(Base):
         __tablename__ = 'test_is_abstract_model'
@@ -491,17 +387,6 @@ class TestIsAbstractModelFunction(unittest.TestCase):
         TestIsNotAbstractModel.__table__
     ]
 
-    @classmethod
-    def setUpClass(cls):
-        super(TestIsAbstractModelFunction, cls).setUpClass()
-        Base.metadata.create_all(ENGINE, tables=cls.tables)
-
-    @classmethod
-    def tearDownClass(cls):
-        super(TestIsAbstractModelFunction, cls).tearDownClass()
-        for table in cls.tables:
-            Base.metadata.remove(table)
-
     def test_is_abstract_model_returns_true(self):
         self.assertTrue(is_abstract_model(self.TestIsAbstractModel))
 
@@ -509,7 +394,7 @@ class TestIsAbstractModelFunction(unittest.TestCase):
         self.assertFalse(is_abstract_model(self.TestIsNotAbstractModel))
 
 
-class TestGetRelationsDataFunction(unittest.TestCase):
+class TestGetRelationsDataFunction(SQLAlchemyUnitTest):
 
     class TestGetRelationsDataUserModel(Base):
         __tablename__ = 'test_get_relations_data_users_model'
@@ -536,17 +421,6 @@ class TestGetRelationsDataFunction(unittest.TestCase):
         TestGetRelationsDataUserModel.__table__,
         TestGetRelationsDataAddressModel.__table__,
     ]
-
-    @classmethod
-    def setUpClass(cls):
-        super(TestGetRelationsDataFunction, cls).setUpClass()
-        Base.metadata.create_all(ENGINE, tables=cls.tables)
-
-    @classmethod
-    def tearDownClass(cls):
-        super(TestGetRelationsDataFunction, cls).tearDownClass()
-        for table in cls.tables:
-            Base.metadata.remove(table)
 
     def test_get_relations_data_returns_empty_dict(self):
         data = {
@@ -576,7 +450,7 @@ class TestGetRelationsDataFunction(unittest.TestCase):
         )
 
 
-class TestModelPkFunction(unittest.TestCase):
+class TestModelPkFunction(SQLAlchemyUnitTest):
 
     class TestModelPkWithSinglePkModel(Base):
         __tablename__ = 'test_model_pk_with_single_pk_model'
@@ -591,17 +465,6 @@ class TestModelPkFunction(unittest.TestCase):
         TestModelPkWithSinglePkModel.__table__,
         TestModelPkWithCompositePkModel.__table__
     ]
-
-    @classmethod
-    def setUpClass(cls):
-        super(TestModelPkFunction, cls).setUpClass()
-        Base.metadata.create_all(ENGINE, tables=cls.tables)
-
-    @classmethod
-    def tearDownClass(cls):
-        super(TestModelPkFunction, cls).tearDownClass()
-        for table in cls.tables:
-            Base.metadata.remove(table)
 
     def test_model_pk_from_model_with_one_pk(self):
         self.assertEqual(

@@ -13,14 +13,11 @@ from aiorest_ws.db.orm.sqlalchemy.serializers import ListSerializer, \
 from aiorest_ws.db.orm.sqlalchemy import fields, serializers
 from aiorest_ws.test.utils import override_settings
 
+from tests.db.orm.sqlalchemy.base import Base, SQLAlchemyUnitTest
 from tests.fixtures.sqlalchemy import SESSION, ENGINE
 
 from sqlalchemy import Column, Integer, String, Enum, ForeignKey
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, Query
-
-
-Base = declarative_base()
 
 
 class TestGetValidationErrorDetailFunction(unittest.TestCase):
@@ -134,7 +131,7 @@ class TestListSerializer(unittest.TestCase):
         )
 
 
-class TestModelSerializer(unittest.TestCase):
+class TestModelSerializer(SQLAlchemyUnitTest):
 
     class TestModelSerializerUserModel(Base):
         __tablename__ = 'test_model_serializer_users_model'
@@ -164,17 +161,6 @@ class TestModelSerializer(unittest.TestCase):
         TestModelSerializerUserModel.__table__,
         TestModelSerializerAddressModel.__table__
     ]
-
-    @classmethod
-    def setUpClass(cls):
-        super(TestModelSerializer, cls).setUpClass()
-        Base.metadata.create_all(ENGINE, tables=cls.tables)
-
-    @classmethod
-    def tearDownClass(cls):
-        super(TestModelSerializer, cls).tearDownClass()
-        for table in cls.tables:
-            Base.metadata.remove(table)
 
     def create_table(self, table):
         Base.metadata.create_all(ENGINE, tables=[table, ])
@@ -642,7 +628,7 @@ class TestModelSerializer(unittest.TestCase):
             serializer_fields = instance.fields  # NOQA
 
 
-class TestHyperlinkModelSerializer(unittest.TestCase):
+class TestHyperlinkModelSerializer(SQLAlchemyUnitTest):
 
     class TestHyperlinkModelSerializerUserModel(Base):
         __tablename__ = 'test_hyperlink_model_serializer_users_model'
@@ -671,17 +657,6 @@ class TestHyperlinkModelSerializer(unittest.TestCase):
         TestHyperlinkModelSerializerUserModel.__table__,
         TestHyperlinkModelSerializerAddressModel.__table__
     ]
-
-    @classmethod
-    def setUpClass(cls):
-        super(TestHyperlinkModelSerializer, cls).setUpClass()
-        Base.metadata.create_all(ENGINE, tables=cls.tables)
-
-    @classmethod
-    def tearDownClass(cls):
-        super(TestHyperlinkModelSerializer, cls).tearDownClass()
-        for table in cls.tables:
-            Base.metadata.remove(table)
 
     def test_build_nested_field(self):
 
