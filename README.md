@@ -26,6 +26,19 @@ License
 -----
 The aiorest-ws published under BSD license. For more details read [LICENSE](https://github.com/Relrin/aiorest-ws/blob/master/LICENSE) file.
 
+Roadmap (by priority) to releases:
+------
+v1.2:
+ - Improve scalability of aiorest-ws (balancer instance or HAProxy?)
+ - Notification support
+ 
+v1.3:
+ - Web browsable API (similar on swagger?)
+ 
+v1.4:
+ - Classes and functions for testing APIs
+ - Clients for Python, JavaScript
+
 Documentation
 -----
 The latest documentation for the project is available [there](http://aiorest-ws.readthedocs.org/).
