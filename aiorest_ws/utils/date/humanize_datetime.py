@@ -41,7 +41,7 @@ def time_formats(formats):
 
 def humanize_strptime(format_string):
     # Note that we're missing some of the locale specific mappings that
-    # don't really make sense.
+    # don't really make sense
     mapping = {
         "%Y": "YYYY",
         "%y": "YY",
@@ -50,7 +50,7 @@ def humanize_strptime(format_string):
         "%B": "[January-December]",
         "%d": "DD",
         "%H": "hh",
-        "%I": "hh",  # Requires '%p' to differentiate from '%H'.
+        "%I": "hh",  # Requires '%p' to differentiate from '%H'
         "%M": "mm",
         "%S": "ss",
         "%f": "uuuuuu",

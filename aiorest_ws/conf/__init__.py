@@ -21,14 +21,16 @@ ENVIRONMENT_VARIABLE = "AIORESTWS_SETTINGS_MODULE"
 
 
 class Settings(object):
-    """Settings class of application."""
+    """
+    Settings class of application.
+    """
     def __init__(self):
         super(Settings, self).__init__()
 
-        # Parse default settings and append to object.
+        # Parse default settings and append to object
         self._setup(global_settings)
 
-        # After that take the user defined settings and make merge.
+        # After that take the user defined settings and make merge
         user_settings = os.environ.get(ENVIRONMENT_VARIABLE, None)
         if user_settings:
             user_settings = importlib.import_module(user_settings)
@@ -59,12 +61,12 @@ class Settings(object):
                 )
                 manager_cls = db_settings.get('manager') or 'SQLiteManager'
                 # User defined manager_cls as string means that necessary to
-                # extract class and create one instance of this.
+                # extract class and create one instance of this
                 if type(manager_cls) is str:
                     manager_instance = getattr(
                         managers_module, manager_cls
                     )(**kwargs)
-                # In any other cases in can be already instantiated manager.
+                # In any other cases in can be already instantiated manager
                 else:
                     manager_instance = manager_cls
                 db_settings['manager'] = manager_instance
@@ -75,7 +77,7 @@ class UserSettingsHolder(Settings):
     Holder for user configured settings.
     """
     # SETTINGS_MODULE doesn't make much sense in the manually configured
-    # (standalone) case.
+    # (standalone) case
     SETTINGS_MODULE = None
 
     def __init__(self, default_settings):

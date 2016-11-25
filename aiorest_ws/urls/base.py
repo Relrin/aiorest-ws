@@ -10,7 +10,7 @@ _urlconfs = {}
 
 def set_urlconf(urlconf_data):
     """
-    Set the _urlconf for the current thread
+    Set the _urlconf for the current thread.
     """
     _urlconfs['data'] = urlconf_data
 

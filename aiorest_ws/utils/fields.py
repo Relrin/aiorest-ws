@@ -45,7 +45,7 @@ def get_attribute(instance, attrs):
     """
     for attr in attrs:
         if instance is None:
-            # Break out early if we get `None` at any point in a nested lookup.
+            # Break out early if we get `None` at any point in a nested lookup
             return None
 
         if isinstance(instance, collections.Mapping):
@@ -59,7 +59,7 @@ def get_attribute(instance, attrs):
             except (AttributeError, KeyError) as exc:
                 # If we raised an Attribute or KeyError here it'd get treated
                 # as an omitted field in `Field.get_attribute()`. Instead we
-                # raise a ValueError to ensure the exception is not masked.
+                # raise a ValueError to ensure the exception is not masked
                 raise ValueError(
                     'Exception raised in callable attribute "{0}"; '
                     'original exception was: {1}'.format(attr, exc)
@@ -102,15 +102,15 @@ def to_choices_dict(choices):
     ret = collections.OrderedDict()
     for choice in choices:
         if (not isinstance(choice, (list, tuple))):
-            # single choice
+            # Single choice
             ret[choice] = choice
         else:
             key, value = choice
             if isinstance(value, (list, tuple)):
-                # grouped choices (category, sub choices)
+                # Grouped choices (category, sub choices)
                 ret[key] = to_choices_dict(value)
             else:
-                # paired choice (key, display value)
+                # Paired choice (key, display value)
                 ret[key] = value
     return ret
 
@@ -124,10 +124,10 @@ def flatten_choices_dict(choices):
     ret = collections.OrderedDict()
     for key, value in choices.items():
         if isinstance(value, dict):
-            # grouped choices (category, sub choices)
+            # Grouped choices (category, sub choices)
             for sub_key, sub_value in value.items():
                 ret[sub_key] = sub_value
         else:
-            # choice (key, display value)
+            # Choice (key, display value)
             ret[key] = value
     return ret

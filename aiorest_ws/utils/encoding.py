@@ -19,7 +19,8 @@ _PROTECTED_TYPES = (
 
 
 def is_protected_type(obj):
-    """Determine if the object instance is of a protected type.
+    """
+    Determine if the object instance is of a protected type.
     Objects of protected types are preserved as-is when passed to
     force_text(strings_only=True).
     """
@@ -32,7 +33,7 @@ def force_text(s, encoding='utf-8', strings_only=False, errors='strict'):
     strings, rather than kept as lazy objects.
     If strings_only is True, don't convert (some) non-string-like objects.
     """
-    # Handle the common case first for performance reasons.
+    # Handle the common case first for performance reasons
     if issubclass(type(s), str):
         return s
     if strings_only and is_protected_type(s):
@@ -46,14 +47,14 @@ def force_text(s, encoding='utf-8', strings_only=False, errors='strict'):
         else:
             # Note: We use .decode() here, instead of six.text_type(s,
             # encoding, errors), so that if s is a SafeBytes, it ends up
-            # being a SafeText at the end.
+            # being a SafeText at the end
             s = s.decode(encoding, errors)
     except UnicodeDecodeError:
         # If we get to here, the caller has passed in an Exception
         # subclass populated with non-ASCII bytestring data without a
         # working unicode method. Try to handle this without raising a
         # further exception by individually forcing the exception args
-        # to unicode.
+        # to unicode
         s = ' '.join(force_text(arg, encoding, strings_only, errors)
                      for arg in s)
     return s

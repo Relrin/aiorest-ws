@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-__all__ = (
-    'iso8601_repr',
-)
+__all__ = ('iso8601_repr', )
 
 
 def iso8601_repr(timedelta, format=None):

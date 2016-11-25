@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    User model for authentication.
+User model for authentication.
 """
 from sqlite3 import OperationalError
 
@@ -21,7 +21,9 @@ __all__ = ('UserSQLiteModel', )
 
 
 class UserSQLiteModel(User):
-    """SQLite user model."""
+    """
+    SQLite user model.
+    """
     db_manager = SQLiteManager
 
     def __init__(self):
@@ -37,18 +39,21 @@ class UserSQLiteModel(User):
             self.__create_models()
 
     def __create_models(self):
-        """Create user model and append foreign key into token table."""
+        """
+        Create user model and append foreign key into token table.
+        """
         try:
             self.db_manager.execute_script(SQL_CREATE_USER_TABLE)
             self.db_manager.execute_script(SQL_CREATE_TOKEN_FOREIGN_KEY)
         # This exception taken only in the case, when `user_id` foreign
         # keys already created. We didn't have any opportunity to check
-        # existing column via SQL, because SQL syntax of SQLite is reduced.
+        # existing column via SQL, because SQL syntax of SQLite is reduced
         except OperationalError:
             pass
 
     def __user_defined_fields(self, init_data):
-        """Define fields in which changed data by the user.
+        """
+        Define fields in which changed data by the user.
 
         :param init_data: data, taken from the user.
         """
@@ -62,16 +67,21 @@ class UserSQLiteModel(User):
 
     @property
     def fields(self):
-        """Get list of fields with primary key."""
+        """
+        Get list of fields with primary key.
+        """
         return USER_MODEL_FIELDS
 
     @property
     def fields_without_pk(self):
-        """Get list of fields without primary key."""
+        """
+        Get list of fields without primary key.
+        """
         return USER_MODEL_FIELDS_WITHOUT_PK
 
     def create_user(self, *args, **kwargs):
-        """Create user in the database.
+        """
+        Create user in the database.
 
         :param args: tuple of arguments.
         :param kwargs: dictionary, where key is filled field of user model.
@@ -102,16 +112,15 @@ class UserSQLiteModel(User):
             logger.error(exc)
 
     def update_user(self, *args, **kwargs):
-        """Update user row in the database.
+        """
+        Update user row in the database.
 
         :param args: tuple of arguments.
         :param kwargs: dictionary, where key is updated field of user model.
         """
         username = kwargs.pop('username', None)
         if not username:
-            raise SearchCriteriaRequired(
-                "Username for WHEN statement is required."
-            )
+            raise SearchCriteriaRequired("Username for WHEN statement is required.")  # NOQA
 
         if len(kwargs) < 1:
             raise NotEnoughArguments()
@@ -128,7 +137,8 @@ class UserSQLiteModel(User):
             logger.error(exc)
 
     def get_user_by_username(self, username, with_id=False):
-        """Get user by his username from the database.
+        """
+        Get user by his username from the database.
 
         :param username: username as a string.
         :param with_id: boolean flag, which means necessity to append to the
@@ -140,9 +150,7 @@ class UserSQLiteModel(User):
             else:
                 sql = SQL_USER_GET_BY_USERNAME
 
-            user_row = self.db_manager.execute_sql(
-                sql, (username, )
-            ).fetchone()
+            user_row = self.db_manager.execute_sql(sql, (username, )).fetchone()  # NOQA
             if user_row:
                 user_data = convert_user_raw_data_to_dict(user_row, with_id)
             else:
@@ -153,7 +161,8 @@ class UserSQLiteModel(User):
         return User(**user_data)
 
     def get_user_by_token(self, token):
-        """Get user object from the database, based on the his token.
+        """
+        Get user object from the database, based on the his token.
 
         :param token: passed token as a dictionary object.
         """

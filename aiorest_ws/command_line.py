@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    Custom functions and classes, which help working with the command line.
+Custom functions and classes, which help working with the command line.
 """
 from argparse import ArgumentParser
 
@@ -8,11 +8,14 @@ __all__ = ('CommandLine', )
 
 
 class CommandLine(object):
-    """Wrapper over ArgumentParser class for working with command line."""
+    """
+    Wrapper over ArgumentParser class for working with command line.
+    """
     options = ArgumentParser()
 
     def define(self, name, default=None, help=None, type=None):
-        """Defines an option in the global namespace.
+        """
+        Defines an option in the global namespace.
 
         Note: already defined argument or option has been ignored and not
               appended again!
@@ -28,5 +31,7 @@ class CommandLine(object):
                                       type=type)
 
     def parse_command_line(self):
-        """Parse options from the command line."""
+        """
+        Parse options from the command line.
+        """
         return self.options.parse_args()

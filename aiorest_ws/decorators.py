@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    Decorators and wrappers, used for routing issues.
+Decorators and wrappers, used for routing issues.
 """
 from aiorest_ws.validators import MethodValidator
 from aiorest_ws.views import MethodBasedView
@@ -9,7 +9,8 @@ __all__ = ('endpoint', )
 
 
 def endpoint(path, methods, name=None, **attrs):
-    """Decorator function, which turn handler into MethodBasedView class.
+    """
+    Decorator function, which turn handler into MethodBasedView class.
 
     :param path: URL, used for get access to APIs.
     :param methods: acceptable method name or list of methods.

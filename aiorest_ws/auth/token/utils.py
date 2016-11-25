@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    Functions and constants, which can be used for work with Token models.
+Functions and constants, which can be used for work with Token models.
 """
 
 SQL_CREATE_TOKEN_TABLE = """

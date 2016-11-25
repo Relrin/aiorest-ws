@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    Exceptions for user management.
+Exceptions for user management.
 """
 from aiorest_ws.exceptions import BaseAPIException
 

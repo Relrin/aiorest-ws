@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-    This module contains function, which using at validators.py for type
-    checking issues.
+This module contains function, which using at validators.py for type
+checking issues.
 """
 from inspect import isclass
 
@@ -9,7 +9,9 @@ __all__ = ('to_str', 'get_object_type', )
 
 
 def to_str(obj):
-    """Custom convert object to string representation."""
+    """
+    Custom convert object to string representation.
+    """
     if isinstance(obj, (list, tuple)):
         string = "/".join([item.__name__ for item in obj])
     else:
@@ -18,9 +20,7 @@ def to_str(obj):
 
 
 def get_object_type(value):
-    """Getting object type."""
-    if not isclass(value):
-        obj_type = type(value)
-    else:
-        obj_type = value
-    return obj_type
+    """
+    Getting object type.
+    """
+    return type(value) if not isclass(value) else value

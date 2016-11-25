@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    Functions and constants, which can be used for work with User models.
+Functions and constants, which can be used for work with User models.
 """
 from aiorest_ws.db.utils import convert_db_row_to_dict
 from hashlib import sha256
@@ -61,8 +61,8 @@ USER_MODEL_FIELDS_WITHOUT_PK = (
 
 
 def construct_update_sql(**parameters):
-    """Create update SQL query for SQLite based on the data, provided by
-    the user.
+    """
+    Create update SQL query for SQLite based on the data, provided by the user.
 
     :param parameters: dictionary, where key is updated field of user model.
     """
@@ -81,7 +81,8 @@ def construct_update_sql(**parameters):
 
 
 def convert_user_raw_data_to_dict(user_raw_data, with_id=False):
-    """Convert database row to the dictionary object.
+    """
+    Convert database row to the dictionary object.
 
     :param user_raw_data: database row.
     :param with_id: boolean flag, which means necessity to append to the result
@@ -100,7 +101,8 @@ def convert_user_raw_data_to_dict(user_raw_data, with_id=False):
 
 
 def generate_password_hash(password):
-    """Generate SHA256 hash for password.
+    """
+    Generate SHA256 hash for password.
 
     :param password: password as a string.
     """

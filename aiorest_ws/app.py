@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    This module implements the central application object.
+This module implements the central application object.
 """
 import asyncio
 import ssl
@@ -16,7 +16,9 @@ __all__ = ('Application', )
 
 
 class Application(object):
-    """Main application of aiorest-ws framework."""
+    """
+    Main application of aiorest-ws framework.
+    """
 
     _factory = RequestHandlerFactory
     _protocol = RequestHandlerProtocol
@@ -25,7 +27,9 @@ class Application(object):
     _middlewares = []
 
     def __init__(self, *args, **options):
-        """Initialization of Application instance."""
+        """
+        Initialization of Application instance.
+        """
         super(Application, self).__init__()
         self.factory = options.get('factory')
         self.protocol = options.get('protocol')
@@ -38,12 +42,15 @@ class Application(object):
 
     @property
     def factory(self):
-        """Get factory class."""
+        """
+        Get factory class.
+        """
         return self._factory
 
     @factory.setter
     def factory(self, factory):
-        """Set factory class.
+        """
+        Set factory class.
 
         :param factory: subclass of RequestHandlerFactory.
         """
@@ -53,17 +60,22 @@ class Application(object):
 
     @property
     def middlewares(self):
-        """Get list of used middlewares."""
+        """
+        Get list of used middlewares.
+        """
         return self._middlewares
 
     @property
     def protocol(self):
-        """Get protocol class."""
+        """
+        Get protocol class.
+        """
         return self._protocol
 
     @protocol.setter
     def protocol(self, protocol):
-        """Set protocol class.
+        """
+        Set protocol class.
 
         :param factory: subclass of RequestHandlerProtocol.
         """
@@ -73,12 +85,15 @@ class Application(object):
 
     @property
     def certificate(self):
-        """Get filepath to certificate."""
+        """
+        Get filepath to certificate.
+        """
         return self._certificate
 
     @certificate.setter
     def certificate(self, certificate):
-        """Setter for certificate.
+        """
+        Setter for certificate.
 
         :param certificate: path to certificate file.
         """
@@ -86,12 +101,15 @@ class Application(object):
 
     @property
     def key(self):
-        """Get private key for certificate."""
+        """
+        Get private key for certificate.
+        """
         return self._key
 
     @key.setter
     def key(self, key):
-        """Set private key for certificate.
+        """
+        Set private key for certificate.
 
         :param key: private key for certificate.
         """
@@ -99,20 +117,22 @@ class Application(object):
 
     @property
     def url(self):
-        """Get url to WebSocket REST API."""
-        if self.isSecure:
-            url = "wss://{0}:{1}/{2}"
-        else:
-            url = "ws://{0}:{1}/{2}"
-        return url
+        """
+        Get url to WebSocket REST API.
+        """
+        return "wss://{0}:{1}/{2}" if self.isSecure else "ws://{0}:{1}/{2}"
 
     @property
     def isSecure(self):
-        """Property, which help us to understand, use SSL or not."""
+        """
+        Property, which help us to understand, use SSL or not.
+        """
         return self.certificate and self.key
 
     def _get_ssl_context(self):
-        """Generating SSL context for asyncio loop."""
+        """
+        Generating SSL context for asyncio loop.
+        """
         if self.isSecure:
             ssl_context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
             ssl_context.load_cert_chain(self.certificate, self.key)
@@ -121,7 +141,9 @@ class Application(object):
         return ssl_context
 
     def _init_factory(self, url, **options):
-        """Create a factory instance."""
+        """
+        Create a factory instance.
+        """
         debug = options.get('debug', False)
 
         factory = self.factory(url, debug=debug)
@@ -129,14 +151,18 @@ class Application(object):
         return factory
 
     def _enable_compressing(self, factory, **options):
-        """Set compression message for factory, if defined."""
+        """
+        Set compression message for factory, if defined.
+        """
         compress = options.get('compress', False)
 
         if compress:
             factory.setProtocolOptions(perMessageCompressionAccept=accept)
 
     def _set_factory_router(self, factory, **options):
-        """Set users router for factory, if defined."""
+        """
+        Set users router for factory, if defined.
+        """
         router = options.get('router', None)
         assert router, "Argument `router` must be defined for Application."
 
@@ -144,7 +170,9 @@ class Application(object):
         factory.router._middlewares = self.middlewares
 
     def _init_urlconf(self, factory, url, **options):
-        """Initialize urlconf thread variable."""
+        """
+        Initialize urlconf thread variable.
+        """
         data = {
             'path': url,
             'urls': factory.router._urls,
@@ -153,7 +181,9 @@ class Application(object):
         set_urlconf(data)
 
     def generate_factory(self, url, **options):
-        """Create and initialize factory instance."""
+        """
+        Create and initialize factory instance.
+        """
         factory = self._init_factory(url, **options)
         self._enable_compressing(factory, **options)
         self._set_factory_router(factory, **options)
@@ -161,11 +191,14 @@ class Application(object):
         return factory
 
     def generate_url(self, host, port, path=''):
-        """Generate URL to application."""
+        """
+        Generate URL to application.
+        """
         return self.url.format(host, port, path)
 
     def run(self, **options):
-        """Create and start web server with some IP and PORT.
+        """
+        Create and start web server with some IP and PORT.
 
         :param options: parameters, which can be used for configuration
                         of the Application.

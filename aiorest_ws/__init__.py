@@ -11,6 +11,6 @@ __title__ = 'aiorest-ws'
 __version__ = '1.1.0'
 __author__ = 'Valeryi Savich'
 __license__ = 'BSD'
-__copyright__ = 'Copyright (c) 2015 by Valeryi Savich'
+__copyright__ = 'Copyright (c) 2016 by Valeryi Savich'
 
 VERSION = __version__

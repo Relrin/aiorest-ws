@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    Storage backends for save/get credentials.
+Storage backends for save/get credentials.
 """
 from aiorest_ws.auth.token.utils import SQL_CREATE_TOKEN_TABLE, \
     SQL_TOKEN_GET, SQL_TOKEN_GET_BY_TOKEN_USERNAME, SQL_TOKEN_ADD, \
@@ -15,7 +15,9 @@ __all__ = ('InMemoryTokenBackend', )
 
 
 class InMemoryTokenBackend(BaseStorageBackend):
-    """In memory backend (based on SQLite) for token."""
+    """
+    In memory backend (based on SQLite) for token.
+    """
 
     def __init__(self):
         super(InMemoryTokenBackend, self).__init__()
@@ -29,7 +31,8 @@ class InMemoryTokenBackend(BaseStorageBackend):
         self.db_manager.execute_script(SQL_CREATE_TOKEN_TABLE)
 
     def get(self, token):
-        """Get token from the storage.
+        """
+        Get token from the storage.
 
         :param token: token as string.
         """
@@ -42,7 +45,8 @@ class InMemoryTokenBackend(BaseStorageBackend):
         return token_object
 
     def get_token_by_username(self, token_name, username):
-        """Get token from the storage by token_name and username.
+        """
+        Get token from the storage by token_name and username.
 
         :param token: token as string.
         """
@@ -57,7 +61,8 @@ class InMemoryTokenBackend(BaseStorageBackend):
         return token_object
 
     def save(self, token_name, token, expired=None, user_id=None):
-        """Save token in the storage.
+        """
+        Save token in the storage.
 
         :param user: instance of User class.
         :param token: token as string.

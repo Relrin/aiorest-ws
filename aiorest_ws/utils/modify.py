@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 """
-    Functions and decorators used for modify classes on the fly.
+Functions and decorators used for modify classes on the fly.
 """
 __all__ = ('add_property', )
 
 
 def add_property(instance, field_name, value):
-    """Append property to the current instance of class.
+    """
+    Append property to the current instance of class.
 
     :param instance: modified object.
     :param field_name: attribute name in class.

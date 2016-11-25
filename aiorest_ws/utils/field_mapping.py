@@ -23,7 +23,7 @@ class ClassLookupDict(object):
     def __getitem__(self, key):
         if hasattr(key, '_proxy_class'):
             # Deal with proxy classes. Ie. BoundField behaves as if it
-            # is a Field instance when using ClassLookupDict.
+            # is a Field instance when using ClassLookupDict
             base_class = key._proxy_class
         else:
             base_class = key.__class__

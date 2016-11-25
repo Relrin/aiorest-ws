@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 """
-    WebSocket status codes and functions for work with them.
+WebSocket status codes and functions for work with them.
 
-    For more details check the link below:
-        https://tools.ietf.org/html/rfc6455
+For more details check the link below:
+    https://tools.ietf.org/html/rfc6455
 """
 __all__ = (
     'WS_NORMAL', 'WS_GOING_AWAY', 'WS_PROTOCOL_ERROR',
@@ -12,7 +12,6 @@ __all__ = (
     'WS_MESSAGE_VIOLATE_POLICY', 'WS_MESSAGE_TOO_BIG',
     'WS_SERVER_DIDNT_RETURN_EXTENSIONS', 'WS_UNEXPECTED_CONDITION',
     'WS_FAILURE_TLS',
-
     'is_not_used', 'is_reserved', 'is_library', 'is_private',
 )
 
@@ -33,7 +32,8 @@ WS_FAILURE_TLS = 1015
 
 
 def is_not_used(code):
-    """Checking code, that is unused.
+    """
+    Checking code, that is unused.
 
     :param code: integer value.
     """
@@ -41,7 +41,8 @@ def is_not_used(code):
 
 
 def is_reserved(code):
-    """Checking code, that is reserved.
+    """
+    Checking code, that is reserved.
 
     :param code: integer value.
     """
@@ -49,7 +50,8 @@ def is_reserved(code):
 
 
 def is_library(code):
-    """Checking code, that is value, used by libraries.
+    """
+    Checking code, that is value, used by libraries.
 
     :param code: integer value.
     """
@@ -57,7 +59,8 @@ def is_library(code):
 
 
 def is_private(code):
-    """Checking code, that is private code.
+    """
+    Checking code, that is private code.
 
     :param code: integer value.
     """

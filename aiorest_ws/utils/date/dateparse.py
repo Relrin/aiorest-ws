@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    Functions to parse datetime objects.
+Functions to parse datetime objects.
 """
 # We're using regular expressions rather than time.strptime because:
 # - They provide both validation and parsing.
@@ -59,7 +59,8 @@ iso8601_duration_re = re.compile(
 
 
 def parse_date(value):
-    """Parses a string and return a datetime.date.
+    """
+    Parses a string and return a datetime.date.
 
     Raises ValueError if the input is well formatted but not a valid date.
     Returns None if the input isn't well formatted.
@@ -71,7 +72,8 @@ def parse_date(value):
 
 
 def parse_time(value):
-    """Parses a string and return a datetime.time.
+    """
+    Parses a string and return a datetime.time.
 
     This function doesn't support time zone offsets.
 
@@ -89,7 +91,8 @@ def parse_time(value):
 
 
 def parse_datetime(value):
-    """Parses a string and return a datetime.datetime.
+    """
+    Parses a string and return a datetime.datetime.
 
     This function supports time zone offsets. When the input contains one,
     the output uses a timezone with a fixed offset from UTC.
@@ -155,7 +158,8 @@ def parse_timedelta(value):
 
 
 def parse_duration(value):
-    """Parses a duration string and returns a datetime.timedelta.
+    """
+    Parses a duration string and returns a datetime.timedelta.
     The preferred format for durations in Django is '%d %H:%M:%S.%f'.
     Also supports ISO 8601 representation.
     """
