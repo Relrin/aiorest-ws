@@ -156,16 +156,12 @@ class ModelField(fields.ModelField):
 
     def __init__(self, model_field, **kwargs):
         # The `max_length` option is supported by Django's base `Field` class,
-        # so we'd better support it here.
+        # so we'd better support it here
         max_length = kwargs.pop('max_length', None)
         super(ModelField, self).__init__(model_field, **kwargs)
         if max_length is not None:
-            message = self.error_messages['max_length'].format(
-                max_length=max_length
-            )
-            self.validators.append(
-                MaxLengthValidator(max_length, message=message)
-            )
+            message = self.error_messages['max_length'].format(max_length=max_length)  # NOQA
+            self.validators.append(MaxLengthValidator(max_length, message=message))  # NOQA
 
     def to_internal_value(self, data):
         rel = get_remote_field(self.model_field, default=None)
@@ -289,9 +285,7 @@ class IPAddressField(CharField):
         self.protocol = protocol.lower()
         self.unpack_ipv4 = (self.protocol == 'both')
         super(IPAddressField, self).__init__(**kwargs)
-        validators, error_message = ip_address_validators(
-            protocol, self.unpack_ipv4
-        )
+        validators, error_message = ip_address_validators(protocol, self.unpack_ipv4)  # NOQA
         self.validators.extend(validators)
 
     def to_internal_value(self, data):
@@ -316,7 +310,7 @@ class FilePathField(ChoiceField):
     def __init__(self, path, match=None, recursive=False, allow_files=True,
                  allow_folders=False, required=None, **kwargs):
         # Defer to Django's FilePathField implementation to get the
-        # valid set of choices.
+        # valid set of choices
         field = DjangoFilePathField(
             path, match=match, recursive=recursive, allow_files=allow_files,
             allow_folders=allow_folders, required=required
@@ -345,7 +339,7 @@ class FileField(fields.AbstractField):
 
     def to_internal_value(self, data):
         try:
-            # `UploadedFile` objects should have name and size attributes.
+            # `UploadedFile` objects should have name and size attributes
             file_name = data.name
             file_size = data.size
         except AttributeError:
@@ -370,7 +364,7 @@ class FileField(fields.AbstractField):
 
         if use_url:
             if not getattr(value, 'url', None):
-                # If the file has not been saved it may not have a URL.
+                # If the file has not been saved it may not have a URL
                 return None
             url = value.url
             return url
@@ -392,7 +386,7 @@ class ImageField(FileField):
     def to_internal_value(self, data):
         # Image validation is a bit grungy, so we'll just outright
         # defer to Django's implementation so we don't need to
-        # consider it, or treat PIL as a test dependency.
+        # consider it, or treat PIL as a test dependency
         file_object = super(ImageField, self).to_internal_value(data)
         django_field = self._DjangoImageField()
         django_field.error_messages = self.error_messages

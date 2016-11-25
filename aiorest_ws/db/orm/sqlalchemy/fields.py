@@ -95,7 +95,7 @@ class ModelField(fields.ModelField):
     This is used by `ModelSerializer` when dealing with custom model fields,
     that do not have a serializer field to be mapped to.
 
-    For more details, I recommend to read the next page in SQLAlchemy docs:
+    For more details recommended to read the next page in SQLAlchemy docs:
     http://docs.sqlalchemy.org/en/latest/core/type_api.html
     """
     def __init__(self, model_field, **kwargs):
@@ -121,7 +121,7 @@ class ModelField(fields.ModelField):
         return data
 
     def to_representation(self, obj):
-        # Custom implementation of representation of data for a user
+        # Custom implementation of representation of data
         if self.type_has_custom_behaviour('process_result_value'):
             return self.field_type.process_result_value(obj, self.dialect)
 

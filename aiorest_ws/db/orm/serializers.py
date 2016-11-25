@@ -76,7 +76,7 @@ class BaseSerializer(AbstractSerializer):
 
     def __new__(cls, *args, **kwargs):
         # We override this method in order to automatically create
-        # `ListSerializer` classes instead when `many=True` is set.
+        # `ListSerializer` classes instead when `many=True` is set
         if kwargs.pop('many', False):
             return cls.many_init(*args, **kwargs)
         return super(BaseSerializer, cls).__new__(cls, *args, **kwargs)
@@ -201,14 +201,10 @@ class BaseSerializer(AbstractSerializer):
 
         if self.instance is not None:
             self.instance = self.update(self.instance, validated_data)
-            assert self.instance is not None, (
-                '`update()` did not return an object instance.'
-            )
+            assert self.instance is not None, '`update()` did not return an object instance.'  # NOQA
         else:
             self.instance = self.create(validated_data)
-            assert self.instance is not None, (
-                '`create()` did not return an object instance.'
-            )
+            assert self.instance is not None, '`create()` did not return an object instance.'  # NOQA
 
         return self.instance
 
@@ -251,7 +247,7 @@ class SerializerMetaclass(type):
 
         # If this class is subclass of another Serializer, then add that
         # Serializer's fields. Note that we loop over the bases in *reverse*.
-        # This is necessary in order to maintain the correct order of fields.
+        # This is necessary in order to maintain the correct order of fields
         for base in reversed(bases):
             if hasattr(base, '_declared_fields'):
                 fields = list(base._declared_fields.items()) + fields
@@ -275,7 +271,7 @@ class Serializer(BaseSerializer, metaclass=SerializerMetaclass):
         """
         # `fields` is evaluated lazily. We do this to ensure that we don't
         # have issues importing modules that use ModelSerializers as fields,
-        # even if app-loading stage has not yet run.
+        # even if app-loading stage has not yet run
         if not hasattr(self, '_fields'):
             self._fields = BindingDict(self)
             for key, value in self.get_fields().items():
@@ -302,14 +298,14 @@ class Serializer(BaseSerializer, metaclass=SerializerMetaclass):
         """
         # Every new serializer is created with a clone of the field instances.
         # This allows users to dynamically modify the fields on a serializer
-        # instance without affecting every other serializer class.
+        # instance without affecting every other serializer class
         return copy.deepcopy(self._declared_fields)
 
     def get_validators(self):
         """
         Returns a list of validator callables.
         """
-        # Used by the lazily-evaluated `validators` property.
+        # Used by the lazily-evaluated `validators` property
         meta = getattr(self, 'Meta', None)
         validators = getattr(meta, 'validators', None)
         return validators[:] if validators else []
@@ -334,7 +330,7 @@ class Serializer(BaseSerializer, metaclass=SerializerMetaclass):
 
     def run_validation(self, data=empty):
         """
-        Validate passed data
+        Validate passed data.
         """
         raise NotImplementedError('`run_validation()` must be implemented.')
 
@@ -390,7 +386,7 @@ class Serializer(BaseSerializer, metaclass=SerializerMetaclass):
 
             if attribute is None:
                 # We skip `to_representation` for `None` values so that
-                # fields do not have to explicitly deal with that case.
+                # fields do not have to explicitly deal with that case
                 ret[field.field_name] = None
             else:
                 ret[field.field_name] = field.to_representation(attribute)
@@ -586,9 +582,7 @@ class ListSerializer(BaseSerializer):
         """
         # Dealing with nested relationships, data can be a Manager,
         # so, first get a queryset from the Manager if needed
-        return [
-            self.child.to_representation(item) for item in data
-        ]
+        return [self.child.to_representation(item) for item in data]
 
     def validate(self, attrs):
         return attrs
@@ -603,9 +597,7 @@ class ListSerializer(BaseSerializer):
         )
 
     def create(self, validated_data):
-        return [
-            self.child.create(attrs) for attrs in validated_data
-        ]
+        return [self.child.create(attrs) for attrs in validated_data]
 
     def save(self, **kwargs):
         """
@@ -628,14 +620,10 @@ class ListSerializer(BaseSerializer):
 
         if self.instance is not None:
             self.instance = self.update(self.instance, validated_data)
-            assert self.instance is not None, (
-                '`update()` did not return an object instance.'
-            )
+            assert self.instance is not None, '`update()` did not return an object instance.'  # NOQA
         else:
             self.instance = self.create(validated_data)
-            assert self.instance is not None, (
-                '`create()` did not return an object instance.'
-            )
+            assert self.instance is not None, '`create()` did not return an object instance.'  # NOQA
 
         return self.instance
 
@@ -690,7 +678,7 @@ class ModelSerializer(Serializer):
         """
         raise NotImplementedError('`get_field_info()` must be implemented.')
 
-    # Default `create` and `update` behavior...
+    # Default `create` and `update` behavior
     def create(self, validated_data):
         """
         Create object in the database, with the passed `validated_data`.
@@ -723,9 +711,7 @@ class ModelSerializer(Serializer):
         )
 
         if self.is_abstract_model(self.Meta.model):
-            raise ValueError(
-                'Cannot use ModelSerializer with Abstract Models.'
-            )
+            raise ValueError('Cannot use ModelSerializer with Abstract Models.')  # NOQA
 
         declared_fields = copy.deepcopy(self._declared_fields)
         model = getattr(self.Meta, 'model')
@@ -735,7 +721,7 @@ class ModelSerializer(Serializer):
             assert depth >= 0, "'depth' may not be negative."
             assert depth <= 10, "'depth' may not be greater than 10."
 
-        # Retrieve metadata about fields & relationships on the model class.
+        # Retrieve metadata about fields & relationships on the model class
         info = self.get_field_info(model)
         field_names = self.get_field_names(declared_fields, info)
 
@@ -746,16 +732,16 @@ class ModelSerializer(Serializer):
             field_names, declared_fields, extra_kwargs
         )
 
-        # Determine the fields that should be included on the serializer.
+        # Determine the fields that should be included on the serializer
         fields = OrderedDict()
 
         for field_name in field_names:
-            # If the field is explicitly declared on the class then use that.
+            # If the field is explicitly declared on the class then use that
             if field_name in declared_fields:
                 fields[field_name] = declared_fields[field_name]
                 continue
 
-            # Determine the serializer field class and keyword arguments.
+            # Determine the serializer field class and keyword arguments
             field_class, field_kwargs = self.build_field(
                 field_name, info, model, depth
             )
@@ -766,10 +752,10 @@ class ModelSerializer(Serializer):
                 field_kwargs, extra_field_kwargs
             )
 
-            # Create the serializer field.
+            # Create the serializer field
             fields[field_name] = field_class(**field_kwargs)
 
-        # Add in any hidden fields.
+        # Add in any hidden fields
         fields.update(hidden_fields)
         return fields
 
@@ -808,11 +794,11 @@ class ModelSerializer(Serializer):
 
         if fields is not None:
             # Ensure that all declared fields have also been included in the
-            # `Meta.fields` option.
+            # `Meta.fields` option
 
             # Do not require any fields that are declared a parent class,
             # in order to allow serializer subclasses to only include
-            # a subset of fields.
+            # a subset of fields
             required_field_names = set(declared_fields)
             for cls in self.__class__.__bases__:
                 _declared_fields = getattr(cls, '_declared_fields', [])
@@ -830,11 +816,11 @@ class ModelSerializer(Serializer):
 
             return fields
 
-        # Use the default set of field names if `Meta.fields` is not specified.
+        # Use the default set of field names if `Meta.fields` is not specified
         fields = self.get_default_field_names(declared_fields, info)
 
         if exclude is not None:
-            # If `Meta.exclude` is included, then remove those fields.
+            # If `Meta.exclude` is included, then remove those fields
             for field_name in exclude:
                 assert field_name in fields, (
                     "The field '{field_name}' was included on serializer "
@@ -922,7 +908,7 @@ class ModelSerializer(Serializer):
             kwargs.pop('required')
 
         if extra_kwargs.get('read_only', kwargs.get('read_only', False)):
-            # Read only fields should always omit the 'required' argument.
+            # Read only fields should always omit the 'required' argument
             extra_kwargs.pop('required', None)
 
         kwargs.update(extra_kwargs)
@@ -960,13 +946,13 @@ class ModelSerializer(Serializer):
 
         # Determine if we need any additional `HiddenField` or extra keyword
         # arguments to deal with `unique_for` dates that are required to
-        # be in the input data in order to validate it.
+        # be in the input data in order to validate it
         unique_constraint_names = self._get_unique_constraint_names(
             model, model_fields, field_names
         )
 
         # Include each of "unique multiple columns" field names,
-        # so long as all the field names are included on the serializer.
+        # so long as all the field names are included on the serializer
         unique_constraint_names |= self._get_unique_together_constraints(
             model, model_fields, field_names
         )
@@ -974,12 +960,12 @@ class ModelSerializer(Serializer):
         # Now we have all the field names that have uniqueness constraints
         # applied, we can add the extra 'required=...' or 'default=...'
         # arguments that are appropriate to these fields, or add a
-        # `HiddenField` for it.
+        # `HiddenField` for it
         hidden_fields = {}
         uniqueness_extra_kwargs = {}
 
         for unique_constraint_name in unique_constraint_names:
-            # Get the model field that is referred too.
+            # Get the model field that is referred too
             unique_constraint_field = self._get_unique_field(
                 model, unique_constraint_name
             )
@@ -989,22 +975,17 @@ class ModelSerializer(Serializer):
             if unique_constraint_name in model_fields:
                 # The corresponding field is present in the serializer
                 if default is empty:
-                    uniqueness_extra_kwargs[unique_constraint_name] = {
-                        'required': True
-                    }
+                    field_kwargs = {'required': True}
                 else:
-                    uniqueness_extra_kwargs[unique_constraint_name] = {
-                        'default': default
-                    }
+                    field_kwargs = {'default': default}
+                uniqueness_extra_kwargs[unique_constraint_name] = field_kwargs
             elif default is not empty:
                 # The corresponding field is not present in the,
                 # serializer. We have a default to use for it, so
-                # add in a hidden field that populates it.
-                hidden_fields[unique_constraint_name] = HiddenField(
-                    default=default
-                )
+                # add in a hidden field that populates it
+                hidden_fields[unique_constraint_name] = HiddenField(default=default)  # NOQA
 
-        # Update `extra_kwargs` with any new options.
+        # Update `extra_kwargs` with any new options
         for key, value in uniqueness_extra_kwargs.items():
             if key in extra_kwargs:
                 extra_kwargs[key].update(value)
@@ -1036,7 +1017,7 @@ class ModelSerializer(Serializer):
 
             if '.' in source or source == '*':
                 # Model fields will always have a simple source mapping,
-                # they can't be nested attribute lookups.
+                # they can't be nested attribute lookups
                 continue
 
             self._bind_field(model, source, model_fields)
