@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    Middlewares for authentication issues.
+Middlewares for authentication issues.
 """
 from aiorest_ws.abstract import AbstractMiddleware
 from aiorest_ws.auth.user.models import UserSQLiteModel
@@ -14,17 +14,21 @@ __all__ = ('BaseTokenMiddleware', 'JSONWebTokenMiddleware', )
 
 
 class BaseTokenMiddleware(AbstractMiddleware):
-    """Base token middleware class."""
+    """
+    Base token middleware class.
+    """
 
     def init_credentials(self, request):
-        """Getting credentials (user, keys, tokens) from database/cache/etc.
+        """
+        Getting credentials (user, keys, tokens) from database/cache/etc.
 
         :param request: instance of Request class.
         """
         pass
 
     def authenticate(self, request, handler):
-        """Authenticate user.
+        """
+        Authenticate user.
 
         :param request: instance of Request class.
         :param handler: view, invoked later for the request.
@@ -32,7 +36,8 @@ class BaseTokenMiddleware(AbstractMiddleware):
         pass
 
     def process_request(self, request, handler):
-        """Processing request before calling handler.
+        """
+        Processing request before calling handler.
 
         :param request: instance of Request class.
         :param handler: view, invoked later for the request.
@@ -42,7 +47,9 @@ class BaseTokenMiddleware(AbstractMiddleware):
 
 
 class JSONWebTokenMiddleware(BaseTokenMiddleware):
-    """The JSON Web Token middleware class."""
+    """
+    The JSON Web Token middleware class.
+    """
     storage_backend = InMemoryTokenBackend
     manager = JSONWebTokenManager
     user_model = UserSQLiteModel
@@ -54,7 +61,8 @@ class JSONWebTokenMiddleware(BaseTokenMiddleware):
         self.manager = self.manager()
 
     def get_user_by_token(self, token):
-        """Get user from the database by passed token.
+        """
+        Get user from the database by passed token.
 
         :param token: token as string.
         """
@@ -66,7 +74,8 @@ class JSONWebTokenMiddleware(BaseTokenMiddleware):
         return user
 
     def init_credentials(self, request):
-        """Getting credentials (user, keys, tokens) from database/cache/etc.
+        """
+        Getting credentials (user, keys, tokens) from database/cache/etc.
 
         :param request: instance of Request class.
         """
@@ -83,7 +92,8 @@ class JSONWebTokenMiddleware(BaseTokenMiddleware):
         add_property(request, 'token_payload', token_payload)
 
     def authenticate(self, request, view):
-        """Authenticate user.
+        """
+        Authenticate user.
 
         NOTE: Authentication applied for the views, which set `auth_required`
         attribute to `True` value.

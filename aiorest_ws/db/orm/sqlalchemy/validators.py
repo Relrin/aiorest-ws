@@ -7,9 +7,7 @@ from aiorest_ws.db.orm.sqlalchemy.mixins import ORMSessionMixin
 from aiorest_ws.db.orm.validators import BaseValidator, \
     BaseUniqueFieldValidator
 
-__all__ = (
-    'ORMFieldValidator', 'UniqueORMValidator',
-)
+__all__ = ('ORMFieldValidator', 'UniqueORMValidator', )
 
 
 class ORMFieldValidator(BaseValidator):

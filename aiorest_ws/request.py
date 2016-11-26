@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    Classes and function for creating and processing requests from user.
+Classes and function for creating and processing requests from user.
 """
 import asyncio
 import json
@@ -18,38 +18,42 @@ __all__ = ('RequestHandlerProtocol', 'RequestHandlerFactory', )
 
 
 class RequestHandlerProtocol(WebSocketServerProtocol):
-    """REST WebSocket protocol instance, creating for every client connection.
+    """
+    REST WebSocket protocol instance, creating for every client connection.
     This protocol describe how to process network events (users requests to
     APIs) asynchronously.
     """
     def _decode_message(self, payload, isBinary=False):
-        """Decoding input message to Request object.
+        """
+        Decoding input message to Request object.
 
         :param payload: input message.
         :param isBinary: boolean value, means that received data had a binary
                          format.
         """
-        # message was taken in base64
+        # Message was taken in base64
         if isBinary:
             payload = b64decode(payload)
         input_data = json.loads(payload.decode('utf-8'))
         return Request(**input_data)
 
     def _encode_message(self, response, isBinary=False):
-        """Encoding output message.
+        """
+        Encoding output message.
 
         :param response: output message.
         :param isBinary: boolean value, means that received data had a binary
                          format.
         """
-        # encode additionally to base64 if necessary
+        # Encode additionally to base64 if necessary
         if isBinary:
             response = b64encode(response)
         return response
 
     @asyncio.coroutine
     def onMessage(self, payload, isBinary):
-        """Handler, called for every message which was sent from the some user.
+        """
+        Handler, called for every message which was sent from the some user.
 
         :param payload: input message.
         :param isBinary: boolean value, means that received data had a binary
@@ -62,7 +66,8 @@ class RequestHandlerProtocol(WebSocketServerProtocol):
 
 
 class RequestHandlerFactory(WebSocketServerFactory):
-    """REST WebSocket server factory, which instantiates client connections.
+    """
+    REST WebSocket server factory, which instantiates client connections.
 
     NOTE: Persistent configuration information is not saved in the instantiated
     protocol. For such cases kept data in a Factory classes, databases, etc.
@@ -73,12 +78,15 @@ class RequestHandlerFactory(WebSocketServerFactory):
 
     @property
     def router(self):
-        """Get router instance."""
+        """
+        Get router instance.
+        """
         return self._router
 
     @router.setter
     def router(self, router):
-        """Set router instance.
+        """
+        Set router instance.
 
         :param router: instance of class, which derived from AbstractRouter.
         """

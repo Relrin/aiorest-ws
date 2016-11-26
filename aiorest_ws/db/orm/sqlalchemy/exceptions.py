@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+"""
+Exception classes for work with model serializers, fields and SQLAlchemy ORM.
+"""
 from aiorest_ws.exceptions import BaseAPIException
 
 

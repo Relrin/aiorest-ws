@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    Exception classes for token authentication.
+Exception classes for token authentication.
 """
 from aiorest_ws.exceptions import BaseAPIException
 

@@ -113,7 +113,7 @@ class override_settings(BaseContextDecorator):
         if test_func._overridden_settings is None:
             test_func._overridden_settings = self.options
         else:
-            # Duplicate dict to prevent subclasses from altering their parent.
+            # Duplicate dict to prevent subclasses from altering their parent
             test_func._overridden_settings = dict(
                 test_func._overridden_settings, **self.options
             )

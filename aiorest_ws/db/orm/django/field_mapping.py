@@ -43,7 +43,7 @@ def get_field_kwargs(field_name, model_field):
     validator_kwarg = list(model_field.validators)
 
     # The following will only be used by ModelField classes.
-    # Gets removed for everything else.
+    # Gets removed for everything else
     kwargs['model_field'] = model_field
 
     if model_field.verbose_name and needs_label(model_field.verbose_name, field_name):  # NOQA
@@ -62,7 +62,7 @@ def get_field_kwargs(field_name, model_field):
 
     if isinstance(model_field, models.AutoField) or not model_field.editable:
         # If this field is read-only, then return early.
-        # Further keyword arguments are not valid.
+        # Further keyword arguments are not valid
         kwargs['read_only'] = True
         return kwargs
 
@@ -94,7 +94,7 @@ def get_field_kwargs(field_name, model_field):
 
     if model_field.choices:
         # If this model field contains choices, then return early.
-        # Further keyword arguments are not valid.
+        # Further keyword arguments are not valid
         kwargs['choices'] = model_field.choices
         return kwargs
 
@@ -106,7 +106,7 @@ def get_field_kwargs(field_name, model_field):
         ]
 
     # Ensure that max_length is passed explicitly as a keyword arg,
-    # rather than as a validator.
+    # rather than as a validator
     max_length = getattr(model_field, 'max_length', None)
     if max_length is not None and (isinstance(model_field, models.CharField) or
                                    isinstance(model_field, models.TextField)):
@@ -117,7 +117,7 @@ def get_field_kwargs(field_name, model_field):
         ]
 
     # Ensure that min_length is passed explicitly as a keyword arg,
-    # rather than as a validator.
+    # rather than as a validator
     min_length = next((
         validator.limit_value for validator in validator_kwarg
         if isinstance(validator, MinLengthValidator)
@@ -130,7 +130,7 @@ def get_field_kwargs(field_name, model_field):
         ]
 
     # Ensure that max_value is passed explicitly as a keyword arg,
-    # rather than as a validator.
+    # rather than as a validator
     max_value = next((
         validator.limit_value for validator in validator_kwarg
         if isinstance(validator, MaxValueValidator)
@@ -143,7 +143,7 @@ def get_field_kwargs(field_name, model_field):
         ]
 
     # Ensure that max_value is passed explicitly as a keyword arg,
-    # rather than as a validator.
+    # rather than as a validator
     min_value = next((
         validator.limit_value for validator in validator_kwarg
         if isinstance(validator, MinValueValidator)
@@ -156,7 +156,7 @@ def get_field_kwargs(field_name, model_field):
         ]
 
     # URLField does not need to include the URLValidator argument,
-    # as it is explicitly added in.
+    # as it is explicitly added in
     if isinstance(model_field, models.URLField):
         validator_kwarg = [
             validator for validator in validator_kwarg
@@ -164,7 +164,7 @@ def get_field_kwargs(field_name, model_field):
         ]
 
     # EmailField does not need to include the validate_email argument,
-    # as it is explicitly added in.
+    # as it is explicitly added in
     if isinstance(model_field, models.EmailField):
         validator_kwarg = [
             validator for validator in validator_kwarg
@@ -194,7 +194,8 @@ def get_field_kwargs(field_name, model_field):
             }
         validator = UniqueValidator(
             queryset=model_field.model._default_manager,
-            message=unique_error_message)
+            message=unique_error_message
+        )
         validator_kwarg.append(validator)
 
     if validator_kwarg:
@@ -238,7 +239,7 @@ def get_relation_kwargs(field_name, relation_info):
             kwargs.pop('queryset', None)
         if kwargs.get('read_only', False):
             # If this field is read-only, then return early.
-            # No further keyword arguments are valid.
+            # No further keyword arguments are valid
             return kwargs
 
         if model_field.has_default() or model_field.blank or model_field.null:

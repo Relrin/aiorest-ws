@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    URL parsers, which help to define, with which endpoint router works.
+URL parsers, which help to define, with which endpoint router works.
 """
 import re
 
@@ -17,12 +17,13 @@ VALID_DYNAMIC_PARAMETER = re.compile(r'{(?P<var>[\w][\w\d_]*)}')
 
 
 class URLParser(object):
-    """Parser over endpoints paths, which returns one of the most suitable
+    """
+    Parser over endpoints paths, which returns one of the most suitable
     instances of route classes.
     """
-
     def define_route(self, path, handler, methods, name=None):
-        """Define a router as instance of BaseRoute subclass, which passed
+        """
+        Define a router as instance of BaseRoute subclass, which passed
         from register method in RestWSRouter.
 
         :param path: URL, which used to get access to API.
@@ -36,7 +37,7 @@ class URLParser(object):
         if all(symbol not in path for symbol in ['{', '}']):
             return PlainEndpoint(path, handler, methods, name)
 
-        # try to processing as a dynamic path
+        # Try to processing as a dynamic path
         pattern = ''
         for part in DYNAMIC_PARAMETER.split(path):
             match = VALID_DYNAMIC_PARAMETER.match(part)
@@ -45,13 +46,11 @@ class URLParser(object):
                 continue
 
             if any(symbol in part for symbol in ['{', '}']):
-                raise EndpointValueError("Invalid {} part of {} path"
-                                         .format(part, path))
+                raise EndpointValueError("Invalid {} part of {} path".format(part, path))  # NOQA
 
             pattern += re.escape(part)
         try:
             compiled = re.compile("^{}$".format(pattern))
         except re.error as exc:
-            raise EndpointValueError("Bad pattern '{}': {}"
-                                     .format(pattern, exc))
+            raise EndpointValueError("Bad pattern '{}': {}".format(pattern, exc))  # NOQA
         return DynamicEndpoint(path, handler, methods, name, compiled)

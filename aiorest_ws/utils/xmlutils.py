@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    XML classes and functions, used for serializing and de-serializing.
+XML classes and functions, used for serializing and de-serializing.
 """
 from xml.sax.saxutils import XMLGenerator
 
@@ -8,7 +8,9 @@ __all__ = ('SimpleXMLGenerator', )
 
 
 class SimpleXMLGenerator(XMLGenerator):
-    """XML generator for input data."""
+    """
+    XML generator for input data.
+    """
     root_name = 'root'
     item_tag_name = 'list-item'
 
@@ -16,7 +18,8 @@ class SimpleXMLGenerator(XMLGenerator):
         super(SimpleXMLGenerator, self).__init__(stream, encoding=encoding)
 
     def parse(self, data):
-        """Convert data to XML.
+        """
+        Convert data to XML.
 
         :param data: input data.
         """
@@ -27,14 +30,16 @@ class SimpleXMLGenerator(XMLGenerator):
         self.endDocument()
 
     def to_str(self, value):
-        """Encode value for the string.
+        """
+        Encode value for the string.
 
         :param value: value, which will have converted to the string.
         """
         return str(value).encode(self._encoding)
 
     def to_xml(self, xml, data):
-        """Convert Python object to XML.
+        """
+        Convert Python object to XML.
 
         :param xml: XML object.
         :param data: Python's object, which will have been converted.

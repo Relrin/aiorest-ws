@@ -61,7 +61,7 @@ class RelatedField(relations.RelatedField):
     def get_attribute(self, instance):
         if self.use_pk_only_optimization() and self.source_attrs:
             # Optimized case, return a mock object only containing the
-            # pk attribute.
+            # pk attribute
             try:
                 instance = get_attribute(instance, self.source_attrs[:-1])
                 value = instance.serializable_value(self.source_attrs[-1])
@@ -80,7 +80,7 @@ class RelatedField(relations.RelatedField):
         queryset = self.get_queryset()
         if queryset is None:
             # Ensure that field.choices returns something sensible
-            # even when accessed with a read-only field.
+            # even when accessed with a read-only field
             return {}
 
         if cutoff is not None:

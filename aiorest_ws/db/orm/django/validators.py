@@ -13,9 +13,7 @@ from django.utils.translation import ugettext_lazy as _
 from aiorest_ws.db.orm.exceptions import ValidationError
 from aiorest_ws.utils.representation import smart_repr
 
-__all__ = [
-    'qs_exists', 'qs_filter', 'UniqueValidator'
-]
+__all__ = ('qs_exists', 'qs_filter', 'UniqueValidator', )
 
 
 def qs_exists(queryset):
@@ -50,9 +48,9 @@ class UniqueValidator(object):
         prior to the validation call being made.
         """
         # Determine the underlying model field name. This may not be the
-        # same as the serializer field name if `source=<>` is set.
+        # same as the serializer field name if `source=<>` is set
         self.field_name = serializer_field.source_attrs[-1]
-        # Determine the existing instance, if this is an update operation.
+        # Determine the existing instance, if this is an update operation
         self.instance = getattr(serializer_field.parent, 'instance', None)
 
     def filter_queryset(self, value, queryset):

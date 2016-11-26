@@ -1,4 +1,8 @@
 # -*- coding: utf-8 -*-
+"""
+This module provides special classes (mixins) which used for getting data from
+SQLAlchemy ORM when work with a model serializers or fields.
+"""
 from aiorest_ws.conf import settings
 from aiorest_ws.db.orm.sqlalchemy.model_meta import model_pk
 
@@ -7,7 +11,10 @@ __all__ = ('ORMSessionMixin', 'SQLAlchemyMixin', )
 
 
 class ORMSessionMixin(object):
-
+    """
+    Special wrapper around SQLALchemy querysets, when user specified them in
+    for fields, serializers and etcetera.
+    """
     def _get_session(self):
         return settings.SQLALCHEMY_SESSION()
 
@@ -28,7 +35,9 @@ class ORMSessionMixin(object):
 
 
 class SQLAlchemyMixin(object):
-
+    """
+    Class which provide opportunity to get primary key from the passed object.
+    """
     def _get_filter_args(self, query, data):
         mapper = query._bind_mapper()
         model = mapper.class_

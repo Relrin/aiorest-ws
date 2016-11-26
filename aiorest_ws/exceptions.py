@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-    Handled exceptions raised by aiorest-ws framework, which inspired under
-    Django REST framework.
+Handled exceptions raised by aiorest-ws framework, which inspired under
+Django REST framework.
 """
 from aiorest_ws.status import WS_PROTOCOL_ERROR, WS_DATA_CANNOT_ACCEPT
 from aiorest_ws.utils.encoding import force_text
@@ -24,7 +24,8 @@ class ImproperlyConfigured(Exception):
 
 
 class BaseAPIException(Exception):
-    """Base class for aiorest-ws framework exceptions.
+    """
+    Base class for aiorest-ws framework exceptions.
 
     All subclasses should provide `.status_code` and `.default_detail`
     properties.
@@ -33,7 +34,8 @@ class BaseAPIException(Exception):
     default_detail = u"A server error occurred."
 
     def __init__(self, detail=None):
-        """Create an instance of exception with users detail information if
+        """
+        Create an instance of exception with users detail information if
         it is passed.
 
         :param detail: users detail information (string).

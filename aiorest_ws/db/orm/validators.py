@@ -44,6 +44,9 @@ class BaseValidator(object):
 
 
 class MaxValueValidator(BaseValidator):
+    """
+    Validator for checking maximal value of input number.
+    """
     message = u"Ensure this value is less than or equal to {max_value}."
 
     def __init__(self, max_value, *args, **kwargs):
@@ -59,6 +62,9 @@ class MaxValueValidator(BaseValidator):
 
 
 class MinValueValidator(BaseValidator):
+    """
+    Validator for checking minimal value of input number.
+    """
     message = u"Ensure this value is greater than or equal to {min_value}."
 
     def __init__(self, min_value, *args, **kwargs):
@@ -74,6 +80,9 @@ class MinValueValidator(BaseValidator):
 
 
 class MaxLengthValidator(BaseValidator):
+    """
+    Validator for checking maximum length of input string.
+    """
     message = u"Ensure that this value has no more {max_length} characters."
 
     def __init__(self, max_length, *args, **kwargs):
@@ -90,6 +99,9 @@ class MaxLengthValidator(BaseValidator):
 
 
 class MinLengthValidator(BaseValidator):
+    """
+    Validator for checking minimum length of input string.
+    """
     message = u"Ensure that this value has minimum {min_length} characters."
 
     def __init__(self, min_length, *args, **kwargs):
@@ -106,6 +118,9 @@ class MinLengthValidator(BaseValidator):
 
 
 class EnumValidator(BaseValidator):
+    """
+    Validator for checking input keys of passed Enum.
+    """
     message = u"Ensure that passed value is one of the allowable: {key_list}."
 
     def __init__(self, enum, *args, **kwargs):

@@ -41,7 +41,7 @@ class IntegerField(AbstractField):
                      u"to {min_value}.",
         'max_string_length': u"String value too large."
     }
-    MAX_STRING_LENGTH = 1000  # protect against extremely string inputs.
+    MAX_STRING_LENGTH = 1000  # protect against extremely string inputs
     re_decimal = re.compile(r'\.0*$')  # allow to use .0 at the end of number
 
     def __init__(self, **kwargs):
@@ -49,19 +49,11 @@ class IntegerField(AbstractField):
         self.min_value = kwargs.pop('min_value', None)
         super(IntegerField, self).__init__(**kwargs)
         if self.max_value is not None:
-            message = self.error_messages['max_value'].format(
-                max_value=self.max_value
-            )
-            self.validators.append(
-                validators.MaxValueValidator(self.max_value, message=message)
-            )
+            message = self.error_messages['max_value'].format(max_value=self.max_value)  # NOQA
+            self.validators.append(validators.MaxValueValidator(self.max_value, message=message))  # NOQA
         if self.min_value is not None:
-            message = self.error_messages['min_value'].format(
-                min_value=self.min_value
-            )
-            self.validators.append(
-                validators.MinValueValidator(self.min_value, message=message)
-            )
+            message = self.error_messages['min_value'].format(min_value=self.min_value)  # NOQA
+            self.validators.append(validators.MinValueValidator(self.min_value, message=message))  # NOQA
 
     def to_internal_value(self, data):
         if isinstance(data, str) and len(data) > self.MAX_STRING_LENGTH:
@@ -193,7 +185,7 @@ class CharField(AbstractField):
     def run_validation(self, data=empty):
         # Test for the empty string here so that it does not get validated,
         # and so that subclasses do not need to handle it explicitly inside
-        # the `to_internal_value()` method.
+        # the `to_internal_value()` method
         if data == '' or (self.trim_whitespace and str(data).strip() == ''):
             if not self.allow_blank:
                 self.raise_error('blank')
@@ -219,7 +211,7 @@ class ChoiceField(AbstractField):
 
         # Map the string representation of choices to the underlying value.
         # Allows us to deal with eg. integer choices while supporting either
-        # integer or string input, but still get the correct datatype out.
+        # integer or string input, but still get the correct datatype out
         self.choice_strings_to_values = {
             str(key): key for key in self.choices.keys()
         }
@@ -251,7 +243,7 @@ class FloatField(AbstractField):
                      u"to {min_value}.",
         'max_string_length': u"String value too large."
     }
-    MAX_STRING_LENGTH = 1000  # protect against extremely string inputs.
+    MAX_STRING_LENGTH = 1000  # protect against extremely string inputs
 
     def __init__(self, **kwargs):
         self.max_value = kwargs.pop('max_value', None)
@@ -371,7 +363,7 @@ class TimeField(AbstractField):
 
         # Applying a `TimeField` to a datetime value is almost always not a
         # sensible thing to do, as it means naively dropping any explicit or
-        # implicit timezone info.
+        # implicit timezone info
         assert not isinstance(value, datetime.datetime), (
             'Expected a `time`, but got a `datetime`. Refusing to coerce, '
             'as this may mean losing timezone information. Use a custom '
@@ -401,7 +393,7 @@ class DecimalField(AbstractField):
                             u"decimal point.",
         'max_string_length': u"String value too large."
     }
-    MAX_STRING_LENGTH = 1000  # Guard against malicious string inputs.
+    MAX_STRING_LENGTH = 1000  # Guard against malicious string inputs
 
     def __init__(self, max_digits, decimal_places, coerce_to_string=None,
                  max_value=None, min_value=None, **kwargs):
@@ -583,7 +575,7 @@ class DateField(AbstractField):
 
         # Applying a `DateField` to a datetime value is almost always not a
         # sensible thing to do, as it means naively dropping any explicit or
-        # implicit timezone info.
+        # implicit timezone info
         assert not isinstance(value, datetime.datetime), (
             'Expected a `date`, but got a `datetime`. Refusing to coerce, '
             'as this may mean losing timezone information. Use a custom '
@@ -618,7 +610,6 @@ class DateTimeField(AbstractField):
 
     def enforce_timezone(self, value):
         """
-
         When `self.timezone` is `None`, always return naive datetimes.
         When `self.timezone` is not `None`, always return aware datetimes.
         """
@@ -726,8 +717,8 @@ class HiddenField(AbstractField):
         super(HiddenField, self).__init__(**kwargs)
 
     def get_value(self, dictionary):
-        # We always use the default value for `HiddenField`.
-        # User input is never provided or accepted.
+        # We always use the default value for `HiddenField` and user input
+        # is never provided or accepted
         return empty
 
     def to_internal_value(self, data):
@@ -768,6 +759,7 @@ class ReadOnlyField(AbstractField):
     If the field is a method with no parameters, the method will be called
     and it's return value used as the representation.
     For example, the following would call `get_expiry_date()` on the object:
+
     class ExampleSerializer(Serializer):
         expiry_date = ReadOnlyField(source='get_expiry_date')
     """
@@ -890,12 +882,15 @@ class DictField(AbstractField):
 
 class HStoreField(DictField):
     """
-    HStore field for PostgreSQL
+    HStore field for PostgreSQL.
     """
     child = CharField(allow_blank=True)
 
 
 class JSONField(AbstractField):
+    """
+    Special kind of field which is storing data in JSON format.
+    """
     default_error_messages = {
         'invalid': u"Value must be valid JSON."
     }
@@ -939,7 +934,7 @@ class ModelField(AbstractField):
 
     def get_attribute(self, obj):
         # We pass the object instance onto `to_representation`,
-        # not just the field attribute.
+        # not just the field attribute
         return obj
 
     def to_representation(self, obj):
@@ -951,12 +946,12 @@ class SerializerMethodField(AbstractField):
     A read-only field that get its representation from calling a method on the
     parent serializer class. The method called will be of the form
     "get_{field_name}", and should take a single argument, which is the
-    object being serialized.
-    For example:
+    object being serialized. For example:
+
     class ExampleSerializer(ModelSerializer):
         extra_info = SerializerMethodField()
         def get_extra_info(self, obj):
-            return ...  # Calculate some data to return.
+            return ...  # Calculate some data to return
     """
     def __init__(self, method_name=None, **kwargs):
         self.method_name = method_name
@@ -976,7 +971,7 @@ class SerializerMethodField(AbstractField):
             (self.method_name, field_name, parent.__class__.__name__)
         )
 
-        # The method name should default to `get_{field_name}`.
+        # The method name should default to `get_{field_name}`
         if self.method_name is None:
             self.method_name = default_method_name
 

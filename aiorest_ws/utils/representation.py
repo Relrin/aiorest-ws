@@ -60,15 +60,13 @@ def serializer_repr(serializer, indent, force_many=None):
         elif hasattr(field, 'child'):
             ret += list_repr(field, indent + 1)
         elif hasattr(field, 'child_relation'):
-            ret += field_repr(field.child_relation,
-                              force_many=field.child_relation)
+            ret += field_repr(field.child_relation, force_many=field.child_relation)  # NOQA
         else:
             ret += field_repr(field)
 
     if serializer.validators:
         ret += '\n' + indent_str + 'class Meta:'
-        ret += '\n' + indent_str + '    validators = ' + \
-               smart_repr(serializer.validators)
+        ret += '\n' + indent_str + '    validators = ' + smart_repr(serializer.validators)  # NOQA
 
     return ret
 

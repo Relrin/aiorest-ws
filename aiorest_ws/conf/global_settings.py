@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    Default settings for configuration behaviour of aiorest-ws framework.
+Default settings for configuration behaviour of aiorest-ws framework.
 """
 
 # -----------------------------------------------
@@ -20,10 +20,10 @@ TIME_INPUT_FORMATS = (ISO_8601,)
 # Local time zone for this installation. All choices can be found here:
 # https://en.wikipedia.org/wiki/List_of_tz_zones_by_name (although not all
 # systems may support all possibilities). When USE_TZ is True, this is
-# interpreted as the default user time zone.
+# interpreted as the default user time zone
 TIME_ZONE = 'America/Chicago'
 
-# If you set this to True, Django will use timezone-aware datetimes.
+# If you set this to True, Django will use timezone-aware datetimes
 USE_TZ = False
 
 # Encoding charset for string, files, etc.
@@ -62,7 +62,7 @@ REST_CONFIG = {
 # -----------------------------------------------
 # List of middleware classes, which assigned for the main router. All
 # middlewares will be used in the order of enumeration. Keep in mind, when
-# use this feature.
+# use this feature
 MIDDLEWARE_CLASSES = ()
 
 # -----------------------------------------------

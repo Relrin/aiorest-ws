@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 """
-Module, which provide classes and function for related and nested field.
+Module which provide classes and function for related and nested field.
 
 NOTE: Don't forget to override `to_internal_value()`, `to_representation()`
-and some specific methods for all specified classes for you own purposes.
+and other specific methods for all specified classes for you own purposes.
 
 For your own ORM support necessary to implement classes accordingly to the
 next inheritance tree (don't look onto the classes, which aren't inherited
@@ -35,7 +35,7 @@ __all__ = (
 )
 
 # We assume that 'validators' are intended for the child serializer,
-# rather than the parent serializer.
+# rather than the parent serializer
 MANY_RELATION_KWARGS = (
     'read_only', 'write_only', 'required', 'default', 'initial', 'source',
     'label', 'help_text', 'style', 'error_messages', 'allow_empty'
@@ -92,7 +92,7 @@ class RelatedField(AbstractField):
 
     def __new__(cls, *args, **kwargs):
         # We override this method in order to automagically create
-        # `ManyRelatedField` classes instead when `many=True` is set.
+        # `ManyRelatedField` classes instead when `many=True` is set
         if kwargs.pop('many', False):
             return cls.many_init(*args, **kwargs)
         return super(RelatedField, cls).__new__(cls, *args, **kwargs)
@@ -106,6 +106,7 @@ class RelatedField(AbstractField):
         Note that we're over-cautious in passing most arguments to both parent
         and child classes in order to try to cover the general case. If you're
         overriding this method you'll probably want something much simpler, eg:
+
         @classmethod
         def many_init(cls, *args, **kwargs):
             kwargs['child'] = cls()
@@ -266,14 +267,14 @@ class HyperlinkedRelatedField(object):
         # We include this simply for dependency injection in tests.
         # We can't add it as a class attributes or it would expect an
         # implicit `self` argument to be passed.
-        # Set the `reverse` attribute of this class.
+        # Set the `reverse` attribute of this class
         self.reverse = reverse
 
         super(HyperlinkedRelatedField, self).__init__(**kwargs)
 
     def use_pk_only_optimization(self):
         # Must return boolean value for equal operation between
-        # self.lookup_field attribute and defined model PK
+        # self.lookup_field attribute and defined model PK.
         # For example, for Django Framework it can be:
         # return self.lookup_field == 'pk'
         raise NotImplementedError("`use_pk_only_optimization()` must be "
@@ -308,7 +309,7 @@ class HyperlinkedRelatedField(object):
         May raise a `NoReverseMatch` if the `view_name` and `lookup_field`
         attributes are not configured to correctly match the URL conf.
         """
-        # Unsaved objects will not yet have a valid URL.
+        # Unsaved objects will not yet have a valid URL
         if not self.is_saved_in_database(obj):
             return None
 
@@ -341,7 +342,7 @@ class HyperlinkedRelatedField(object):
         return self.get_object(match.view_name, match.args, match.kwargs)
 
     def to_representation(self, value):
-        # Return the hyperlink, or error if incorrectly configured.
+        # Return the hyperlink, or error if incorrectly configured
         try:
             url = self.get_url(value, self.view_name)
         except NoReverseMatch:
@@ -381,7 +382,7 @@ class HyperlinkedIdentityField(object):
 
     def use_pk_only_optimization(self):
         # We have the complete object instance already. We don't need
-        # to run the 'only get the pk for this relationship' code.
+        # to run the 'only get the pk for this relationship' code
         return False
 
 

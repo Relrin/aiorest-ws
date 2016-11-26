@@ -147,7 +147,7 @@ class LocalTimezone(ReferenceLocalTimezone):
                 exc.__traceback__ = sys.exc_info()[2]
             raise exc_value
 
-utc = pytz.utc if pytz else UTC()  # UTC time zone as a tzinfo instance.
+utc = pytz.utc if pytz else UTC()  # UTC time zone as a tzinfo instance
 
 
 def get_fixed_timezone(offset):
@@ -163,7 +163,7 @@ def get_fixed_timezone(offset):
 
 
 # In order to avoid accessing settings at compile time,
-# wrap the logic in a function and cache the result.
+# wrap the logic in a function and cache the result
 def get_default_timezone():
     """
     Returns the default time zone as a tzinfo instance.
@@ -173,7 +173,7 @@ def get_default_timezone():
     if isinstance(settings.TIME_ZONE, str) and pytz is not None:
         return pytz.timezone(settings.TIME_ZONE)
     else:
-        # This relies on os.environ['TZ'] being set to settings.TIME_ZONE.
+        # This relies on os.environ['TZ'] being set to settings.TIME_ZONE
         return LocalTimezone()
 
 
@@ -199,10 +199,10 @@ def _get_timezone_name(timezone):
     Returns the name of ``timezone``.
     """
     try:
-        # for pytz timezones
+        # For pytz timezones
         return timezone.zone
     except AttributeError:
-        # for regular tzinfo objects
+        # For regular tzinfo objects
         return timezone.tzname(None)
 
 
@@ -216,10 +216,10 @@ def localtime(value, timezone=None):
     if timezone is None:
         timezone = get_current_timezone()
     # If `value` is naive, astimezone() will raise a ValueError,
-    # so we don't need to perform a redundant check.
+    # so we don't need to perform a redundant check
     value = value.astimezone(timezone)
     if hasattr(timezone, 'normalize'):
-        # This method is available for pytz time zones.
+        # This method is available for pytz time zones
         value = timezone.normalize(value)
     return value
 
@@ -229,14 +229,14 @@ def now():
     Returns an aware or naive datetime.datetime, depending on settings.USE_TZ.
     """
     if settings.USE_TZ:
-        # timeit shows that datetime.now(tz=utc) is 24% slower
+        # Timeit shows that datetime.now(tz=utc) is 24% slower
         return datetime.utcnow().replace(tzinfo=utc)
     else:
         return datetime.now()
 
 
 # By design, these four functions don't perform any checks on their arguments.
-# The caller should ensure that they don't receive an invalid value like None.
+# The caller should ensure that they don't receive an invalid value like None
 
 def is_aware(value):
     """
@@ -271,10 +271,10 @@ def make_aware(value, timezone=None, is_dst=None):
     if timezone is None:
         timezone = get_current_timezone()
     if hasattr(timezone, 'localize'):
-        # This method is available for pytz time zones.
+        # This method is available for pytz time zones
         return timezone.localize(value, is_dst=is_dst)
     else:
-        # Check that we won't overwrite the timezone of an aware datetime.
+        # Check that we won't overwrite the timezone of an aware datetime
         if is_aware(value):
             raise ValueError(
                 "make_aware expects a naive datetime, got %s" % value)
@@ -289,9 +289,9 @@ def make_naive(value, timezone=None):
     if timezone is None:
         timezone = get_current_timezone()
     # If `value` is naive, astimezone() will raise a ValueError,
-    # so we don't need to perform a redundant check.
+    # so we don't need to perform a redundant check
     value = value.astimezone(timezone)
     if hasattr(timezone, 'normalize'):
-        # This method is available for pytz time zones.
+        # This method is available for pytz time zones
         value = timezone.normalize(value)
     return value.replace(tzinfo=None)

@@ -22,7 +22,7 @@ def _get_pk(opts):
     rel = get_remote_field(pk)
 
     while rel and rel.parent_link:
-        # If model is a child via multi-table inheritance, use parent's pk.
+        # If model is a child via multi-table inheritance, use parent's pk
         pk = get_related_model(pk)._meta.pk
         rel = get_remote_field(pk)
 
@@ -75,9 +75,7 @@ def _get_forward_relationships(opts):
             to_many=True,
             # many-to-many do not have to_fields
             to_field=None,
-            has_through_model=(
-                not get_remote_field(field).through._meta.auto_created
-            )
+            has_through_model=not get_remote_field(field).through._meta.auto_created  # NOQA
         )
 
     return forward_relations

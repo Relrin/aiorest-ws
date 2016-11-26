@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    Logging tool for aiorest-ws framework.
+Logging tool for aiorest-ws framework.
 """
 import logging
 import logging.config

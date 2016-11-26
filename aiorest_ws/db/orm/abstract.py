@@ -138,7 +138,7 @@ class AbstractSerializer(object):
             self.source = field_name
 
         # `self.source_attrs` is a list of attributes that need to be looked
-        # up when serializing the instance, or populating the validated data.
+        # up when serializing the instance, or populating the validated data
         if self.source == '*':
             self.source_attrs = []
         else:

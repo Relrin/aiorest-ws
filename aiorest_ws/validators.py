@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    Validator classes and functions for checking passed arguments.
+Validator classes and functions for checking passed arguments.
 """
 import inspect
 
@@ -17,17 +17,24 @@ __all__ = (
 
 
 class BaseValidator(object):
-    """Base class for validators."""
+    """
+    Base class for validators.
+    """
 
     def validate(self, *args, **kwargs):
-        """Validating passed arguments and kwargs."""
+        """
+        Validating passed arguments and kwargs.
+        """
         pass
 
 
 class EndpointNameValidator(BaseValidator):
-    """Validator for endpoint name argument."""
+    """
+    Validator for endpoint name argument.
+    """
     def _check_name(self, name):
-        """Validate passed name variable.
+        """
+        Validate passed name variable.
 
         :param name: the base to use for the URL names that are created.
         """
@@ -36,7 +43,8 @@ class EndpointNameValidator(BaseValidator):
                                            u'be string type')
 
     def validate(self, name):
-        """Validate passed name variable.
+        """
+        Validate passed name variable.
 
         :param name: the base to use for the URL names that are created.
         """
@@ -44,9 +52,12 @@ class EndpointNameValidator(BaseValidator):
 
 
 class HandlerValidator(BaseValidator):
-    """Validator for handler argument."""
+    """
+    Validator for handler argument.
+    """
     def _check_handler(self, handler):
-        """Validate passed handler for requests.
+        """
+        Validate passed handler for requests.
 
         :param handler: class or function (wrapped into MethodBasedView),
                         which used for generating response.
@@ -59,7 +70,8 @@ class HandlerValidator(BaseValidator):
             raise InvalidHandler()
 
     def validate(self, handler):
-        """Validate passed handler for requests.
+        """
+        Validate passed handler for requests.
 
         :param handler: class or function, used for generating response.
         """
@@ -67,11 +79,14 @@ class HandlerValidator(BaseValidator):
 
 
 class MethodValidator(BaseValidator):
-    """Validator for methods argument."""
+    """
+    Validator for methods argument.
+    """
     supported_methods_types = (list, str)
 
     def _check_methods(self, methods):
-        """Validate passed methods variable.
+        """
+        Validate passed methods variable.
 
         :param methods: list of methods or string with concrete method name.
         """
@@ -88,33 +103,41 @@ class MethodValidator(BaseValidator):
 
 
 class PathValidator(BaseValidator):
-    """Validator for path argument."""
+    """
+    Validator for path argument.
+    """
     def _check_path(self, path):
-        """Validate passed path for endpoint.
+        """
+        Validate passed path for endpoint.
 
-        :param path: path to endpoint (string)
+        :param path: path to endpoint (string).
         """
         if not path.startswith('/'):
             raise InvalidPathArgument(u"Path should be started with `/` "
                                       u"symbol")
 
     def validate(self, path):
-        """Validate passed path for endpoint.
+        """
+        Validate passed path for endpoint.
 
-        :param path: path to endpoint (string)
+        :param path: path to endpoint (string).
         """
         self._check_path(path)
 
 
 class RouteArgumentsValidator(BaseValidator):
-    """Validator for arguments of RestWSRouter."""
+    """
+    Validator for arguments of RestWSRouter.
+    """
     path_validator = PathValidator()
     handler_validator = HandlerValidator()
     methods_validator = MethodValidator()
     endpoint_name_validator = EndpointNameValidator()
 
     def validate(self, path, handler, methods, name):
-        """Validating passed arguments and kwargs."""
+        """
+        Validating passed arguments and kwargs.
+        """
         self.path_validator.validate(path)
         self.handler_validator.validate(handler)
         self.methods_validator.validate(methods)
@@ -122,7 +145,8 @@ class RouteArgumentsValidator(BaseValidator):
 
 
 def check_and_set_subclass(instance, attribute, value, subclasses):
-    """Validate subclass of passed value on supported type and set him for
+    """
+    Validate subclass of passed value on supported type and set him for
     instance of some class.
 
     :param instance: object, for with necessary make check and sets value.

@@ -68,8 +68,7 @@ class ListSerializer(BaseListSerializer):
         try:
             self.run_validators(value)
             value = self.validate(value)
-            assert value is not None, '.validate() should return the ' \
-                                      'validated data'
+            assert value is not None, '.validate() should return the validated data'  # NOQA
         except (ValidationError, AssertionError) as exc:
             raise ValidationError(detail=get_validation_error_detail(exc))
 
@@ -153,7 +152,7 @@ class ModelSerializer(BaseModelSerializer):
         """
         return model_meta.get_field_info(model)
 
-    # Default `create` and `update` behavior...
+    # Default `create` and `update` behavior
     def create(self, validated_data):
         """
         We have a bit of extra checking around this in order to provide
@@ -185,14 +184,14 @@ class ModelSerializer(BaseModelSerializer):
         ModelClass = self.Meta.model
         # Remove relationship instances from validated_data.
         # They are not valid arguments to the default `.create()` method,
-        # as they require that the instance has already been saved.
+        # as they require that the instance has already been saved
         relations = model_meta.get_relations_data(ModelClass, validated_data)
 
         session = settings.SQLALCHEMY_SESSION(expire_on_commit=False)
         try:
             instance = ModelClass(**validated_data)
             # After creating instance of ModelClass, just append all data,
-            # which are removed earlier.
+            # which are removed earlier
             if relations:
                 session.enable_relationship_loading(instance)
                 for field_name, value in relations.items():
@@ -230,7 +229,7 @@ class ModelSerializer(BaseModelSerializer):
         # Generate filter for getting existing object once more. Earlier,
         # We generate query to the database, because we can get relationship
         # objects, which attached to the existing object. But can't use this
-        # instance further. To avoid issues with it, just get object once more.
+        # instance further. To avoid issues with it, just get object once more
         filter_args = (
             getattr(ModelClass, field) == getattr(instance, field)
             for field in model_meta.model_pk(ModelClass)
@@ -239,7 +238,7 @@ class ModelSerializer(BaseModelSerializer):
         # Simply set each attribute on the instance, and then save it.
         # Note that unlike `.create()` we don't need to treat many-to-many
         # relationships as being a special case. During updates we already
-        # have an instance pk for the relationships to be associated with.
+        # have an instance pk for the relationships to be associated with
         session = settings.SQLALCHEMY_SESSION(expire_on_commit=False)
         try:
             instance = session.query(ModelClass).filter(*filter_args).first()
@@ -274,8 +273,7 @@ class ModelSerializer(BaseModelSerializer):
         try:
             self.run_validators(value)
             value = self.validate(value)
-            assert value is not None, '.validate() should return the ' \
-                                      'validated data'
+            assert value is not None, '.validate() should return the validated data'  # NOQA
         except (ValidationError, AssertionError) as exc:
             raise ValidationError(detail=get_validation_error_detail(exc))
 
@@ -316,7 +314,7 @@ class ModelSerializer(BaseModelSerializer):
 
             if '.' in source or source == '*':
                 # Model fields will always have a simple source mapping,
-                # they can't be nested attribute lookups.
+                # they can't be nested attribute lookups
                 continue
 
             self._bind_field(model, source, model_fields)
@@ -387,18 +385,14 @@ class ModelSerializer(BaseModelSerializer):
         """
         if field_name in info.fields_and_pk:
             model_field = info.fields_and_pk[field_name]
-            return self.build_standard_field(
-                field_name, model_field, model_class
-            )
+            return self.build_standard_field(field_name, model_field, model_class)  # NOQA
 
         elif field_name in info.relations:
             relation_info = info.relations[field_name]
             if not nested_depth:
                 return self.build_relational_field(field_name, relation_info)
             else:
-                return self.build_nested_field(
-                    field_name, relation_info, nested_depth
-                )
+                return self.build_nested_field(field_name, relation_info, nested_depth)  # NOQA
 
         elif hasattr(model_class, field_name):
             return self.build_property_field(field_name, model_class)
@@ -420,7 +414,7 @@ class ModelSerializer(BaseModelSerializer):
 
         if 'choices' in field_kwargs:
             # Fields with choices get coerced into `ChoiceField`
-            # instead of using their regular typed field.
+            # instead of using their regular typed field
             field_class = self.serializer_choice_field
             # Some model fields may introduce kwargs that would not be valid
             # for the choice field. We need to strip these out.
@@ -439,17 +433,17 @@ class ModelSerializer(BaseModelSerializer):
         if not issubclass(field_class, ModelField):
             # `model_field` is only valid for the fallback case of
             # `ModelField`, which is used when no other typed field
-            # matched to the model field.
+            # matched to the model field
             field_kwargs.pop('model_field', None)
 
         if not issubclass(field_class, CharField) and \
                 not issubclass(field_class, EnumField):
-            # `allow_blank` is only valid for textual fields.
+            # `allow_blank` is only valid for textual fields
             field_kwargs.pop('allow_blank', None)
 
         if isinstance(model_field.type, postgresql.ARRAY):
             # Populate the `child` argument on `ListField` instances generated
-            # for the PostgreSQL specific `ArrayField`.
+            # for the PostgreSQL specific `ArrayField`
             child_field_name = '%s.%s' % (field_name, 'child')
             child_model_field = model_field.type.item_type
             # Because our model_field, which passed to the build_standard_field
@@ -476,10 +470,10 @@ class ModelSerializer(BaseModelSerializer):
             field_kwargs['many'] = True
 
         # `to_field` is only valid for slug fields, which aren't
-        # supported by SQLAlchemy ORM by default.
+        # supported by SQLAlchemy ORM by default
         field_kwargs.pop('to_field', None)
 
-        # `view_name` is only valid for hyperlinked relationships.
+        # `view_name` is only valid for hyperlinked relationships
         if not issubclass(field_class, HyperlinkedRelatedField):
             field_kwargs.pop('view_name', None)
 

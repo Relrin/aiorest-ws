@@ -55,7 +55,7 @@ class RelatedField(ORMSessionMixin, relations.RelatedField):
     def get_attribute(self, instance):
         if self.use_pk_only_optimization() and self.source_attrs:
             # Optimized case, return a mock object only containing the
-            # pk attribute.
+            # pk attribute
             try:
                 instance = get_attribute(instance, self.source_attrs[:-1])
                 value = getattr(instance, self.source_attrs[-1])
@@ -63,7 +63,7 @@ class RelatedField(ORMSessionMixin, relations.RelatedField):
             except AttributeError:
                 pass
 
-        # Standard case, return the object instance.
+        # Standard case, return the object instance
         return get_attribute(instance, self.source_attrs)
 
 

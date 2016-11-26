@@ -77,8 +77,7 @@ class ListSerializer(BaseListSerializer):
         try:
             self.run_validators(value)
             value = self.validate(value)
-            assert value is not None, '.validate() should return the ' \
-                                      'validated data'
+            assert value is not None, '.validate() should return the validated data'  # NOQA
         except (ValidationError, DjangoValidationError) as exc:
             raise ValidationError(detail=get_validation_error_detail(exc))
 
@@ -172,7 +171,7 @@ class ModelSerializer(BaseModelSerializer):
 
         # Remove many-to-many relationships from validated_data.
         # They are not valid arguments to the default `.create()` method,
-        # as they require that the instance has already been saved.
+        # as they require that the instance has already been saved
         info = model_meta.get_field_info(ModelClass)
         many_to_many = {}
         for field_name, relation_info in info.relations.items():
@@ -199,7 +198,7 @@ class ModelSerializer(BaseModelSerializer):
             )
             raise TypeError(msg)
 
-        # Save many-to-many relationships after the instance is created.
+        # Save many-to-many relationships after the instance is created
         if many_to_many:
             for field_name, value in many_to_many.items():
                 field = getattr(instance, field_name)
@@ -214,7 +213,7 @@ class ModelSerializer(BaseModelSerializer):
         # Simply set each attribute on the instance, and then save it.
         # Note that unlike `.create()` we don't need to treat many-to-many
         # relationships as being a special case. During updates we already
-        # have an instance pk for the relationships to be associated with.
+        # have an instance pk for the relationships to be associated with
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
         instance.save()
@@ -267,7 +266,7 @@ class ModelSerializer(BaseModelSerializer):
         unique_constraint_names = set()
 
         for model_field in model_fields.values():
-            # Include each of the `unique_for_*` field names.
+            # Include each of the `unique_for_*` field names
             unique_constraint_names |= {
                 model_field.unique_for_date, model_field.unique_for_month,
                 model_field.unique_for_year
@@ -350,10 +349,10 @@ class ModelSerializer(BaseModelSerializer):
 
         if 'choices' in field_kwargs:
             # Fields with choices get coerced into `ChoiceField`
-            # instead of using their regular typed field.
+            # instead of using their regular typed field
             field_class = self.serializer_choice_field
             # Some model fields may introduce kwargs that would not be valid
-            # for the choice field. We need to strip these out.
+            # for the choice field. We need to strip these out
             valid_kwargs = {
                 'read_only', 'write_only',
                 'required', 'default', 'initial', 'source',
@@ -368,16 +367,16 @@ class ModelSerializer(BaseModelSerializer):
         if not issubclass(field_class, ModelField):
             # `model_field` is only valid for the fallback case of
             # `ModelField`, which is used when no other typed field
-            # matched to the model field.
+            # matched to the model field
             field_kwargs.pop('model_field', None)
 
         if not issubclass(field_class, CharField) and not issubclass(field_class, ChoiceField):  # NOQA
-            # `allow_blank` is only valid for textual fields.
+            # `allow_blank` is only valid for textual fields
             field_kwargs.pop('allow_blank', None)
 
         if postgres_fields and isinstance(model_field, postgres_fields.ArrayField):  # NOQA
             # Populate the `child` argument on `ListField` instances generated
-            # for the PostgreSQL specific `ArrayField`.
+            # for the PostgreSQL specific `ArrayField`
             child_model_field = model_field.base_field
             child_field_class, child_field_kwargs = self.build_standard_field(
                 'child', child_model_field
@@ -399,7 +398,7 @@ class ModelSerializer(BaseModelSerializer):
             field_kwargs['slug_field'] = to_field
             field_class = self.serializer_related_to_field
 
-        # `view_name` is only valid for hyperlinked relationships.
+        # `view_name` is only valid for hyperlinked relationships
         if not issubclass(field_class, HyperlinkedRelatedField):
             field_kwargs.pop('view_name', None)
 

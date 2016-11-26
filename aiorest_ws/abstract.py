@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    Abstract classes for future implementation.
+Abstract classes for future implementation.
 """
 from abc import ABCMeta, abstractmethod
 
@@ -11,13 +11,14 @@ __all__ = (
 
 
 class AbstractEndpoint(metaclass=ABCMeta):
-    """Base class for endpoints."""
-
+    """
+    Base class for endpoints.
+    """
     path = None      # URL, used for get access to API
-    handler = None   # class/function for processing request
-    methods = []     # list of supported methods (GET, POST, etc.)
-    name = None      # short name for route
-    _pattern = None  # pattern, which using for checking path on compatible
+    handler = None   # Class/function for processing request
+    methods = []     # List of supported methods (GET, POST, etc.)
+    name = None      # Short name for route
+    _pattern = None  # Pattern, which using for checking path on compatible
 
     def __init__(self, path, handler, methods, name):
         self.path = path
@@ -30,7 +31,8 @@ class AbstractEndpoint(metaclass=ABCMeta):
 
     @abstractmethod
     def match(self, path):
-        """Checking path on compatible.
+        """
+        Checking path on compatible.
 
         :param path: URL, which used for get access to API.
         """
@@ -38,7 +40,9 @@ class AbstractEndpoint(metaclass=ABCMeta):
 
 
 class AbstractRouter(metaclass=ABCMeta):
-    """Base class for routers."""
+    """
+    Base class for routers.
+    """
     _middlewares = []
 
     def __init__(self, *args, **kwargs):
@@ -47,12 +51,15 @@ class AbstractRouter(metaclass=ABCMeta):
 
     @property
     def middlewares(self):
-        """Get list of used middlewares."""
+        """
+        Get list of used middlewares.
+        """
         return self._middlewares
 
     @abstractmethod
     def process_request(self, request):
-        """Handling received request from user.
+        """
+        Handling received request from user.
 
         :param request: request from user.
         """
@@ -60,10 +67,13 @@ class AbstractRouter(metaclass=ABCMeta):
 
 
 class AbstractMiddleware(metaclass=ABCMeta):
-    """Base class for middlewares."""
+    """
+    Base class for middlewares.
+    """
     @abstractmethod
     def process_request(self, request, handler):
-        """Processing request before calling handler.
+        """
+        Processing request before calling handler.
 
         :param request: instance of Request class.
         :param handler: view, invoked later for the request.
@@ -72,10 +82,13 @@ class AbstractMiddleware(metaclass=ABCMeta):
 
 
 class AbstractPermission(metaclass=ABCMeta):
-    """Base class for permissions."""
+    """
+    Base class for permissions.
+    """
     @staticmethod
     def check(request, handler):
-        """Check permission method.
+        """
+        Check permission method.
 
         :param request: instance of Request class.
         :param handler: view, invoked later for the request.

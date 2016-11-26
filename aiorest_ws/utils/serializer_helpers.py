@@ -33,7 +33,7 @@ class ReturnDict(OrderedDict):
 
     def __reduce__(self):
         # Pickling these objects will drop the .serializer backlink,
-        # but preserve the raw data.
+        # but preserve the raw data
         return dict, (dict(self),)
 
 
