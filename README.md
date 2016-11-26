@@ -10,8 +10,8 @@ Features
 - Authentication (using JSON Web Token)
 - Customizing behaviour of your application through settings file
 - Compressing messages for minimize of transmitted traffic (if your browser support)
+- Model serializing for Django and SQLAlchemy ORM
 - SSL support
-- Support model serializing for Django and SQLAlchemy ORM
 
 Requirements
 -----
