@@ -126,21 +126,21 @@ class ApplicationTestCase(unittest.TestCase):
     def test_init_factory(self):
         url = self.app.generate_url('127.0.0.1', 8080)
         factory = self.app._init_factory(url)
-        self.assertFalse(factory.debug)
+        self.assertEqual(factory.log._log_level, 'info')
         self.assertEqual(factory.protocol, RequestHandlerProtocol)
 
     def test_init_factory_2(self):
         url = self.app.generate_url('127.0.0.1', 8080)
-        options = {'debug': False}
+        options = {'log_level': 'info'}
         factory = self.app._init_factory(url, **options)
-        self.assertFalse(factory.debug)
+        self.assertEqual(factory.log._log_level, 'info')
         self.assertEqual(factory.protocol, RequestHandlerProtocol)
 
     def test_init_factory_3(self):
         url = self.app.generate_url('127.0.0.1', 8080)
-        options = {'debug': True}
+        options = {'log_level': 'debug'}
         factory = self.app._init_factory(url, **options)
-        self.assertTrue(factory.debug)
+        self.assertEqual(factory.log._log_level, 'debug')
         self.assertEqual(factory.protocol, RequestHandlerProtocol)
 
     def test_enable_compressing(self):
@@ -187,15 +187,15 @@ class ApplicationTestCase(unittest.TestCase):
     def test_generate_factory(self):
         url = self.app.generate_url('127.0.0.1', 8080)
         factory = self.app.generate_factory(
-            url, debug=True, router=SimpleRouter()
+            url, log_level='debug', router=SimpleRouter()
         )
-        self.assertTrue(factory.debug)
+        self.assertEqual(factory.log._log_level, 'debug')
         self.assertIsInstance(factory.router, SimpleRouter)
 
     def test_generate_factory_2(self):
         url = self.app.generate_url('127.0.0.1', 8080)
         factory = self.app.generate_factory(url, router=SimpleRouter())
-        self.assertFalse(factory.debug)
+        self.assertEqual(factory.log._log_level, 'info')
         self.assertIsInstance(factory.router, SimpleRouter)
 
     def test_generate_factory_3(self):
@@ -203,7 +203,7 @@ class ApplicationTestCase(unittest.TestCase):
         factory = self.app.generate_factory(
             url, router=SimpleRouter(), compress=True
         )
-        self.assertFalse(factory.debug)
+        self.assertEqual(factory.log._log_level, 'info')
         self.assertIsInstance(factory.router, SimpleRouter)
         self.assertEqual(factory.perMessageCompressionAccept, accept)
 

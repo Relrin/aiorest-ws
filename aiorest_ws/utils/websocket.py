@@ -12,6 +12,7 @@ __all__ = ('deflate_offer_accept', )
 def deflate_offer_accept(offers):
     """
     Function to accept offers from the client.
+    NOTE: For using this you will need a "permessage-deflate" extension.
 
     :param offers: iterable object (list, tuple), where every object
                    is instance of PerMessageDeflateOffer.

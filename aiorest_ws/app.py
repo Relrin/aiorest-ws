@@ -4,6 +4,8 @@ This module implements the central application object.
 """
 import asyncio
 import ssl
+import txaio
+txaio.use_asyncio()
 from time import gmtime, strftime
 
 from aiorest_ws.__init__ import __version__
@@ -144,10 +146,10 @@ class Application(object):
         """
         Create a factory instance.
         """
-        debug = options.get('debug', False)
-
-        factory = self.factory(url, debug=debug)
+        log_level = options.get('log_level', 'info')
+        factory = self.factory(url)
         factory.protocol = self.protocol
+        factory.log._set_log_level(log_level)
         return factory
 
     def _enable_compressing(self, factory, **options):
@@ -155,16 +157,18 @@ class Application(object):
         Set compression message for factory, if defined.
         """
         compress = options.get('compress', False)
+        accept_function = options.get('accept_function', accept)
+        protocol_options = {"perMessageCompressionAccept": accept_function}
 
         if compress:
-            factory.setProtocolOptions(perMessageCompressionAccept=accept)
+            factory.setProtocolOptions(**protocol_options)
 
     def _set_factory_router(self, factory, **options):
         """
         Set users router for factory, if defined.
         """
         router = options.get('router', None)
-        assert router, "Argument `router` must be defined for Application."
+        assert router, "Argument `router` must be defined for the Application."
 
         factory.router = router
         factory.router._middlewares = self.middlewares
