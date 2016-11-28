@@ -8,7 +8,6 @@ Application usage
 This module provide :class:`Application` class, which used as entry point
 for your REST applications with WebSockets.
 
-
 Run a instance of application
 -----------------------------
 
@@ -23,6 +22,7 @@ handler. It can be method-based:
     from aiorest_ws.views import MethodBasedView
 
     class HelloWorld(MethodBasedView):
+
         def get(self, request, *args, **kwargs):
             return "Hello, world!"
 
@@ -128,8 +128,9 @@ the next parameters:
     then server REST with WebSockets will be available on the ``ws://127.0.0.1:8080/api``
     or ``wss://127.0.0.1:8080/api`` (when SSL enabled)
 
-- debug
-    If given, enable or disable debug mode. Default to ``False``
+- log_level
+    If specified, set logging level. Default to ``'info'``. Available options are: ``'info'``,
+    ``'debug'``, ``'critical'``, ``'error'``, ``'warn'``, ``'trace'``
 
 - router
     Router with registered endpoints
@@ -137,6 +138,10 @@ the next parameters:
 
 - compress
     Enable compressing for transmitted traffic. Default to ``False``
+
+- accept_function
+    Function for compressing of transmitted traffic. Default function is ``aiorest_ws.utils.websocket.deflate_offer_accept``.
+    Using only when ``compress`` argument specified with ``True`` value.
 
 Running with SSL
 ----------------
@@ -180,3 +185,9 @@ For enable this feature is enough to append ``compress`` parameter with
 
     app = Application()
     app.run(compress=True)
+
+By default using deflate compression method which is provided by "permessage-deflate" extension. If you
+want to change this behaviour to a custom, then specify ``accept_function`` argument with certain
+functionality (as a function). For instance you can look on the
+`example <https://github.com/crossbario/autobahn-python/tree/master/examples/twisted/websocket/echo_compressed>`_
+of autobahn-python repository.

@@ -4,8 +4,6 @@ This module implements the central application object.
 """
 import asyncio
 import ssl
-import txaio
-txaio.use_asyncio()
 from time import gmtime, strftime
 
 from aiorest_ws.__init__ import __version__
