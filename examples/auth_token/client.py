@@ -48,7 +48,7 @@ class AuthAPIClientProtocol(WebSocketClientProtocol):
 
 
 if __name__ == '__main__':
-    factory = WebSocketClientFactory("ws://localhost:8080", debug=False)
+    factory = WebSocketClientFactory("ws://localhost:8080")
     factory.protocol = AuthAPIClientProtocol
 
     loop = asyncio.get_event_loop()

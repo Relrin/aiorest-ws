@@ -10,9 +10,11 @@ with open('aiorest_ws/__init__.py', 'rb') as f:
     version = str(ast.literal_eval(_version_re.search(
         f.read().decode('utf-8')).group(1)))
 
-requirements = ['autobahn>=0.12.1', ]
-test_requirements = requirements + ['pytest', 'pytest-asyncio',
-                                    'pytest-cov', 'pytest-xdist']
+requirements = ['autobahn==0.16.0', ]
+test_requirements = requirements + [
+    'pytest', 'pytest-asyncio',
+    'pytest-cov', 'pytest-xdist'
+]
 
 
 def read(f):

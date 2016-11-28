@@ -1,5 +1,5 @@
 alabaster>=0.7.5
-autobahn==0.12.1
+autobahn==0.16.0
 cov-core==1.15.0
 coverage==4.0.3
 Django==1.10.2
