@@ -6,16 +6,19 @@ from aiorest_ws.views import MethodBasedView
 
 
 class HelloWorld(MethodBasedView):
+
     def get(self, request, *args, **kwargs):
         return "Hello, username!"
 
 
 class HelloWorldCustom(MethodBasedView):
+
     def get(self, request, user, id, *args, **kwargs):
         return "Hello, {0} with ID={1}".format(user, id)
 
 
 class CalculateSum(MethodBasedView):
+
     def get(self, request, *args, **kwargs):
         try:
             digits = kwargs['params']['digits']

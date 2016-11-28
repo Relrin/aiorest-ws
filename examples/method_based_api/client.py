@@ -11,23 +11,29 @@ class HelloClientProtocol(WebSocketClientProtocol):
 
     def onOpen(self):
         # hello username
-        request = {'method': 'GET',
-                   'url': '/hello/'}
+        request = {
+            'method': 'GET',
+            'url': '/hello/'
+        }
         self.sendMessage(json.dumps(request).encode('utf8'))
 
         # hello endpoint with arg in URL path (`user` and random digit)
         for _ in range(0, 10):
             user_id = str(randint(1, 100))
-            request = {'method': 'GET',
-                       'url': '/hello/user/' + user_id}
+            request = {
+                'method': 'GET',
+                'url': '/hello/user/' + user_id
+            }
             self.sendMessage(json.dumps(request).encode('utf8'))
 
         # send request and parameters are separately
         digits = [randint(1, 10) for _ in range(3)]
         print("calculate sum for {}".format(digits))
-        request = {'method': 'GET',
-                   'url': '/calc/sum',
-                   'args': {'digits': digits}}
+        request = {
+            'method': 'GET',
+            'url': '/calc/sum',
+            'args': {'digits': digits}
+        }
         self.sendMessage(json.dumps(request).encode('utf8'))
 
     def onMessage(self, payload, isBinary):
@@ -35,7 +41,7 @@ class HelloClientProtocol(WebSocketClientProtocol):
 
 
 if __name__ == '__main__':
-    factory = WebSocketClientFactory("ws://localhost:8080", debug=False)
+    factory = WebSocketClientFactory("ws://localhost:8080")
     factory.protocol = HelloClientProtocol
 
     loop = asyncio.get_event_loop()
