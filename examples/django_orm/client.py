@@ -18,10 +18,10 @@ class HelloClientProtocol(WebSocketClientProtocol):
         request = {
             'method': 'POST',
             'url': '/manufacturer/',
-            'event_name': 'create-manufacturer',
-            'args': {
+            'data': {
                 "name": 'Ford'
-            }
+            },
+            'event_name': 'create-manufacturer'
         }
         self.sendMessage(json.dumps(request).encode('utf8'))
 
@@ -45,11 +45,11 @@ class HelloClientProtocol(WebSocketClientProtocol):
         request = {
             'method': 'POST',
             'url': '/cars/',
-            'event_name': 'create-car',
-            'args': {
+            'data': {
                 'name': 'M5',
                 'manufacturer': 2
-            }
+            },
+            'event_name': 'create-car'
         }
         self.sendMessage(json.dumps(request).encode('utf8'))
 
@@ -60,10 +60,10 @@ class HelloClientProtocol(WebSocketClientProtocol):
         request = {
             'method': 'PUT',
             'url': '/cars/Q5/',
-            'event_name': 'partial-update-car',
-            'args': {
+            'data': {
                 'name': 'Q7'
-            }
+            },
+            'event_name': 'partial-update-car'
         }
         self.sendMessage(json.dumps(request).encode('utf8'))
 
@@ -71,8 +71,7 @@ class HelloClientProtocol(WebSocketClientProtocol):
         request = {
             'method': 'GET',
             'url': '/manufacturer/',
-            'event_name': 'get-manufacturer-list',
-            'args': {}
+            'event_name': 'get-manufacturer-list'
         }
         self.sendMessage(json.dumps(request).encode('utf8'))
 
@@ -80,10 +79,10 @@ class HelloClientProtocol(WebSocketClientProtocol):
         request = {
             'method': 'PUT',
             'url': '/manufacturer/Audi/',
-            'event_name': 'update-manufacturer',
-            'args': {
+            'data': {
                 'name': 'Not Audi'
-            }
+            },
+            'event_name': 'update-manufacturer'
         }
         self.sendMessage(json.dumps(request).encode('utf8'))
 
@@ -91,8 +90,7 @@ class HelloClientProtocol(WebSocketClientProtocol):
         request = {
             'method': 'GET',
             'url': '/cars/TT/',
-            'event_name': 'get-car-detail',
-            'args': {}
+            'event_name': 'get-car-detail'
         }
         self.sendMessage(json.dumps(request).encode('utf8'))
 

@@ -16,12 +16,12 @@ class RegisterUser(MethodBasedView):
     user_manager = UserSQLiteModel()
 
     def post(self, request, *args, **kwargs):
-        user = self.user_manager.get_user_by_username(request.args['username'])
+        user = self.user_manager.get_user_by_username(request.data['username'])
         # only anonymous doesn't have username
         if user.is_authenticated:
             message = "User already created."
         else:
-            self.user_manager.create_user(**request.args)
+            self.user_manager.create_user(**request.data)
             message = "User created successfully."
         return message
 
@@ -55,7 +55,7 @@ class LogIn(MethodBasedView):
 
     def post(self, request, *args, **kwargs):
         user = self.user_manager.get_user_by_username(
-            request.args['username'], with_id=True
+            request.data['username'], with_id=True
         )
         if user.is_authenticated:
             api_token = self.get_or_create_token(user, *args, **kwargs)

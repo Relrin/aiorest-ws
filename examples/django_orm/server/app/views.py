@@ -16,11 +16,10 @@ class ManufacturerListView(MethodBasedView):
         return serializer.data
 
     def post(self, request, *args, **kwargs):
-        data = kwargs.get('params', None)
-        if not data:
+        if not request.data:
             raise ValidationError('You must provide arguments for create.')
 
-        serializer = ManufacturerSerializer(data=data)
+        serializer = ManufacturerSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return serializer.data
@@ -42,12 +41,11 @@ class ManufacturerView(MethodBasedView):
         return serializer.data
 
     def put(self, request, name, *args, **kwargs):
-        data = kwargs.get('params', None)
-        if not data:
+        if not request.data:
             raise ValidationError('You must provide arguments for create.')
 
         instance = self.get_manufacturer(name)
-        serializer = ManufacturerSerializer(instance, data=data, partial=True)
+        serializer = ManufacturerSerializer(instance, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return serializer.data
@@ -61,11 +59,10 @@ class CarListView(MethodBasedView):
         return serializer.data
 
     def post(self, request, *args, **kwargs):
-        data = kwargs.get('params', None)
-        if not data:
+        if not request.data:
             raise ValidationError('You must provide arguments for create.')
 
-        serializer = CarSerializer(data=data)
+        serializer = CarSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return serializer.data
@@ -87,12 +84,11 @@ class CarView(MethodBasedView):
         return serializer.data
 
     def put(self, request, name, *args, **kwargs):
-        data = kwargs.get('params', None)
-        if not data:
+        if not request.data:
             raise ValidationError('You must provide data for update.')
 
         instance = self.get_car(name)
-        serializer = CarSerializer(instance, data=data, partial=True)
+        serializer = CarSerializer(instance, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return serializer.data

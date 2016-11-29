@@ -21,7 +21,7 @@ class CalculateSum(MethodBasedView):
 
     def get(self, request, *args, **kwargs):
         try:
-            digits = kwargs['params']['digits']
+            digits = kwargs['digits']
         except KeyError:
             digits = [0, ]
         return {"sum": sum(digits)}
