@@ -80,7 +80,6 @@ Client example (Python):
     from autobahn.asyncio.websocket import WebSocketClientProtocol, \
         WebSocketClientFactory
 
-
     class HelloClientProtocol(WebSocketClientProtocol):
 
         def onOpen(self):
@@ -157,7 +156,7 @@ Contents:
 ---------
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 4
 
    auth
    app

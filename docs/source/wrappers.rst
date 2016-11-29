@@ -26,21 +26,21 @@ Properties:
 
     Returns dictionary of arguments for request.
 
-    For instance in the "classical REST" you can send the HTTP request by certain URL
-    like http://mywebsite.com/api/user/?name=admin&password=mysecretpassword where with ``?`` separator
-    and ``&`` symbols you can specify all required arguments where it necessary. In our case for
-    aiorest-ws library you should specify all this arguments in request as a dictionary. For example:
+    For instance in the "classical REST" you can send the HTTP request by certain URL like
+    http://mywebsite.com/api/user/?name=admin&password=mysecretpassword where with ``?`` and ``&``
+    symbols you can specify all required arguments when it is necessary. For the following example
+    we specify all the same arguments in request at the dictionary:
 
-.. code-block:: javascript
+    .. code-block:: python
 
-    {
-        "method": "GET",
-        "url": "/api/user,
-        "args": {
-            "name": "admin",
-            "password": "mysecretpassword"
+        {
+            "method": "GET",
+            "url": "/api/user",
+            "args": {
+                "name": "admin",
+                "password": "mysecretpassword"
+            }
         }
-    }
 
 - data
 
