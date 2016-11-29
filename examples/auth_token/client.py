@@ -12,7 +12,7 @@ class AuthAPIClientProtocol(WebSocketClientProtocol):
         # create user
         request = {
             'method': 'POST', 'url': '/auth/user/create',
-            'args': {
+            'data': {
                 'username': 'admin',
                 'password': '123456',
                 'is_superuser': True, 'is_staff': False, 'is_user': False
@@ -27,7 +27,7 @@ class AuthAPIClientProtocol(WebSocketClientProtocol):
         request = {
             'method': 'POST',
             'url': '/auth/login',
-            'args': {
+            'data': {
                 'username': 'admin',
                 'password': '123456',
             }

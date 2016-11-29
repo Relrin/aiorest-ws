@@ -14,6 +14,7 @@ class Request(object):
         self._method = kwargs.pop('method', None)
         self._url = kwargs.pop('url', None)
         self._args = kwargs.pop('args', {})
+        self._data = kwargs.pop('data', None)
         self._event_name = kwargs.pop('event_name', None)
 
         for key in kwargs.keys():
@@ -39,6 +40,13 @@ class Request(object):
         Get dictionary of arguments, defined by the user.
         """
         return self._args
+
+    @property
+    def data(self):
+        """
+        Get request body.
+        """
+        return self._data
 
     @property
     def event_name(self):

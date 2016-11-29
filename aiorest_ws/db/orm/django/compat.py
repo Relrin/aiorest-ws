@@ -9,8 +9,17 @@ from django.apps import apps
 from django.core.exceptions import ImproperlyConfigured
 from django.db import models
 
-from django.contrib.postgres import fields as postgres_fields
-from django.contrib.postgres.fields import JSONField
+
+try:
+    from django.contrib.postgres import fields as postgres_fields
+except ImportError:
+    postgres_fields = None
+
+
+try:
+    from django.contrib.postgres.fields import JSONField
+except ImportError:
+    JSONField = None
 
 
 __all__ = [

@@ -98,13 +98,16 @@ class RestWSRouterTestCase(unittest.TestCase):
         handler, args, kwargs = self.router.search_handler(request, url)
         self.assertIsInstance(handler, FakeView)
         self.assertEqual(args, ('v2',))
-        self.assertEqual(kwargs, {'params': {'format': 'json'}})
+        self.assertEqual(kwargs, {'format': 'json'})
 
     @unittest.mock.patch('aiorest_ws.log.logger.info')
     def test_process_request(self, log_info):
         self.router.register('/api/get/', FakeGetView, 'GET')
 
-        decoded_json = {'method': 'GET', 'url': '/api/get/'}
+        decoded_json = {
+            'method': 'GET',
+            'url': '/api/get/'
+        }
         request = Request(**decoded_json)
         response = self.router.process_request(request).decode('utf-8')
         json_response = json.loads(response)
@@ -118,7 +121,8 @@ class RestWSRouterTestCase(unittest.TestCase):
         self.router.register('/api/get/', FakeGetView, 'GET')
 
         decoded_json = {
-            'method': 'GET', 'url': '/api/get/',
+            'method': 'GET',
+            'url': '/api/get/',
             'args': {'format': 'xml'}
         }
         request = Request(**decoded_json)
@@ -134,7 +138,8 @@ class RestWSRouterTestCase(unittest.TestCase):
         self.router.register('/api/get/', FakeGetView, 'GET')
 
         decoded_json = {
-            'method': 'GET', 'url': '/api/get/',
+            'method': 'GET',
+            'url': '/api/get/',
             'args': {'format': 'xml'}, 'event_name': 'test'
         }
         request = Request(**decoded_json)
@@ -152,7 +157,10 @@ class RestWSRouterTestCase(unittest.TestCase):
     def test_process_request_by_invalid_url(self, log_info, log_exc):
         self.router.register('/api/get/', FakeGetView, 'GET')
 
-        decoded_json = {'method': 'GET', 'url': '/api/invalid/'}
+        decoded_json = {
+            'method': 'GET',
+            'url': '/api/invalid/'
+        }
         request = Request(**decoded_json)
         response = self.router.process_request(request).decode('utf-8')
         json_response = json.loads(response)
@@ -186,7 +194,10 @@ class RestWSRouterTestCase(unittest.TestCase):
         self.router._middlewares = [FakeTokenMiddleware(), ]
         self.router.register('/api/get/', FakeGetView, 'GET')
 
-        decoded_json = {'method': 'GET', 'url': '/api/get/'}
+        decoded_json = {
+            'method': 'GET',
+            'url': '/api/get/'
+        }
         request = Request(**decoded_json)
         response = self.router.process_request(request).decode('utf-8')
         json_response = json.loads(response)
@@ -201,7 +212,10 @@ class RestWSRouterTestCase(unittest.TestCase):
         self.router._middlewares = [FakeTokenMiddlewareWithExc(), ]
         self.router.register('/api/get/', FakeGetView, 'GET')
 
-        decoded_json = {'method': 'GET', 'url': '/api/get/'}
+        decoded_json = {
+            'method': 'GET',
+            'url': '/api/get/'
+        }
         request = Request(**decoded_json)
         response = self.router.process_request(request).decode('utf-8')
         json_response = json.loads(response)
@@ -216,7 +230,10 @@ class RestWSRouterTestCase(unittest.TestCase):
 
         self.router.register_endpoint(fake_handler)
 
-        decoded_json = {'url': '/api', 'method': 'GET'}
+        decoded_json = {
+            'url': '/api',
+            'method': 'GET'
+        }
         request = Request(**decoded_json)
         response = self.router.process_request(request).decode('utf-8')
         json_response = json.loads(response)

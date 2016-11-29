@@ -95,9 +95,9 @@ class SimpleRouter(AbstractRouter):
             if match is not None:
                 handler = route.handler()
                 args = match
-                params = request.args
-                if params:
-                    kwargs.update({'params': params})
+                parameters = request.args
+                if parameters:
+                    kwargs.update(parameters)
                 break
         return handler, args, kwargs
 

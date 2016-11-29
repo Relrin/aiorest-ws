@@ -18,10 +18,10 @@ class HelloClientProtocol(WebSocketClientProtocol):
         request = {
             'method': 'POST',
             'url': '/address/',
-            'event_name': 'create-address',
-            'args': {
-                "email_address":'some_address@google.com'
-            }
+            'data': {
+                "email_address": 'some_address@google.com'
+            },
+            'event_name': 'create-address'
         }
         self.sendMessage(json.dumps(request).encode('utf8'))
 
@@ -45,13 +45,13 @@ class HelloClientProtocol(WebSocketClientProtocol):
         request = {
             'method': 'POST',
             'url': '/user/',
-            'event_name': 'create-user',
-            'args': {
+            'data': {
                 'name': 'Neyton',
                 'fullname': 'Neyton Drake',
                 'password': hash_password('123456'),
                 'addresses': [{"id": 1}, ]
-            }
+            },
+            'event_name': 'create-user'
         }
         self.sendMessage(json.dumps(request).encode('utf8'))
 
@@ -62,11 +62,11 @@ class HelloClientProtocol(WebSocketClientProtocol):
         request = {
             'method': 'PUT',
             'url': '/user/6/',
-            'event_name': 'partial-update-user',
-            'args': {
+            'data': {
                 'fullname': 'Definitely not Neyton Drake',
                 'addresses': [{"id": 1}, {"id": 2}]
-            }
+            },
+            'event_name': 'partial-update-user'
         }
         self.sendMessage(json.dumps(request).encode('utf8'))
 
@@ -74,23 +74,21 @@ class HelloClientProtocol(WebSocketClientProtocol):
         request = {
             'method': 'POST',
             'url': '/user/list/',
-            'event_name': 'create-user-list',
-            'args': {
-                'list': [
-                    {
-                        'name': 'User 1',
-                        'fullname': 'User #1',
-                        'password': hash_password('1q2w3e'),
-                        'addresses': [{"id": 1}, ]
-                    },
-                    {
-                        'name': 'User 2',
-                        'fullname': 'User #2',
-                        'password': hash_password('qwerty'),
-                        'addresses': [{"id": 2}, ]
-                    },
-                ]
-            }
+            'data': [
+                {
+                    'name': 'User 1',
+                    'fullname': 'User #1',
+                    'password': hash_password('1q2w3e'),
+                    'addresses': [{"id": 1}, ]
+                },
+                {
+                    'name': 'User 2',
+                    'fullname': 'User #2',
+                    'password': hash_password('qwerty'),
+                    'addresses': [{"id": 2}, ]
+                },
+            ],
+            'event_name': 'create-user-list'
         }
         self.sendMessage(json.dumps(request).encode('utf8'))
 

@@ -14,16 +14,14 @@ class UserListView(MethodBasedView):
         users = session.query(User).all()
         return UserSerializer(users, many=True).data
 
-    def post(self, *args, **kwargs):
-        data = kwargs.get('params', None)
-        if not data:
+    def post(self, request, *args, **kwargs):
+        if not request.data:
             raise ValidationError('You must provide arguments for create.')
 
-        created_obj_data = data.get('list', [])
-        if not data:
+        if not isinstance(request.data, list):
             raise ValidationError('You must provide a list of objects.')
 
-        serializer = UserSerializer(data=created_obj_data, many=True)
+        serializer = UserSerializer(data=request.data, many=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return serializer.data
@@ -37,8 +35,7 @@ class UserView(MethodBasedView):
         return UserSerializer(instance).data
 
     def put(self, request, id, *args, **kwargs):
-        validated_data = kwargs.get('params', None)
-        if not validated_data:
+        if not request.data:
             raise ValidationError('You must provide an updated instance.')
 
         session = settings.SQLALCHEMY_SESSION()
@@ -46,7 +43,7 @@ class UserView(MethodBasedView):
         if not instance:
             raise ValidationError('Object does not exist')
 
-        serializer = UserSerializer(instance, data=validated_data, partial=True)
+        serializer = UserSerializer(instance, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return serializer.data
@@ -55,8 +52,7 @@ class UserView(MethodBasedView):
 class CreateUserView(MethodBasedView):
 
     def post(self, request, *args, **kwargs):
-        validated_data = kwargs.get('params', None)
-        serializer = UserSerializer(data=validated_data)
+        serializer = UserSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return serializer.data
@@ -73,8 +69,7 @@ class AddressView(MethodBasedView):
 class CreateAddressView(MethodBasedView):
 
     def post(self, request, *args, **kwargs):
-        validated_data = kwargs.get('params', None)
-        serializer = AddressSerializer(data=validated_data)
+        serializer = AddressSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return serializer.data
