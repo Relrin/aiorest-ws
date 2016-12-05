@@ -176,7 +176,7 @@ class Application(object):
         Initialize urlconf thread variable.
         """
         data = {
-            'path': url,
+            'path': url.strip('/'),
             'urls': factory.router._urls,
             'routes': factory.router._routes
         }
