@@ -822,9 +822,248 @@ implementation raises an error, although subclasses may customize this behavior.
 
 HyperlinkedModelSerializer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+The :class:`HyperlinkedModelSerializer` class is similar to the :class:`ModelSerializer` class
+except that it uses hyperlinks to represent relationships, rather than primary keys.
+
+By default the serializer will include a ``url`` field instead of a primary key field.
+
+The url field will be represented using a :class:`HyperlinkedIdentityField` serializer field, and
+any relationships on the model will be represented using a :class:`HyperlinkedRelatedField`
+serializer field.
+
+You can explicitly include the primary key by adding it to the ``fields`` option, for example:
+
+.. code-block:: python
+
+    class UserSerializer(serializers.ModelSerializer):
+
+        class Meta:
+            model = User
+            fields = ('url', 'username', 'email', 'logged_at')
+
+Absolute and relative URLs
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+When instantiating a :class:`HyperlinkedModelSerializer` you do not need to include the current
+request in the serializer context as it implemented in Django REST. Just create an serialized
+instance and call the ``.data`` attribute:
+
+.. code-block:: python
+
+    serializer = UserSerializer(user_queryset)
+
+So, after getting a data from serializer instance, you will get absolute path to this object
+instead of primary key:
+
+.. code-block:: javascript
+
+    "wss://127.0.0.1:8000/user/1/"
+
+If you do want to use relative URLs, you should explicitly pass ``{'relative': True}`` to the
+serializer constructor as the ``context`` argument:
+
+.. code-block:: python
+
+    serializer = UserSerializer(user_object, context={'relative': True})
+
+After that you will get a relative link to an object:
+
+.. code-block:: javascript
+
+    "/user/1/"
+
+How hyperlinked views are determined
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+There needs to be a way of determining which views should be used for hyperlinking to model
+instances.
+
+By default hyperlinks are expected to correspond to a view name that matches the style
+``'{model_name}-detail'``, and looks up the instance by a ``pk`` keyword argument.
+
+You can override a URL field view name and lookup field by using either, or both of, the
+``view_name`` and ``lookup_field`` options in the ``extra_kwargs`` setting, like so:
+
+
+.. code-block:: python
+
+    class CarSerializer(serializers.HyperlinkedModelSerializer):
+
+        class Meta:
+            model = Account
+            fields = ('car_url', 'car_model', 'factories')
+            extra_kwargs = {
+                'url': {'view_name': 'cars', 'lookup_field': 'car_model'}
+                'factories': {'lookup_field': 'name'}
+            }
+
+Alternatively you can set the fields on the serializer explicitly. For example:
+
+.. code-block:: python
+
+    class CarSerializer(serializers.HyperlinkedModelSerializer):
+        url = serializers.HyperlinkedIdentityField(
+            view_name='cars', lookup_field='car_model'
+        )
+        factories = serializers.HyperlinkedRelatedField(
+            view_name='factory-detail', lookup_field='name',
+            many=True, read_only=True
+        )
+
+        class Meta:
+            model = Account
+            fields = ('url', 'car_model', 'factories')
+
+**Tip**: Properly matching together hyperlinked representations and your URL conf can sometimes
+be a bit fiddly. Printing the ``repr`` of a :class:`HyperlinkedModelSerializer` instance is a
+particularly useful way to inspect exactly which view names and lookup fields the relationships
+are expected to map too.
+
+Changing the URL field name
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The name of the URL field defaults to ``url``. You can override this globally, by using the
+``URL_FIELD_NAME`` setting.
 
 ListSerializer
 ^^^^^^^^^^^^^^
+The :class:`ListSerializer` class provides the behavior for serializing and validating multiple
+objects at once. You won't typically need to use :class:`ListSerializer` directly, but should instead
+simply pass ``many=True`` when instantiating a serializer.
+
+When a serializer is instantiated and ``many=True`` is passed, a :class:`ListSerializer` instance
+will be created. The serializer class then becomes a child of the parent :class:`ListSerializer`.
+
+The following argument can also be passed to a :class:`ListSerializer` field or a serializer that
+is passed ``many=True``:
+
+``allow_empty``
+
+This is ``True`` by default, but can be set to ``False`` if you want to disallow empty lists as
+valid input.
+
+Customizing ListSerializer behavior
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+There are a few use cases when you might want to customize the :class:`ListSerializer` behavior.
+For example:
+
+- You want to provide particular validation of the lists, such as checking that one element does
+  not conflict with another element in a list.
+
+- You want to customize the create or update behavior of multiple objects.
+
+For these cases you can modify the class that is used when ``many=True`` is passed, by using the
+``list_serializer_class`` option on the serializer ``Meta`` class.
+
+For example:
+
+.. code-block:: python
+
+    class CustomListSerializer(serializers.ListSerializer):
+        ...
+
+    class CustomSerializer(serializers.Serializer):
+        ...
+        class Meta:
+            list_serializer_class = CustomListSerializer
+
+Customizing multiple create
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The default implementation for multiple object creation is to simply call ``.create()`` for each
+item in the list. If you want to customize this behavior, you'll need to customize the ``.create()``
+method on :class:`ListSerializer` class that is used when ``many=True`` is passed.
+
+For example:
+
+.. code-block:: python
+
+    class BookListSerializer(serializers.ListSerializer):
+
+        def create(self, validated_data):
+            books = [Book(**item) for item in validated_data]
+            return Book.objects.bulk_create(books)
+
+    class BookSerializer(serializers.Serializer):
+        ...
+        class Meta:
+            list_serializer_class = BookListSerializer
+
+Customizing multiple update
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+By default the :class:`ListSerializer` class does not support multiple updates. This is because the
+behavior that should be expected for insertions and deletions is ambiguous.
+
+To support multiple updates you'll need to do so explicitly. When writing your multiple update code
+make sure to keep the following in mind:
+
+- How do you determine which instance should be updated for each item in the list of data?
+- How should insertions be handled? Are they invalid, or do they create new objects?
+- How should removals be handled? Do they imply object deletion, or removing a relationship? Should
+  they be silently ignored, or are they invalid?
+- How should ordering be handled? Does changing the position of two items imply any state change or
+  is it ignored?
+
+You will need to add an explicit ``id`` field to the instance serializer. The default
+implicitly-generated ``id`` field is marked as ``read_only``. This causes it to be removed on
+updates. Once you declare it explicitly, it will be available in the list serializer's ``update``
+method.
+
+Here's an example of how you might choose to implement multiple updates:
+
+.. code-block:: python
+
+    class BookListSerializer(serializers.ListSerializer):
+
+        def update(self, instance, validated_data):
+            # Maps for id->instance and id->data item.
+            book_mapping = {book.id: book for book in instance}
+            data_mapping = {item['id']: item for item in validated_data}
+
+            # Perform creations and updates.
+            ret = []
+            for book_id, data in data_mapping.items():
+                book = book_mapping.get(book_id, None)
+                if book is None:
+                    ret.append(self.child.create(data))
+                else:
+                    ret.append(self.child.update(book, data))
+
+            # Perform deletions.
+            for book_id, book in book_mapping.items():
+                if book_id not in data_mapping:
+                    book.delete()
+
+            return ret
+
+    class BookSerializer(serializers.Serializer):
+        # We need to identify elements in the list using their primary key,
+        # so use a writable field here, rather than the default which would be read-only.
+        id = serializers.IntegerField()
+
+        ...
+        id = serializers.IntegerField(required=False)
+
+        class Meta:
+            list_serializer_class = BookListSerializer
+
+Customizing ListSerializer initialization
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+When a serializer with ``many=True`` is instantiated, we need to determine which arguments and
+keyword arguments should be passed to the ``.__init__()`` method for both the child
+:class:`Serializer` class, and for the parent :class:`ListSerializer` class.
+
+The default implementation is to pass all arguments to both classes, except for ``validators``, and
+any custom keyword arguments, both of which are assumed to be intended for the child serializer
+class.
+
+Occasionally you might need to explicitly specify how the child and parent classes should be
+instantiated when ``many=True`` is passed. You can do so by using the ``many_init`` class method.
+
+.. code-block:: python
+
+    @classmethod
+    def many_init(cls, *args, **kwargs):
+        # Instantiate the child serializer.
+        kwargs['child'] = cls()
+        # Instantiate the parent list serializer.
+        return CustomListSerializer(*args, **kwargs)
 
 Serializer fields
 -----------------
