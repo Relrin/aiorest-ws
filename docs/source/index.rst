@@ -162,7 +162,9 @@ Contents:
    app
    request
    routing
-   serializing
+   serializers
+   fields
+   relations
    wrappers
    views
 
