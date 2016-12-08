@@ -38,6 +38,9 @@ def resolve(path, urlconf=None):
     if urlconf is None:
         urlconf = get_urlconf()
 
+    # Convert absolute path to relative
+    path = path.replace(urlconf['path'], '')
+
     # Iterate over the all endpoints
     for route in urlconf.get('urls', []):
         # Find match between endpoint and passed URL
@@ -50,7 +53,7 @@ def resolve(path, urlconf=None):
     raise NoMatch()
 
 
-def reverse(view_name, urlconf=None, args=[], kwargs={}):
+def reverse(view_name, urlconf=None, args=[], kwargs={}, relative=False):
     """
     Generate URL to endpoint, which processing by Application instance, based
     on the `view_name` and passed arguments.
@@ -66,10 +69,9 @@ def reverse(view_name, urlconf=None, args=[], kwargs={}):
 
     root_path = ''
     api_path = ''
-    route = None
     try:
-        # Get root path, alike "wss://127.0.0.1:8000/"
-        root_path = urlconf['path'].strip('/')
+        # Get root path, when necessary to generate absolute URL
+        root_path = '' if relative else urlconf['path'].strip('/')
 
         # Get path to a specific endpoint
         route = urlconf['routes'][view_name]

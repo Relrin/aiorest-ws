@@ -22,6 +22,7 @@ Features
 - Authentication (using JSON Web Token)
 - Customizing behaviour of your application through settings file
 - Compressing messages for minimize of transmitted traffic (if your browser support)
+- Model serializing for Django and SQLAlchemy ORM
 - SSL support
 
 Library installation
@@ -43,8 +44,7 @@ Client example (JavaScript):
     var ws = null;
     var isopen = false;
 
-    window.onload = function()
-    {
+    window.onload = function() {
       ws = new WebSocket("ws://127.0.0.1:8080");
       ws.onopen = function() {
         console.log("Connected!");
@@ -80,7 +80,6 @@ Client example (Python):
     from autobahn.asyncio.websocket import WebSocketClientProtocol, \
         WebSocketClientFactory
 
-
     class HelloClientProtocol(WebSocketClientProtocol):
 
         def onOpen(self):
@@ -93,7 +92,7 @@ Client example (Python):
 
 
     if __name__ == '__main__':
-        factory = WebSocketClientFactory("ws://localhost:8080", debug=False)
+        factory = WebSocketClientFactory("ws://localhost:8080")
         factory.protocol = HelloClientProtocol
 
         loop = asyncio.get_event_loop()
@@ -157,15 +156,17 @@ Contents:
 ---------
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 4
 
    auth
    app
    request
    routing
+   serializers
+   fields
+   relations
    wrappers
    views
-   api
 
 Indices and tables
 ==================

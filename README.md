@@ -15,8 +15,8 @@ Features
 
 Requirements
 -----
-- Python >= 3.4.0
-- Autobahn.ws >= 0.12.1
+- Python >= 3.4.2
+- Autobahn.ws == 0.16.0
 
 Optional:
 - SQLAlchemy ORM >= 1.0
@@ -54,8 +54,7 @@ Getting started
 var ws = null;
 var isopen = false;
 
-window.onload = function()
-{
+window.onload = function() {
   ws = new WebSocket("ws://127.0.0.1:8080");
   ws.onopen = function() {
     console.log("Connected!");
@@ -103,7 +102,7 @@ class HelloClientProtocol(WebSocketClientProtocol):
 
 
 if __name__ == '__main__':
-    factory = WebSocketClientFactory("ws://localhost:8080", debug=False)
+    factory = WebSocketClientFactory("ws://localhost:8080")
     factory.protocol = HelloClientProtocol
 
     loop = asyncio.get_event_loop()

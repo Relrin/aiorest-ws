@@ -22,7 +22,6 @@ handler. It can be method-based:
     from aiorest_ws.views import MethodBasedView
 
     class HelloWorld(MethodBasedView):
-
         def get(self, request, *args, **kwargs):
             return "Hello, world!"
 

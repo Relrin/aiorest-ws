@@ -452,7 +452,7 @@ class TestHyperlinkedRelatedField(unittest.TestCase):
         router = SimpleRouter()
         router.register('/test_view/{pk}', FakeView, 'GET', name='test_view')
         url_configuration = {
-            'path': 'wss://127.0.0.1:8000/',
+            'path': 'wss://127.0.0.1:8000',
             'urls': router._urls,
             'routes': router._routes
         }
@@ -485,7 +485,7 @@ class TestHyperlinkedRelatedField(unittest.TestCase):
         router = SimpleRouter()
         router.register('/test_view/{pk}', FakeView, 'GET', name='test_view')
         url_configuration = {
-            'path': 'wss://127.0.0.1:8000/',
+            'path': 'wss://127.0.0.1:8000',
             'urls': router._urls,
             'routes': router._routes
         }
@@ -512,7 +512,7 @@ class TestHyperlinkedRelatedField(unittest.TestCase):
         router = SimpleRouter()
         router.register('/test_view/{pk}', FakeView, 'GET', name='test_view')
         url_configuration = {
-            'path': 'wss://127.0.0.1:8000/',
+            'path': 'wss://127.0.0.1:8000',
             'urls': router._urls,
             'routes': router._routes
         }
@@ -528,7 +528,7 @@ class TestHyperlinkedRelatedField(unittest.TestCase):
         router = SimpleRouter()
         router.register('/test_view/{pk}', FakeView, 'GET', name='test_view')
         url_configuration = {
-            'path': 'wss://127.0.0.1:8000/',
+            'path': 'wss://127.0.0.1:8000',
             'urls': router._urls,
             'routes': router._routes
         }
@@ -561,7 +561,7 @@ class TestHyperlinkedRelatedField(unittest.TestCase):
         router = SimpleRouter()
         router.register('/test_view/{pk}', FakeView, 'GET', name='test_view')
         url_configuration = {
-            'path': 'wss://127.0.0.1:8000/',
+            'path': 'wss://127.0.0.1:8000',
             'urls': router._urls,
             'routes': router._routes
         }
@@ -595,7 +595,7 @@ class TestHyperlinkedRelatedField(unittest.TestCase):
         router = SimpleRouter()
         router.register('/test_view/{pk}', FakeView, 'GET', name='test_view')
         url_configuration = {
-            'path': 'wss://127.0.0.1:8000/',
+            'path': 'wss://127.0.0.1:8000',
             'urls': router._urls,
             'routes': router._routes
         }
@@ -607,6 +607,44 @@ class TestHyperlinkedRelatedField(unittest.TestCase):
             hyperlink_object,
             'wss://127.0.0.1:8000/test_view/1/'
         )
+        self.assertEqual(hyperlink_object.name, 'object.pk=1')
+
+    def test_to_representation_returns_relative_url(self):
+
+        class FakeModel(object):
+
+            def __init__(self, pk):
+                self.pk = pk
+
+            def __str__(self):
+                return "object.pk={}".format(self.pk)
+
+        class FakeModelSerializer(object):
+
+            parent = None
+            _context = {'relative': True}
+
+        class FakeHyperlinkField(self.CustomHyperlinkedRelatedField):
+
+            def is_saved_in_database(self, obj):
+                return True
+
+            def get_lookup_value(self, obj):
+                return (1, )
+
+        router = SimpleRouter()
+        router.register('/test_view/{pk}', FakeView, 'GET', name='test_view')
+        url_configuration = {
+            'path': 'wss://127.0.0.1:8000',
+            'urls': router._urls,
+            'routes': router._routes
+        }
+        set_urlconf(url_configuration)
+        instance = FakeHyperlinkField('test_view', read_only=True)
+        instance.bind('pk', FakeModelSerializer())
+
+        hyperlink_object = instance.to_representation(FakeModel(1))
+        self.assertEqual(hyperlink_object, '/test_view/1/')
         self.assertEqual(hyperlink_object.name, 'object.pk=1')
 
     def test_to_representation_returns_none(self):
@@ -630,7 +668,7 @@ class TestHyperlinkedRelatedField(unittest.TestCase):
         router = SimpleRouter()
         router.register('/test_view/{pk}', FakeView, 'GET', name='test_view')
         url_configuration = {
-            'path': 'wss://127.0.0.1:8000/',
+            'path': 'wss://127.0.0.1:8000',
             'urls': router._urls,
             'routes': router._routes
         }
@@ -659,7 +697,7 @@ class TestHyperlinkedRelatedField(unittest.TestCase):
 
         router = SimpleRouter()
         url_configuration = {
-            'path': 'wss://127.0.0.1:8000/',
+            'path': 'wss://127.0.0.1:8000',
             'urls': router._urls,
             'routes': router._routes
         }
@@ -681,7 +719,7 @@ class TestHyperlinkedRelatedField(unittest.TestCase):
 
         router = SimpleRouter()
         url_configuration = {
-            'path': 'wss://127.0.0.1:8000/',
+            'path': 'wss://127.0.0.1:8000',
             'urls': router._urls,
             'routes': router._routes
         }

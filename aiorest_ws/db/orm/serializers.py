@@ -11,7 +11,7 @@ from aiorest_ws.conf import settings
 from aiorest_ws.exceptions import ImproperlyConfigured
 from aiorest_ws.db.orm.abstract import AbstractSerializer, AbstractField, \
     empty, SkipField
-from aiorest_ws.db.orm.fields import HiddenField
+from aiorest_ws.db.orm.fields import *  # NOQA
 from aiorest_ws.db.orm.exceptions import ValidationError
 from aiorest_ws.utils.fields import set_value, get_attribute
 from aiorest_ws.utils.functional import cached_property

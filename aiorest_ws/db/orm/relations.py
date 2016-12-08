@@ -313,8 +313,12 @@ class HyperlinkedRelatedField(object):
         if not self.is_saved_in_database(obj):
             return None
 
+        # If have taken `context` and set `relative=True`, then necessary to
+        # generate relative URL
+        relative = self.context.get('relative', False)
+
         args = tuple(map(str, self.get_lookup_value(obj)))
-        return self.reverse(view_name, args=args)
+        return self.reverse(view_name, args=args, relative=relative)
 
     def get_name(self, obj):
         return str(obj)

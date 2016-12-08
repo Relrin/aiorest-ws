@@ -68,8 +68,7 @@ def humanize_timedelta(timedelta, display="long", sep=", "):
     """
     Turns a datetime.timedelta object into a nice string representation.
     """
-    assert isinstance(timedelta, datetime.timedelta), \
-        "First argument must be a timedelta."
+    assert isinstance(timedelta, datetime.timedelta), "First argument must be a timedelta."  # NOQA
 
     result = []
 

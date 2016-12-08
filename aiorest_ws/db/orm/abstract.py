@@ -58,8 +58,7 @@ class AbstractSerializer(object):
 
     def __init__(self, read_only=False, write_only=False, required=None,
                  default=empty, initial=empty, source=None, label=None,
-                 help_text=None, style=None, error_messages=None,
-                 validators=None, allow_null=False):
+                 error_messages=None, validators=None, allow_null=False):
         self._creation_counter = AbstractField._creation_counter
         AbstractField._creation_counter += 1
 
@@ -70,8 +69,6 @@ class AbstractSerializer(object):
         self.source = source
         self.initial = self.initial if (initial is empty) else initial
         self.label = label
-        self.help_text = help_text
-        self.style = {} if style is None else style
         self.allow_null = allow_null
 
         # Set `required` by default to `True` value, unless specified

@@ -5,15 +5,15 @@ Project Leader:
 
 - Valeryi Savich <relrin78@gmail.com>
 
-Contributors of code for aiorest-ws are:
+Contributors:
 
 - Dmitry Vechorko <vechorkodima@gmail.com>
 
-The serializers, field classes and exception style was taken from the Django
-REST Framework. The original code is BSD licensed. The following copyrights
-apply:
+The serializers, field, exception classes and documentation for them was
+taken from the Django REST Framework. The original code is BSD licensed. The
+following copyrights apply:
 
-- (c) 2015 Tom Christie
+- (c) 2016 Tom Christie
 
 The to_xml() function was taken from the django-rest-framework-xml module.
 The original code is BSD licensed with the following copyrights from that
@@ -24,21 +24,21 @@ module:
 The routing classes and URL parser code originally placed in aiohttp library.
 The original code is Apache 2.0 licensed. The following copyrights apply:
 
-- (c) 2015 Andrew Svetlov <andrew.svetlov@gmail.com>
+- (c) 2016 Andrew Svetlov <andrew.svetlov@gmail.com>
 
 The View, MethodViewMeta, MethodBasedView classes are partly modified,
 and the base implementation was taken from the Flask project (views module).
 The original code is BSD licensed with the following copyrights from
 that module:
 
-- (c) 2015 Armin Ronacher <armin.ronacher@active-4.com>
+- (c) 2016 Armin Ronacher <armin.ronacher@active-4.com>
 
 The idea for the "global" settings with further overriding, some util modules
 for processing requests and accessing to fields was taken from the Django 
 Framework. The original code is BSD licensed with the following copyrights 
 from that module:
 
-- (c) 2015 Django Software Foundation
+- (c) 2016 Django Software Foundation
 
 The nice_repr (renamed to humanize_timedelta), iso8601_repr and parse
 (renamed to parse_timedelta) functions for processing timedelta objects and

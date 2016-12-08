@@ -16,6 +16,7 @@ class TestResolve(unittest.TestCase):
         super(TestResolve, cls).setUpClass()
         url_parser = URLParser()
         cls.data = {
+            'path': 'wss://127.0.0.1:8000',
             'urls': [
                 url_parser.define_route(
                     '/user/list/', FakeView, ['GET', ], name='user-list'
@@ -28,10 +29,9 @@ class TestResolve(unittest.TestCase):
                 )
             ]
         }
-        set_urlconf(cls.data)
 
     def test_resolve_with_static_path(self):
-        match = resolve('/user/')
+        match = resolve('/user/', self.data)
         self.assertIsInstance(match, RouteMatch)
         self.assertIsNone(match.view_name)
         self.assertEqual(match.args, ())
@@ -39,14 +39,14 @@ class TestResolve(unittest.TestCase):
 
     def test_resolve_with_static_path_and_specified_name(self):
         view_name = 'user-list'
-        match = resolve('/user/list/')
+        match = resolve('/user/list/', self.data)
         self.assertIsInstance(match, RouteMatch)
         self.assertEqual(match.view_name, view_name)
         self.assertEqual(match.args, ())
         self.assertEqual(match.kwargs, {})
 
     def test_resolve_with_dynamic_path(self):
-        match = resolve('/user/1/')
+        match = resolve('/user/1/', self.data)
         self.assertIsInstance(match, RouteMatch)
         self.assertIsNone(match.view_name)
         self.assertEqual(match.args, ('1',))
@@ -54,11 +54,19 @@ class TestResolve(unittest.TestCase):
 
     def test_resolve_raises_no_match_exception(self):
         with self.assertRaises(NoMatch):
-            resolve('/user-list/')
+            resolve('/user-list/', self.data)
 
     def test_resolve_raises_no_match_exception_for_empty_list(self):
         with self.assertRaises(NoMatch):
-            resolve('/user/1/', {'urls': []})
+            empty_urlconf = {'path': 'wss://127.0.0.1:8000/', 'urls': []}
+            resolve('/user/1/', empty_urlconf)
+
+    def test_resolve_absolute_path(self):
+        match = resolve('wss://127.0.0.1:8000/user/1/', self.data)
+        self.assertIsInstance(match, RouteMatch)
+        self.assertIsNone(match.view_name)
+        self.assertEqual(match.args, ('1',))
+        self.assertEqual(match.kwargs, {'pk': '1'})
 
 
 class TestReverse(unittest.TestCase):
@@ -67,7 +75,7 @@ class TestReverse(unittest.TestCase):
         super(TestReverse, self).setUpClass()
         url_parser = URLParser()
         data = {
-            'path': 'wss://127.0.0.1:8000/',
+            'path': 'wss://127.0.0.1:8000',
             'routes': {
                 'user-detail': url_parser.define_route(
                     '/user/{pk}/', FakeView, ['GET', ], name='user-detail'
@@ -78,7 +86,8 @@ class TestReverse(unittest.TestCase):
 
     def test_reverse_with_args(self):
         self.assertEqual(
-            reverse('user-detail', args=('1',)), "wss://127.0.0.1:8000/user/1/"
+            reverse('user-detail', args=('1',)),
+            "wss://127.0.0.1:8000/user/1/"
         )
 
     def test_reverse_with_args_and_kwargs(self):
@@ -95,3 +104,9 @@ class TestReverse(unittest.TestCase):
         set_urlconf({})
         with self.assertRaises(NoReverseMatch):
             reverse('user-detail', args=('1',))
+
+    def test_reverse_returns_relative_url(self):
+        self.assertEqual(
+            reverse('user-detail', args=('1',), relative=True),
+            "/user/1/"
+        )
