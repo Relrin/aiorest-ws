@@ -136,8 +136,13 @@ Continuous Integration.
 Dependencies
 ------------
 
-- Python 3.4.0+
-- Autobahn.ws 0.10.0+
+- Python >= 3.4.2
+- Autobahn.ws == 0.16.0
+
+Optional:
+
+- SQLAlchemy ORM >= 1.0
+- Django >= 1.9
 
 Contributing
 ------------
