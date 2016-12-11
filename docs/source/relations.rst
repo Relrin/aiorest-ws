@@ -486,7 +486,7 @@ In this case we'd need to override :class:`HyperlinkedRelatedField` to get the b
 
         def get_url(self, obj, view_name, request, format):
             relative = self.context.get('relative', False)
-            args = tuple(map(str, [obj.organization.slug, obj.pk])
+            args = tuple(map(str, [obj.organization.slug, obj.pk]))
             return reverse(view_name, args=args, relative=relative)
 
         def get_object(self, view_name, view_args, view_kwargs):
