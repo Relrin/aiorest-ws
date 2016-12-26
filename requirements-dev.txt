@@ -6,7 +6,7 @@ Django==1.10.2
 flake8==2.5.2
 pep8==1.7.0
 pudb==2015.4.1
-psycopg2==2.6.1
+psycopg2==2.6.2
 pyflakes==1.0.0
 pylint==1.5.4
 pytest==2.8.7

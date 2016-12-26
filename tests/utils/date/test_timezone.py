@@ -11,6 +11,7 @@ from aiorest_ws.test.utils import override_settings
 
 EAT = get_fixed_timezone(180)  # Africa/Nairobi
 ICT = get_fixed_timezone(420)  # Asia/Bangkok
+INVALID_TIMEZONE = get_fixed_timezone(0.777)
 
 
 def test_utc_class():
@@ -146,7 +147,7 @@ def test_make_naive(value, timezone, expected):
 
 
 @pytest.mark.parametrize("value, timezone, exc_class", [
-    (dt.datetime(2011, 9, 1, 13, 20, 30), EAT, ValueError)
+    (dt.datetime(2011, 9, 1, 13, 20, 30), INVALID_TIMEZONE, ValueError)
 ])
 def test_make_naive_value_error(value, timezone, exc_class):
     with pytest.raises(exc_class):
