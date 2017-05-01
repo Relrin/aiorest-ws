@@ -5,7 +5,8 @@ from aiorest_ws.db.orm.relations import RelatedField as BaseRelatedField, \
 from aiorest_ws.db.orm.exceptions import ValidationError
 from aiorest_ws.db.orm.sqlalchemy.relations import ManyRelatedField, \
     RelatedField, PrimaryKeyRelatedField, HyperlinkedRelatedField
-from aiorest_ws.db.orm.sqlalchemy.fields import IntegerField, DictField
+from aiorest_ws.db.orm.sqlalchemy.fields import IntegerField, DictField, \
+    CharField
 from aiorest_ws.parsers import URLParser
 from aiorest_ws.test.utils import override_settings
 from aiorest_ws.urls.base import set_urlconf
@@ -218,9 +219,32 @@ class TestPrimaryKeyRelatedField(SQLAlchemyUnitTest):
             "TestPrimaryKeyRelatedFieldUserModel", back_populates="addresses"
         )
 
+    class TestPrimaryKeyRelatedFieldEmailModel(Base):
+        __tablename__ = 'test_pk_related_field_email_model'
+        email = Column(String(256), primary_key=True)
+        user_id = Column(
+            ForeignKey("test_pk_related_field_user_without_uselist_model.id"),
+            nullable=True
+        )
+        user = relationship(
+            "TestPKRelatedFieldUserNoUselistModel",
+            back_populates="email", foreign_keys=[user_id]
+        )
+
+    class TestPKRelatedFieldUserNoUselistModel(Base):
+        __tablename__ = 'test_pk_related_field_user_without_uselist_model'
+        id = Column(Integer, primary_key=True)
+        name = Column(String(50), unique=True)
+        email = relationship(
+            "TestPrimaryKeyRelatedFieldEmailModel", back_populates="user",
+            uselist=False
+        )
+
     tables = [
         TestPrimaryKeyRelatedFieldUserModel.__table__,
-        TestPrimaryKeyRelatedFieldAddressModel.__table__
+        TestPrimaryKeyRelatedFieldAddressModel.__table__,
+        TestPrimaryKeyRelatedFieldEmailModel.__table__,
+        TestPKRelatedFieldUserNoUselistModel.__table__,
     ]
 
     @classmethod
@@ -234,6 +258,17 @@ class TestPrimaryKeyRelatedField(SQLAlchemyUnitTest):
         user.addresses.append(address)
         session.add(user)
         session.add(address)
+
+        user_custom = cls.TestPKRelatedFieldUserNoUselistModel(
+            name='admin_no_uselist'
+        )
+        email = cls.TestPrimaryKeyRelatedFieldEmailModel(
+            email='admin_no_uselist@email.com'
+        )
+        user_custom.email = email
+        session.add(user_custom)
+        session.add(email)
+
         session.commit()
         session.close()
 
@@ -319,7 +354,25 @@ class TestPrimaryKeyRelatedField(SQLAlchemyUnitTest):
 
         user = session.query(self.TestPrimaryKeyRelatedFieldUserModel) \
             .filter_by(name='admin').first()
+
         self.assertEqual(instance.to_representation(user), user.id)
+
+        session.close()
+
+    @override_settings(SQLALCHEMY_SESSION=SESSION)
+    def test_to_representation_returns_remote_pk_from_pk_only_object(self):
+        session = SESSION()
+        queryset = session.query(self.TestPrimaryKeyRelatedFieldEmailModel)
+        instance = PrimaryKeyRelatedField(
+            queryset=queryset, many=False, required=False, pk_field=CharField()
+        )
+
+        user = session.query(self.TestPKRelatedFieldUserNoUselistModel) \
+            .filter_by(name='admin_no_uselist').first()
+
+        email_pk = user.email.email
+        pk_only_object = PKOnlyObject(pk=user.email)
+        self.assertEqual(instance.to_representation(pk_only_object), email_pk)
 
         session.close()
 
