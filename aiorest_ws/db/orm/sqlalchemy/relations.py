@@ -93,6 +93,7 @@ class PrimaryKeyRelatedField(relations.PrimaryKeyRelatedField,
             query.session.close()
 
     def to_representation(self, value):
+        value = value.pk if isinstance(value, PKOnlyObject) else value
         object_pk = self._get_object_pk(value)
         if self.pk_field is not None:
             return self.pk_field.to_representation(object_pk)
