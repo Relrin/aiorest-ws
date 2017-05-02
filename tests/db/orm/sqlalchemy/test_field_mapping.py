@@ -9,7 +9,7 @@ from aiorest_ws.utils.structures import RelationInfo
 from tests.db.orm.sqlalchemy.base import Base, SQLAlchemyUnitTest
 from tests.fixtures.sqlalchemy import SESSION
 
-from sqlalchemy import Column, Integer, String, Enum, ForeignKey
+from sqlalchemy import Column, Integer, String, Enum, ForeignKey, Numeric
 from sqlalchemy.orm import validates
 
 
@@ -50,6 +50,7 @@ class TestGetFieldKwargs(SQLAlchemyUnitTest):
         address = Column(String(50), nullable=True)
         email = Column(String(50), unique=True)
         gender = Column(Enum(*('male', 'female')))
+        salary = Column(Numeric(5, 2), default=0)
 
         @validates('email')
         def validate_email(self, key, address):
@@ -67,26 +68,31 @@ class TestGetFieldKwargs(SQLAlchemyUnitTest):
                 username='Adam',
                 address='UK, London',
                 email='adam@mail.com',
-                gender='male'
+                gender='male',
+                salary=100.00
             ),
             cls.TestGetFieldKwargsModel(
                 username='Bob',
                 address='USA, CA, San Francisco',
                 email='bob@mail.com',
-                gender='male'
+                gender='male',
+                salary=123.56
             ),
             cls.TestGetFieldKwargsModel(
                 username='Alexandra',
                 address=None,
                 email='alexandra@mail.com',
-                gender='female'
+                gender='female',
+                salary=999.99
             ),
         ])
         session.commit()
 
     def test_get_field_kwargs_for_primary_key_field(self):
         field_kwargs = get_field_kwargs(
-            'id', self.TestGetFieldKwargsModel.id, self.TestGetFieldKwargsModel
+            'id',
+            self.TestGetFieldKwargsModel.id,
+            self.TestGetFieldKwargsModel
         )
 
         self.assertEqual(
@@ -101,7 +107,8 @@ class TestGetFieldKwargs(SQLAlchemyUnitTest):
 
     def test_get_field_kwargs_for_nullable_field(self):
         field_kwargs = get_field_kwargs(
-            'address', self.TestGetFieldKwargsModel.address,
+            'address',
+            self.TestGetFieldKwargsModel.address,
             self.TestGetFieldKwargsModel
         )
 
@@ -123,7 +130,8 @@ class TestGetFieldKwargs(SQLAlchemyUnitTest):
 
     def test_get_field_kwargs_for_unique_and_validated_field(self):
         field_kwargs = get_field_kwargs(
-            'email', self.TestGetFieldKwargsModel.email,
+            'email',
+            self.TestGetFieldKwargsModel.email,
             self.TestGetFieldKwargsModel
         )
 
@@ -146,7 +154,8 @@ class TestGetFieldKwargs(SQLAlchemyUnitTest):
 
     def test_get_field_kwargs_for_enum_field(self):
         field_kwargs = get_field_kwargs(
-            'gender', self.TestGetFieldKwargsModel.gender,
+            'gender',
+            self.TestGetFieldKwargsModel.gender,
             self.TestGetFieldKwargsModel
         )
 
@@ -165,6 +174,35 @@ class TestGetFieldKwargs(SQLAlchemyUnitTest):
             self.TestGetFieldKwargsModel.gender
         )
         self.assertEqual(set(field_kwargs['choices']), {'male', 'female'})
+
+    def test_get_field_kwargs_for_decimal_field(self):
+        field_kwargs = get_field_kwargs(
+            'salary',
+            self.TestGetFieldKwargsModel.salary,
+            self.TestGetFieldKwargsModel
+        )
+
+        self.assertEqual(
+            set(field_kwargs.keys()),
+            set([
+                'model_field', 'max_digits', 'decimal_places',
+                'required', 'allow_null'
+            ])
+        )
+        self.assertTrue(field_kwargs['allow_null'])
+        self.assertFalse(field_kwargs['required'])
+        self.assertEqual(
+            field_kwargs['max_digits'],
+            self.TestGetFieldKwargsModel.salary.type.precision
+        )
+        self.assertEqual(
+            field_kwargs['decimal_places'],
+            self.TestGetFieldKwargsModel.salary.type.scale,
+        )
+        self.assertEqual(
+            field_kwargs['model_field'],
+            self.TestGetFieldKwargsModel.salary
+        )
 
 
 class TestGetRelationKwargs(unittest.TestCase):
