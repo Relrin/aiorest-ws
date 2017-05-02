@@ -46,6 +46,14 @@ def get_field_kwargs(field_name, model_field, model_class):
     # Gets removed for everything else
     kwargs['model_field'] = model_field
 
+    max_digits = getattr(model_field.type, 'precision', None)
+    if max_digits is not None:
+        kwargs['max_digits'] = max_digits
+
+    decimal_places = getattr(model_field.type, 'scale', None)
+    if decimal_places is not None:
+        kwargs['decimal_places'] = decimal_places
+
     if model_field.primary_key:
         # If this field is read-only, then return early.
         # Further keyword arguments are not valid
