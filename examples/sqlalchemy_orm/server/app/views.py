@@ -12,7 +12,9 @@ class UserListView(MethodBasedView):
     def get(self, request, *args, **kwargs):
         session = settings.SQLALCHEMY_SESSION()
         users = session.query(User).all()
-        return UserSerializer(users, many=True).data
+        data = UserSerializer(users, many=True).data
+        session.close()
+        return data
 
     def post(self, request, *args, **kwargs):
         if not request.data:
@@ -32,7 +34,9 @@ class UserView(MethodBasedView):
     def get(self, request, id, *args, **kwargs):
         session = settings.SQLALCHEMY_SESSION()
         instance = session.query(User).filter(User.id == id).first()
-        return UserSerializer(instance).data
+        data = UserSerializer(instance).data
+        session.close()
+        return data
 
     def put(self, request, id, *args, **kwargs):
         if not request.data:
@@ -46,7 +50,9 @@ class UserView(MethodBasedView):
         serializer = UserSerializer(instance, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        return serializer.data
+        data = serializer.data
+        session.close()
+        return data
 
 
 class CreateUserView(MethodBasedView):
@@ -63,7 +69,9 @@ class AddressView(MethodBasedView):
     def get(self, request, id, *args, **kwargs):
         session = settings.SQLALCHEMY_SESSION()
         instance = session.query(User).filter(User.id == id).first()
-        return AddressSerializer(instance).data
+        data = AddressSerializer(instance).data
+        session.close()
+        return data
 
 
 class CreateAddressView(MethodBasedView):
