@@ -8,7 +8,7 @@
 \___,_||_| \___/ |_|   \___||___/\___|          \_/\_/  |___/
 """
 __title__ = 'aiorest-ws'
-__version__ = '1.1.0'
+__version__ = '1.1.1'
 __author__ = 'Valeryi Savich'
 __license__ = 'BSD'
 __copyright__ = 'Copyright (c) 2016 by Valeryi Savich'
