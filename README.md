@@ -29,7 +29,7 @@ The aiorest-ws published under BSD license. For more details read [LICENSE](http
 Roadmap (by priority) to releases:
 ------
 v1.2:
- - Improve scalability of aiorest-ws (balancer instance or HAProxy?)
+ - Wrap ORM calls / serializers into coroutines, so that it won't slow down an event loop
  - Notification support
  
 v1.3:
